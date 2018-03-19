@@ -1,0 +1,1472 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug - CSGO|Win32">
+      <Configuration>Debug - CSGO</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - CSS|Win32">
+      <Configuration>Debug - CSS</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - Alien Swarm|Win32">
+      <Configuration>Debug - Alien Swarm</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - Dark Messiah|Win32">
+      <Configuration>Debug - Dark Messiah</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - Episode 1|Win32">
+      <Configuration>Debug - Episode 1</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - Left 4 Dead 2|Win32">
+      <Configuration>Debug - Left 4 Dead 2</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - Left 4 Dead|Win32">
+      <Configuration>Debug - Left 4 Dead</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - Old Metamod|Win32">
+      <Configuration>Debug - Old Metamod</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - Orange Box Valve|Win32">
+      <Configuration>Debug - Orange Box Valve</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - Orange Box|Win32">
+      <Configuration>Debug - Orange Box</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - Bloody Good Time|Win32">
+      <Configuration>Debug - Orange Box</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - EYE|Win32">
+      <Configuration>Debug - Orange Box</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - CSGO|Win32">
+      <Configuration>Release - CSGO</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - CSS|Win32">
+      <Configuration>Release - CSS</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Alien Swarm|Win32">
+      <Configuration>Release - Alien Swarm</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Dark Messiah|Win32">
+      <Configuration>Release - Dark Messiah</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Episode 1|Win32">
+      <Configuration>Release - Episode 1</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Left 4 Dead 2|Win32">
+      <Configuration>Release - Left 4 Dead 2</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Left 4 Dead|Win32">
+      <Configuration>Release - Left 4 Dead</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Old Metamod|Win32">
+      <Configuration>Release - Old Metamod</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Orange Box Valve|Win32">
+      <Configuration>Release - Orange Box Valve</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Orange Box|Win32">
+      <Configuration>Release - Orange Box</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Orange Box|Win32">
+      <Configuration>Release - Bloody Good Time</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Orange Box|Win32">
+      <Configuration>Release - EYE</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B3E797CF-4E77-4C9D-B8A8-7589B6902206}</ProjectGuid>
+    <RootNamespace>sdk</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Episode 1|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Episode 1|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead 2|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - CSGO|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Alien Swarm|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead 2|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - CSGO|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - CSS|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - CSS|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Alien Swarm|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box Valve|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box Valve|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Bloody Good Time|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Bloody Good Time|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - EYE|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Dark Messiah|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Dark Messiah|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Old Metamod|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Old Metamod|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - Episode 1|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Episode 1|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead 2|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - CSGO|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - Alien Swarm|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead 2|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - CSGO|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Alien Swarm|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - CSS|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - CSS|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box Valve|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box Valve|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - Dark Messiah|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Dark Messiah|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - Old Metamod|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Old Metamod|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - Bloody Good Time|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Bloody Good Time|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - EYE|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - Old Metamod|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - Old Metamod|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - Bloody Good Time|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - Bloody Good Time|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - EYE|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - Dark Messiah|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - Dark Messiah|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box Valve|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box Valve|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead 2|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - CSGO|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - Alien Swarm|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead 2|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - CSGO|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - Alien Swarm|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - CSS|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - CSS|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug - Episode 1|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release - Episode 1|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - Dark Messiah|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - Dark Messiah|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - Dark Messiah|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - Episode 1|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - Episode 1|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - Episode 1|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead 2|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - CSGO|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - Alien Swarm|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead 2|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - CSGO|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - Alien Swarm|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead 2|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - CSGO|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - Alien Swarm|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - CSS|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - CSS|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - CSS|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - Old Metamod|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - Old Metamod|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - Old Metamod|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box Valve|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box Valve|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box Valve|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - Bloody Good Time|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - Bloody Good Time|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - Bloody Good Time|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - EYE|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - EYE|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - EYE|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - Dark Messiah|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - Dark Messiah|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - Dark Messiah|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - CSGO|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - CSGO|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - CSGO|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - CSS|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - CSS|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - CSS|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - Episode 1|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - Episode 1|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - Episode 1|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead 2|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - Alien Swarm|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead 2|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - Alien Swarm|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead 2|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - Alien Swarm|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - Old Metamod|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - Old Metamod|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - Old Metamod|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box Valve|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box Valve|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box Valve|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - Bloody Good Time|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - Bloody Good Time|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - Bloody Good Time|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - Dark Messiah|Win32'">sample.ext.2.darkm</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - Episode 1|Win32'">sample.ext.2.ep1</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead 2|Win32'">sample.ext.2.l4d2</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - CSGO|Win32'">sample.ext.2.csgo</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - CSS|Win32'">monster.ext.2.css</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - Alien Swarm|Win32'">sample.ext.2.swarm</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead|Win32'">sample.ext.2.l4d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - Old Metamod|Win32'">sample.ext.1.ep1</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box Valve|Win32'">monster.ext</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box|Win32'">sample.ext.2.ep2</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - Bloody Good Time|Win32'">sample.ext.2.bgt</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - EYE|Win32'">sample.ext.2.eye</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">monster.ext</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Dark Messiah|Win32'">sample.ext.2.darkm</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Episode 1|Win32'">sample.ext.2.ep1</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead 2|Win32'">sample.ext.2.l4d2</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - CSGO|Win32'">sample.ext.2.csgo</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - CSS|Win32'">monster.ext.2.css</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Alien Swarm|Win32'">sample.ext.2.swarm</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead|Win32'">sample.ext.2.l4d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Old Metamod|Win32'">sample.ext.1.ep1</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box Valve|Win32'">monster.ext</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box|Win32'">sample.ext.2.ep2</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Bloody Good Time|Win32'">sample.ext.2.bgt</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'">sample.ext.2.eye</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">sample.ext</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;$(SOURCEMOD)\public;$(SOURCEMOD)\public\sourcepawn;..\CEntity;..\CEntity\AI;..\CEntity\Class;..\CEntity\modify;..\CEntity\stuff;..\Custom;..\Monster;$(HL2SDKCSS)\public;$(HL2SDKCSS)\public\game\server;$(HL2SDKCSS)\public\engine;$(HL2SDKCSS)\public\tier0;$(HL2SDKCSS)\public\tier1;$(HL2SDKCSS)\public\tier3;$(HL2SDKCSS)\public\vstdlib;$(HL2SDKCSS)\game\shared;$(HL2SDKCSS)\public\toolframework;$(MMSOURCE)\core;$(MMSOURCE)\core\sourcehook;$(HL2SDKCSS)\public\SoundEmitterSystem;$(HL2SDKCSS)\game\server;$(HL2SDKCSS)\public\mathlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>$(HL2SDKCSS)\lib\public\tier0.lib;$(HL2SDKCSS)\lib\public\tier1.lib;$(HL2SDKCSS)\lib\public\tier3.lib;$(HL2SDKCSS)\lib\public\mathlib.lib;$(HL2SDKCSS)\lib\public\vstdlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Old Metamod|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK)\public;$(HL2SDK)\public\dlls;$(HL2SDK)\public\engine;$(HL2SDK)\public\tier0;$(HL2SDK)\public\tier1;$(MMSOURCE19)\core-legacy;$(MMSOURCE19)\core-legacy\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK)\lib\public\tier0.lib;$(HL2SDK)\lib\public\tier1.lib;$(HL2SDK)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Old Metamod|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK)\public;$(HL2SDK)\public\dlls;$(HL2SDK)\public\engine;$(HL2SDK)\public\tier0;$(HL2SDK)\public\tier1;$(MMSOURCE19)\core-legacy;$(MMSOURCE19)\core-legacy\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK)\lib\public\tier0.lib;$(HL2SDK)\lib\public\tier1.lib;$(HL2SDK)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Dark Messiah|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK-DARKM)\public;$(HL2SDK-DARKM)\public\dlls;$(HL2SDK-DARKM)\public\engine;$(HL2SDK-DARKM)\public\tier0;$(HL2SDK-DARKM)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK-DARKM)\lib\public\tier0.lib;$(HL2SDK-DARKM)\lib\public\tier1.lib;$(HL2SDK-DARKM)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Dark Messiah|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK-DARKM)\public;$(HL2SDK-DARKM)\public\dlls;$(HL2SDK-DARKM)\public\engine;$(HL2SDK-DARKM)\public\tier0;$(HL2SDK-DARKM)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK-DARKM)\lib\public\tier0.lib;$(HL2SDK-DARKM)\lib\public\tier1.lib;$(HL2SDK-DARKM)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDKOB)\public;$(HL2SDKOB)\public\engine;$(HL2SDKOB)\public\game\server;$(HL2SDKOB)\public\tier0;$(HL2SDKOB)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKOB)\lib\public\tier0.lib;$(HL2SDKOB)\lib\public\tier1.lib;$(HL2SDKOB)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDKOB)\public;$(HL2SDKOB)\public\engine;$(HL2SDKOB)\public\game\server;$(HL2SDKOB)\public\tier0;$(HL2SDKOB)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKOB)\lib\public\tier0.lib;$(HL2SDKOB)\lib\public\tier1.lib;$(HL2SDKOB)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box Valve|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;$(SOURCEMOD)\public;$(SOURCEMOD)\public\sourcepawn;..\CEntity;..\CEntity\AI;..\CEntity\Class;..\CEntity\modify;..\CEntity\stuff;..\Custom;..\Monster;$(HL2SDKCSS)\public;$(HL2SDKCSS)\public\game\server;$(HL2SDKCSS)\public\engine;$(HL2SDKCSS)\public\tier0;$(HL2SDKCSS)\public\tier1;$(HL2SDKCSS)\public\tier3;$(HL2SDKCSS)\public\vstdlib;$(HL2SDKCSS)\game\shared;$(HL2SDKCSS)\public\toolframework;$(MMSOURCE)\core;$(MMSOURCE)\core\sourcehook;$(HL2SDKCSS)\public\SoundEmitterSystem;$(HL2SDKCSS)\game\server;$(HL2SDKCSS)\public\mathlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKCSS)\lib\public\tier0.lib;$(HL2SDKCSS)\lib\public\tier1.lib;$(HL2SDKCSS)\lib\public\tier3.lib;$(HL2SDKCSS)\lib\public\mathlib.lib;$(HL2SDKCSS)\lib\public\vstdlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box Valve|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;$(SOURCEMOD)\public;$(SOURCEMOD)\public\sourcepawn;..\CEntity;..\CEntity\AI;..\CEntity\Class;..\CEntity\modify;..\CEntity\stuff;..\Custom;..\Monster;$(HL2SDKCSS)\public;$(HL2SDKCSS)\public\game\server;$(HL2SDKCSS)\public\engine;$(HL2SDKCSS)\public\tier0;$(HL2SDKCSS)\public\tier1;$(HL2SDKCSS)\public\tier3;$(HL2SDKCSS)\public\vstdlib;$(HL2SDKCSS)\game\shared;$(HL2SDKCSS)\public\toolframework;$(MMSOURCE)\core;$(MMSOURCE)\core\sourcehook;$(HL2SDKCSS)\public\SoundEmitterSystem;$(HL2SDKCSS)\game\server;$(HL2SDKCSS)\public\mathlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKCSS)\lib\public\tier0.lib;$(HL2SDKCSS)\lib\public\tier1.lib;$(HL2SDKCSS)\lib\public\tier3.lib;$(HL2SDKCSS)\lib\public\mathlib.lib;$(HL2SDKCSS)\lib\public\vstdlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - CSS|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..\..\public;..\..\..\public\sourcepawn;..\CEntity;..\CEntity\AI;..\CEntity\Class;..\CEntity\modify;..\CEntity\stuff;..\Custom;..\Monster;$(HL2SDKCSS)\public;$(HL2SDKCSS)\public\game\server;$(HL2SDKCSS)\public\engine;$(HL2SDKCSS)\public\tier0;$(HL2SDKCSS)\public\tier1;$(HL2SDKCSS)\public\tier3;$(HL2SDKCSS)\public\vstdlib;$(HL2SDKCSS)\game\shared;$(HL2SDKCSS)\public\toolframework;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;$(HL2SDKCSS)\public\SoundEmitterSystem;$(HL2SDKCSS)\game\server;$(HL2SDKCSS)\public\mathlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=6;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ShowIncludes>false</ShowIncludes>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKCSS)\lib\public\tier0.lib;$(HL2SDKCSS)\lib\public\tier1.lib;$(HL2SDKCSS)\lib\public\tier3.lib;$(HL2SDKCSS)\lib\public\mathlib.lib;$(HL2SDKCSS)\lib\public\vstdlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - CSS|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..\..\public;..\..\..\public\sourcepawn;..\CEntity;..\CEntity\AI;..\CEntity\Class;..\CEntity\modify;..\CEntity\stuff;..\Custom;..\Monster;$(HL2SDKCSS)\public;$(HL2SDKCSS)\public\game\server;$(HL2SDKCSS)\public\engine;$(HL2SDKCSS)\public\tier0;$(HL2SDKCSS)\public\tier1;$(HL2SDKCSS)\public\tier3;$(HL2SDKCSS)\public\vstdlib;$(HL2SDKCSS)\game\shared;$(HL2SDKCSS)\public\toolframework;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;$(HL2SDKCSS)\public\SoundEmitterSystem;$(HL2SDKCSS)\game\server;$(HL2SDKCSS)\public\mathlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=6;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKCSS)\lib\public\tier0.lib;$(HL2SDKCSS)\lib\public\tier1.lib;$(HL2SDKCSS)\lib\public\tier3.lib;$(HL2SDKCSS)\lib\public\mathlib.lib;$(HL2SDKCSS)\lib\public\vstdlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Bloody Good Time|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK-BGT)\public;$(HL2SDK-BGT)\public\engine;$(HL2SDK-BGT)\public\game\server;$(HL2SDK-BGT)\public\tier0;$(HL2SDK-BGT)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK-BGT)\lib\public\tier0.lib;$(HL2SDK-BGT)\lib\public\tier1.lib;$(HL2SDK-BGT)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Bloody Good Time|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK-BGT)\public;$(HL2SDK-BGT)\public\engine;$(HL2SDK-BGT)\public\game\server;$(HL2SDK-BGT)\public\tier0;$(HL2SDK-BGT)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK-BGT)\lib\public\tier0.lib;$(HL2SDK-BGT)\lib\public\tier1.lib;$(HL2SDK-BGT)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - EYE|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK-EYE)\public;$(HL2SDK-EYE)\public\engine;$(HL2SDK-EYE)\public\game\server;$(HL2SDK-EYE)\public\tier0;$(HL2SDK-EYE)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK-EYE)\lib\public\tier0.lib;$(HL2SDK-EYE)\lib\public\tier1.lib;$(HL2SDK-EYE)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK-EYE)\public;$(HL2SDK-EYE)\public\engine;$(HL2SDK-EYE)\public\game\server;$(HL2SDK-EYE)\public\tier0;$(HL2SDK-EYE)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK-EYE)\lib\public\tier0.lib;$(HL2SDK-EYE)\lib\public\tier1.lib;$(HL2SDK-EYE)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDKL4D)\public;$(HL2SDKL4D)\public\engine;$(HL2SDKL4D)\public\game\server;$(HL2SDKL4D)\public\tier0;$(HL2SDKL4D)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=8;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKL4D)\lib\public\tier0.lib;$(HL2SDKL4D)\lib\public\tier1.lib;$(HL2SDKL4D)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDKL4D)\public;$(HL2SDKL4D)\public\engine;$(HL2SDKL4D)\public\game\server;$(HL2SDKL4D)\public\tier0;$(HL2SDKL4D)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=8;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKL4D)\lib\public\tier0.lib;$(HL2SDKL4D)\lib\public\tier1.lib;$(HL2SDKL4D)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead 2|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDKL4D2)\public;$(HL2SDKL4D2)\public\engine;$(HL2SDKL4D2)\public\game\server;$(HL2SDKL4D2)\public\tier0;$(HL2SDKL4D2)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKL4D2)\lib\public\tier0.lib;$(HL2SDKL4D2)\lib\public\tier1.lib;$(HL2SDKL4D2)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Alien Swarm|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK-SWARM)\public;$(HL2SDK-SWARM)\public\engine;$(HL2SDK-SWARM)\public\game\server;$(HL2SDK-SWARM)\public\tier0;$(HL2SDK-SWARM)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;COMPILER_MSVC;COMPILER_MSVC32;SOURCE_ENGINE=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK-SWARM)\lib\public\interfaces.lib;$(HL2SDK-SWARM)\lib\public\tier0.lib;$(HL2SDK-SWARM)\lib\public\tier1.lib;$(HL2SDK-SWARM)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead 2|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDKL4D2)\public;$(HL2SDKL4D2)\public\engine;$(HL2SDKL4D2)\public\game\server;$(HL2SDKL4D2)\public\tier0;$(HL2SDKL4D2)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKL4D2)\lib\public\tier0.lib;$(HL2SDKL4D2)\lib\public\tier1.lib;$(HL2SDKL4D2)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Alien Swarm|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK-SWARM)\public;$(HL2SDK-SWARM)\public\engine;$(HL2SDK-SWARM)\public\game\server;$(HL2SDK-SWARM)\public\tier0;$(HL2SDK-SWARM)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;COMPILER_MSVC;COMPILER_MSVC32;SOURCE_ENGINE=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK-SWARM)\lib\public\interfaces.lib;$(HL2SDK-SWARM)\lib\public\tier0.lib;$(HL2SDK-SWARM)\lib\public\tier1.lib;$(HL2SDK-SWARM)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - CSGO|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDKCSGO)\public;$(HL2SDKCSGO)\public\engine;$(HL2SDKCSGO)\public\game\server;$(HL2SDKCSGO)\public\tier0;$(HL2SDKCSGO)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;COMPILER_MSVC;COMPILER_MSVC32;SOURCE_ENGINE=12;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKCSGO)\lib\public\interfaces.lib;$(HL2SDKCSGO)\lib\public\tier0.lib;$(HL2SDKCSGO)\lib\public\tier1.lib;$(HL2SDKCSGO)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - CSGO|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDKCSGO)\public;$(HL2SDKCSGO)\public\engine;$(HL2SDKCSGO)\public\game\server;$(HL2SDKCSGO)\public\tier0;$(HL2SDKCSGO)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;COMPILER_MSVC;COMPILER_MSVC32;SOURCE_ENGINE=12;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDKCSGO)\lib\public\interfaces.lib;$(HL2SDKCSGO)\lib\public\tier0.lib;$(HL2SDKCSGO)\lib\public\tier1.lib;$(HL2SDKCSGO)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Episode 1|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK)\public;$(HL2SDK)\public\dlls;$(HL2SDK)\public\engine;$(HL2SDK)\public\tier0;$(HL2SDK)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK)\lib\public\tier0.lib;$(HL2SDK)\lib\public\tier1.lib;$(HL2SDK)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Episode 1|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..;..\sdk;..\..;..\..\sourcepawn;$(HL2SDK)\public;$(HL2SDK)\public\dlls;$(HL2SDK)\public\engine;$(HL2SDK)\public\tier0;$(HL2SDK)\public\tier1;$(MMSOURCE19)\core;$(MMSOURCE19)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(HL2SDK)\lib\public\tier0.lib;$(HL2SDK)\lib\public\tier1.lib;$(HL2SDK)\lib\public\vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\asm\asm.c" />
+    <ClCompile Include="..\CDetour\detours.cpp" />
+    <ClCompile Include="..\CEntity\AI\activitylist.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_behavior_rappel.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_behavior_standoff.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_baseactor.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_basehumanoid.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_basenpc_physicsflyer.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_behavior.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_behavior_assault.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_behavior_follow.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Blended_Movement.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Criteria.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Default.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_goalentity.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Hint.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_HULL.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Interest_Target.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Link.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_LocalIdSpace.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_localnavigator.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Memory.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Motor.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Moveprobe.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Moveshoot.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Movesolver.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Navigator.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Network.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_NetworkManager.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Node.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_pathfinder.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_ResponseSystem.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Route.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Schedule.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_senses.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Sentence.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_speech.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_Squad.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_tacticalservices.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_utils.cpp" />
+    <ClCompile Include="..\CEntity\AI\CAI_waypoint.cpp" />
+    <ClCompile Include="..\CEntity\AI\choreoevent.cpp" />
+    <ClCompile Include="..\CEntity\AI\choreoscene.cpp" />
+    <ClCompile Include="..\CEntity\AI\CH_AI.cpp" />
+    <ClCompile Include="..\CEntity\AI\eventlist.cpp" />
+    <ClCompile Include="..\CEntity\AI\interpolatortypes.cpp" />
+    <ClCompile Include="..\CEntity\AI\sceneentity.cpp" />
+    <ClCompile Include="..\CEntity\CECollisionProperty.cpp" />
+    <ClCompile Include="..\CEntity\CEntity.cpp" />
+    <ClCompile Include="..\CEntity\CEntityBase.cpp" />
+    <ClCompile Include="..\CEntity\CEntityManager.cpp" />
+    <ClCompile Include="..\CEntity\CE_recipientfilter.cpp" />
+    <ClCompile Include="..\CEntity\Class\CAI_NPC.cpp" />
+    <ClCompile Include="..\CEntity\Class\CAI_relationship.cpp" />
+    <ClCompile Include="..\CEntity\Class\CAnimating.cpp" />
+    <ClCompile Include="..\CEntity\Class\CAnimatingOverlay.cpp" />
+    <ClCompile Include="..\CEntity\Class\CBeam.cpp" />
+    <ClCompile Include="..\CEntity\Class\CBreakable.cpp" />
+    <ClCompile Include="..\CEntity\Class\CCombatCharacter.cpp" />
+    <ClCompile Include="..\CEntity\Class\CCombatWeapon.cpp" />
+    <ClCompile Include="..\CEntity\Class\CCycler_Fix.cpp" />
+    <ClCompile Include="..\CEntity\Class\CDoor.cpp" />
+    <ClCompile Include="..\CEntity\Class\CDynamicLink.cpp" />
+    <ClCompile Include="..\CEntity\Class\CDynamicProp.cpp" />
+    <ClCompile Include="..\CEntity\Class\CEAI_ScriptedSequence.cpp" />
+    <ClCompile Include="..\CEntity\Class\CEnvExplosion.cpp" />
+    <ClCompile Include="..\CEntity\Class\CEnvGunfire.cpp" />
+    <ClCompile Include="..\CEntity\Class\CEnvLaser.cpp" />
+    <ClCompile Include="..\CEntity\Class\CESoundEnt.cpp" />
+    <ClCompile Include="..\CEntity\Class\CFlex.cpp" />
+    <ClCompile Include="..\CEntity\Class\CGamePlayerEquip.cpp" />
+    <ClCompile Include="..\CEntity\Class\CGameWeaponManager.cpp" />
+    <ClCompile Include="..\CEntity\Class\CGib.cpp" />
+    <ClCompile Include="..\CEntity\Class\CGrenade.cpp" />
+    <ClCompile Include="..\CEntity\Class\CHLMachineGun.cpp" />
+    <ClCompile Include="..\CEntity\Class\CInfoTarget_Fix.cpp" />
+    <ClCompile Include="..\CEntity\Class\CItem.cpp" />
+    <ClCompile Include="..\CEntity\Class\CPhysBox.cpp" />
+    <ClCompile Include="..\CEntity\Class\CPhysicsProp.cpp" />
+    <ClCompile Include="..\CEntity\Class\CPlayer.cpp" />
+    <ClCompile Include="..\CEntity\Class\CProp.cpp" />
+    <ClCompile Include="..\CEntity\Class\CPropDoor.cpp" />
+    <ClCompile Include="..\CEntity\Class\CPropVehicleDriveable.cpp" />
+    <ClCompile Include="..\CEntity\Class\CRagdollProp.cpp" />
+    <ClCompile Include="..\CEntity\Class\CCommand.cpp" />
+    <ClCompile Include="..\CEntity\Class\CSkyCamera.cpp" />
+    <ClCompile Include="..\CEntity\Class\CSmoke_trail.cpp" />
+    <ClCompile Include="..\CEntity\Class\CSode_Fix.cpp" />
+    <ClCompile Include="..\CEntity\Class\CSpotlightEnd.cpp" />
+    <ClCompile Include="..\CEntity\Class\CSprite.cpp" />
+    <ClCompile Include="..\CEntity\Class\CSpriteTrail.cpp" />
+    <ClCompile Include="..\CEntity\Class\CToggle.cpp" />
+    <ClCompile Include="..\CEntity\Class\CTrigger.cpp" />
+    <ClCompile Include="..\CEntity\Class\CTriggerMultiple.cpp" />
+    <ClCompile Include="..\CEntity\Class\CViewModel.cpp" />
+    <ClCompile Include="..\CEntity\Class\CWorld.cpp" />
+    <ClCompile Include="..\CEntity\Class\ItemRespawnSystem.cpp" />
+    <ClCompile Include="..\CEntity\CTakeDamageInfo.cpp" />
+    <ClCompile Include="..\CEntity\cutil.cpp" />
+    <ClCompile Include="..\CEntity\EntityOutput.cpp" />
+    <ClCompile Include="..\CEntity\GameSystem.cpp" />
+    <ClCompile Include="..\CEntity\modify\simtimer.cpp" />
+    <ClCompile Include="..\CEntity\physics.cpp" />
+    <ClCompile Include="..\CEntity\physics_impact_damage.cpp" />
+    <ClCompile Include="..\CEntity\rtti.cpp" />
+    <ClCompile Include="..\CEntity\stuff\ammodef.cpp" />
+    <ClCompile Include="..\CEntity\stuff\animation.cpp" />
+    <ClCompile Include="..\CEntity\stuff\bone_setup.cpp" />
+    <ClCompile Include="..\CEntity\stuff\eventqueue.cpp" />
+    <ClCompile Include="..\CEntity\stuff\stringregistry.cpp" />
+    <ClCompile Include="..\CEntity\stuff\studio.cpp" />
+    <ClCompile Include="..\CEntity\stuff\TemplateEntities.cpp" />
+    <ClCompile Include="..\command.cpp" />
+    <ClCompile Include="..\Custom\env_flare.cpp" />
+    <ClCompile Include="..\Custom\env_headcrabcanister.cpp" />
+    <ClCompile Include="..\Custom\env_headcrabcanister_shared.cpp" />
+    <ClCompile Include="..\Custom\func_tank.cpp" />
+    <ClCompile Include="..\Custom\grenade_beam.cpp" />
+    <ClCompile Include="..\Custom\grenade_frag.cpp" />
+    <ClCompile Include="..\Custom\grenade_spit.cpp" />
+    <ClCompile Include="..\Custom\item_ammo.cpp" />
+    <ClCompile Include="..\Custom\item_ammo_crate.cpp" />
+    <ClCompile Include="..\Custom\item_battery.cpp" />
+    <ClCompile Include="..\Custom\item_healthkit.cpp" />
+    <ClCompile Include="..\Custom\item_recharge.cpp" />
+    <ClCompile Include="..\Custom\ladder.cpp" />
+    <ClCompile Include="..\Custom\pcs.cpp" />
+    <ClCompile Include="..\Custom\pickup.cpp" />
+    <ClCompile Include="..\Custom\player_pickup.cpp" />
+    <ClCompile Include="..\Custom\prop_combine_ball.cpp" />
+    <ClCompile Include="..\Custom\triggers.cpp" />
+    <ClCompile Include="..\Custom\weapon_ar2.cpp" />
+    <ClCompile Include="..\extension.cpp" />
+    <ClCompile Include="..\Monster\antlion_maker.cpp" />
+    <ClCompile Include="..\Monster\monstermaker.cpp" />
+    <ClCompile Include="..\Monster\npc_antlion.cpp" />
+    <ClCompile Include="..\Monster\npc_antlionguard.cpp" />
+    <ClCompile Include="..\Monster\npc_barnacle.cpp" />
+    <ClCompile Include="..\Monster\npc_basescanner.cpp" />
+    <ClCompile Include="..\Monster\npc_basezombie.cpp" />
+    <ClCompile Include="..\Monster\npc_bullseye.cpp" />
+    <ClCompile Include="..\Monster\npc_combine.cpp" />
+    <ClCompile Include="..\Monster\npc_combines.cpp" />
+    <ClCompile Include="..\Monster\npc_fastzombie.cpp" />
+    <ClCompile Include="..\Monster\npc_headcrab.cpp" />
+    <ClCompile Include="..\Monster\npc_houndeye.cpp" />
+    <ClCompile Include="..\Monster\npc_manhack.cpp" />
+    <ClCompile Include="..\Monster\npc_PoisonZombie.cpp" />
+    <ClCompile Include="..\Monster\npc_rollermine.cpp" />
+    <ClCompile Include="..\Monster\npc_scanner.cpp" />
+    <ClCompile Include="..\Monster\npc_stalker.cpp" />
+    <ClCompile Include="..\Monster\npc_turret_ceiling.cpp" />
+    <ClCompile Include="..\Monster\npc_turret_floor.cpp" />
+    <ClCompile Include="..\Monster\npc_vortigaunt.cpp" />
+    <ClCompile Include="..\Monster\npc_zombie.cpp" />
+    <ClCompile Include="..\Monster\temp_npc.cpp" />
+    <ClCompile Include="..\patch.cpp" />
+    <ClCompile Include="..\sdk\smsdk_ext.cpp" />
+    <ClCompile Include="..\sign_func.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\asm\asm.h" />
+    <ClInclude Include="..\CDetour\detourhelpers.h" />
+    <ClInclude Include="..\CDetour\detours.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_baseactor.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_basehumanoid.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_basenpc_physicsflyer.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Behavior.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_behavior_assault.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_behavior_follow.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_behavior_rappel.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_behavior_standoff.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Blended_Movement.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_component.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Criteria.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_goalentity.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Hint.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Initutils.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Interactions.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Link.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_localnavigator.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Memory.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_motor.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_moveprobe.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_moveshoot.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Navigator.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Network.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_NetworkManager.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Node.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_pathfinder.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_planesolver.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_ResponseSystem.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Route.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_schedule.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_senses.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Sentence.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_speech.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_Squad.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_tacticalservices.h" />
+    <ClInclude Include="..\CEntity\AI\CAI_utils.h" />
+    <ClInclude Include="..\CEntity\AI\CSoundent.h" />
+    <ClInclude Include="..\CEntity\CECollisionProperty.h" />
+    <ClInclude Include="..\CEntity\CEntity.h" />
+    <ClInclude Include="..\CEntity\CEntityBase.h" />
+    <ClInclude Include="..\CEntity\CEntityManager.h" />
+    <ClInclude Include="..\CEntity\CE_Define.h" />
+    <ClInclude Include="..\CEntity\CE_recipientfilter.h" />
+    <ClInclude Include="..\CEntity\Class\CAI_NPC.h" />
+    <ClInclude Include="..\CEntity\Class\CAnimating.h" />
+    <ClInclude Include="..\CEntity\Class\CAnimatingOverlay.h" />
+    <ClInclude Include="..\CEntity\Class\CBeam.h" />
+    <ClInclude Include="..\CEntity\Class\CBreakable.h" />
+    <ClInclude Include="..\CEntity\Class\CCombatCharacter.h" />
+    <ClInclude Include="..\CEntity\Class\CCombatWeapon.h" />
+    <ClInclude Include="..\CEntity\Class\CCycler_Fix.h" />
+    <ClInclude Include="..\CEntity\Class\CDoor.h" />
+    <ClInclude Include="..\CEntity\Class\CDynamicLink.h" />
+    <ClInclude Include="..\CEntity\Class\CDynamicProp.h" />
+    <ClInclude Include="..\CEntity\Class\CEAI_ScriptedSequence.h" />
+    <ClInclude Include="..\CEntity\Class\CEnvExplosion.h" />
+    <ClInclude Include="..\CEntity\Class\CEnvGunfire.h" />
+    <ClInclude Include="..\CEntity\Class\CEnvLaser.h" />
+    <ClInclude Include="..\CEntity\Class\CESoundEnt.h" />
+    <ClInclude Include="..\CEntity\Class\CFlex.h" />
+    <ClInclude Include="..\CEntity\Class\CGib.h" />
+    <ClInclude Include="..\CEntity\Class\CGrenade.h" />
+    <ClInclude Include="..\CEntity\Class\CHLMachineGun.h" />
+    <ClInclude Include="..\CEntity\Class\CInfoTarget_Fix.h" />
+    <ClInclude Include="..\CEntity\Class\CItem.h" />
+    <ClInclude Include="..\CEntity\Class\CPhysBox.h" />
+    <ClInclude Include="..\CEntity\Class\CPhysicsProp.h" />
+    <ClInclude Include="..\CEntity\Class\CPlayer.h" />
+    <ClInclude Include="..\CEntity\Class\CProp.h" />
+    <ClInclude Include="..\CEntity\Class\CPropDoor.h" />
+    <ClInclude Include="..\CEntity\Class\CPropVehicleDriveable.h" />
+    <ClInclude Include="..\CEntity\Class\CRagdollProp.h" />
+    <ClInclude Include="..\CEntity\Class\CCommand.h" />
+    <ClInclude Include="..\CEntity\Class\CSimTimer.h" />
+    <ClInclude Include="..\CEntity\Class\CSkyCamera.h" />
+    <ClInclude Include="..\CEntity\Class\CSmoke_trail.h" />
+    <ClInclude Include="..\CEntity\Class\CSode_Fix.h" />
+    <ClInclude Include="..\CEntity\Class\CSpotlightEnd.h" />
+    <ClInclude Include="..\CEntity\Class\CSprite.h" />
+    <ClInclude Include="..\CEntity\Class\CSpriteTrail.h" />
+    <ClInclude Include="..\CEntity\Class\CToggle.h" />
+    <ClInclude Include="..\CEntity\Class\CTrigger.h" />
+    <ClInclude Include="..\CEntity\Class\CTriggerMultiple.h" />
+    <ClInclude Include="..\CEntity\Class\CViewModel.h" />
+    <ClInclude Include="..\CEntity\Class\CWorld.h" />
+    <ClInclude Include="..\CEntity\Class\ItemRespawnSystem.h" />
+    <ClInclude Include="..\CEntity\CTakeDamageInfo.h" />
+    <ClInclude Include="..\CEntity\cutil.h" />
+    <ClInclude Include="..\CEntity\EntityOutput.h" />
+    <ClInclude Include="..\CEntity\gamemovement.h" />
+    <ClInclude Include="..\CEntity\GameSystem.h" />
+    <ClInclude Include="..\CEntity\IEntityFactory.h" />
+    <ClInclude Include="..\CEntity\macros.h" />
+    <ClInclude Include="..\CEntity\modify\ai_activity.h" />
+    <ClInclude Include="..\CEntity\modify\ai_waypoint.h" />
+    <ClInclude Include="..\CEntity\modify\collisionproperty.h" />
+    <ClInclude Include="..\CEntity\modify\datamap.h" />
+    <ClInclude Include="..\CEntity\modify\effect_dispatch_data.h" />
+    <ClInclude Include="..\CEntity\modify\eventlist.h" />
+    <ClInclude Include="..\CEntity\modify\networkvar.h" />
+    <ClInclude Include="..\CEntity\modify\npcevent.h" />
+    <ClInclude Include="..\CEntity\modify\physics_collisionevent.h" />
+    <ClInclude Include="..\CEntity\modify\playerlocaldata.h" />
+    <ClInclude Include="..\CEntity\modify\playernet_vars.h" />
+    <ClInclude Include="..\CEntity\modify\ragdoll_shared.h" />
+    <ClInclude Include="..\CEntity\modify\sceneentity.h" />
+    <ClInclude Include="..\CEntity\modify\sceneentity_shared.h" />
+    <ClInclude Include="..\CEntity\modify\shareddefs.h" />
+    <ClInclude Include="..\CEntity\modify\shot_manipulator.h" />
+    <ClInclude Include="..\CEntity\modify\simtimer.h" />
+    <ClInclude Include="..\CEntity\modify\takedamageinfo.h" />
+    <ClInclude Include="..\CEntity\modify\usercmd.h" />
+    <ClInclude Include="..\CEntity\modify\vehicle_viewblend_shared.h" />
+    <ClInclude Include="..\CEntity\physics.h" />
+    <ClInclude Include="..\CEntity\rtti.h" />
+    <ClInclude Include="..\CEntity\stuff\eventqueue.h" />
+    <ClInclude Include="..\CEntity\stuff\stringregistry.h" />
+    <ClInclude Include="..\CEntity\stuff\TemplateEntities.h" />
+    <ClInclude Include="..\CEntity\variant_t.h" />
+    <ClInclude Include="..\CEntity\vehicles.h" />
+    <ClInclude Include="..\Custom\env_flare.h" />
+    <ClInclude Include="..\Custom\env_headcrabcanister_shared.h" />
+    <ClInclude Include="..\Custom\func_tank.h" />
+    <ClInclude Include="..\Custom\grenade_beam.h" />
+    <ClInclude Include="..\Custom\grenade_frag.h" />
+    <ClInclude Include="..\Custom\grenade_spit.h" />
+    <ClInclude Include="..\Custom\item_ammo.h" />
+    <ClInclude Include="..\Custom\item_healthkit.h" />
+    <ClInclude Include="..\Custom\ladder.h" />
+    <ClInclude Include="..\Custom\pcs.h" />
+    <ClInclude Include="..\Custom\pickup.h" />
+    <ClInclude Include="..\Custom\player_pickup.h" />
+    <ClInclude Include="..\Custom\prop_combine_ball.h" />
+    <ClInclude Include="..\Custom\weapon_ar2.h" />
+    <ClInclude Include="..\extension.h" />
+    <ClInclude Include="..\Monster\antlion_maker.h" />
+    <ClInclude Include="..\Monster\monstermaker.h" />
+    <ClInclude Include="..\Monster\npc_antlion.h" />
+    <ClInclude Include="..\Monster\npc_barnacle.h" />
+    <ClInclude Include="..\Monster\npc_basescanner.h" />
+    <ClInclude Include="..\Monster\npc_basezombie.h" />
+    <ClInclude Include="..\Monster\npc_bullseye.h" />
+    <ClInclude Include="..\Monster\npc_combine.h" />
+    <ClInclude Include="..\Monster\npc_combines.h" />
+    <ClInclude Include="..\Monster\npc_headcrab.h" />
+    <ClInclude Include="..\Monster\npc_houndeye.h" />
+    <ClInclude Include="..\Monster\npc_manhack.h" />
+    <ClInclude Include="..\Monster\npc_rollermine.h" />
+    <ClInclude Include="..\Monster\npc_scanner.h" />
+    <ClInclude Include="..\Monster\npc_stalker.h" />
+    <ClInclude Include="..\Monster\npc_turret_floor.h" />
+    <ClInclude Include="..\Monster\npc_vortigaunt.h" />
+    <ClInclude Include="..\sdk\smsdk_config.h" />
+    <ClInclude Include="..\sdk\smsdk_ext.h" />
+    <ClInclude Include="..\sign_func.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

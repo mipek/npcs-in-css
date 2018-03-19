@@ -1,0 +1,1014 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="SourceMod SDK">
+      <UniqueIdentifier>{31958233-BB2D-4e41-A8F9-CE8A4684F436}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CEntity">
+      <UniqueIdentifier>{a7aafb88-8500-4316-827a-bcf4d783da31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CEntity\Headers">
+      <UniqueIdentifier>{9a66b8b5-339f-4a25-b6c4-e2bbdb3e3b11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CEntity\Headers\AI">
+      <UniqueIdentifier>{0fa7c92f-1647-4c17-99fa-19ec63830b68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CEntity\Headers\Class">
+      <UniqueIdentifier>{c2e0500d-457b-4489-b604-c10485613fc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CEntity\Headers\modify">
+      <UniqueIdentifier>{70a123fe-9926-4cb6-8248-6f77e9196239}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CEntity\Headers\stuff">
+      <UniqueIdentifier>{c96a2bf9-ed87-4161-8ade-aafbac22c6bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CDetour">
+      <UniqueIdentifier>{f906a6d5-5db6-4ec4-894a-3002d42b862f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="asm">
+      <UniqueIdentifier>{3cd9789b-31a8-44a5-9b08-675f4a4e212c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HL2SDK">
+      <UniqueIdentifier>{f6ac7058-d93a-4890-a399-f63e80fee4ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CEntity\Source">
+      <UniqueIdentifier>{ed43a0ef-074c-4ac0-8c76-6fa91af2d0bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CEntity\Source\AI">
+      <UniqueIdentifier>{a544a8ca-b1f7-4b3e-b551-4cf403ec4106}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CEntity\Source\Class">
+      <UniqueIdentifier>{01426117-fb6e-4a92-9c81-6bbb8b8d8824}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CEntity\Source\stuff">
+      <UniqueIdentifier>{5c158eea-12b4-4185-addc-96740b3c9184}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\extension.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sdk\smsdk_ext.cpp">
+      <Filter>SourceMod SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CDetour\detours.cpp">
+      <Filter>CDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="..\patch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sign_func.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\command.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\asm\asm.c">
+      <Filter>asm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\env_headcrabcanister.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\env_headcrabcanister_shared.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\func_tank.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\grenade_beam.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\grenade_spit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\item_ammo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\item_ammo_crate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\item_battery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\item_healthkit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\item_recharge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\ladder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\pickup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\player_pickup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\triggers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\antlion_maker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\monstermaker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_antlion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_antlionguard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_basezombie.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_bullseye.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_fastzombie.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_headcrab.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_manhack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_PoisonZombie.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_rollermine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_stalker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_turret_floor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_vortigaunt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_zombie.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\temp_npc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\CE_recipientfilter.cpp">
+      <Filter>CEntity\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\CECollisionProperty.cpp">
+      <Filter>CEntity\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\CEntity.cpp">
+      <Filter>CEntity\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\CEntityBase.cpp">
+      <Filter>CEntity\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\CEntityManager.cpp">
+      <Filter>CEntity\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\CTakeDamageInfo.cpp">
+      <Filter>CEntity\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\cutil.cpp">
+      <Filter>CEntity\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\EntityOutput.cpp">
+      <Filter>CEntity\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\GameSystem.cpp">
+      <Filter>CEntity\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\physics.cpp">
+      <Filter>CEntity\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\rtti.cpp">
+      <Filter>CEntity\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\activitylist.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_basehumanoid.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_basenpc_physicsflyer.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_behavior.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_behavior_assault.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_behavior_follow.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Blended_Movement.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Criteria.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Default.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_goalentity.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Hint.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_HULL.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Interest_Target.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Link.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_LocalIdSpace.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_localnavigator.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Memory.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Motor.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Moveprobe.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Moveshoot.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Movesolver.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Navigator.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Network.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_NetworkManager.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Node.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_pathfinder.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_ResponseSystem.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Route.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Schedule.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_senses.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Sentence.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_speech.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_Squad.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_tacticalservices.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_utils.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_waypoint.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CH_AI.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\choreoevent.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\choreoscene.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\eventlist.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\interpolatortypes.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\sceneentity.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CAI_NPC.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CAI_relationship.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CAnimating.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CAnimatingOverlay.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CBeam.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CBreakable.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CCombatCharacter.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CCombatWeapon.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CCycler_Fix.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CDoor.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CDynamicLink.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CDynamicProp.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CEAI_ScriptedSequence.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CEnvExplosion.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CEnvGunfire.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CEnvLaser.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CESoundEnt.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CFlex.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CGib.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CGrenade.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CInfoTarget_Fix.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CItem.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CPhysBox.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CPhysicsProp.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CPlayer.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CProp.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CPropDoor.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CPropVehicleDriveable.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CSkyCamera.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CSmoke_trail.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CSode_Fix.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CSprite.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CSpriteTrail.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CToggle.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CTrigger.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CTriggerMultiple.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CWorld.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\ItemRespawnSystem.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\stuff\ammodef.cpp">
+      <Filter>CEntity\Source\stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\stuff\animation.cpp">
+      <Filter>CEntity\Source\stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\stuff\bone_setup.cpp">
+      <Filter>CEntity\Source\stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\stuff\eventqueue.cpp">
+      <Filter>CEntity\Source\stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\stuff\stringregistry.cpp">
+      <Filter>CEntity\Source\stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\stuff\studio.cpp">
+      <Filter>CEntity\Source\stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\stuff\TemplateEntities.cpp">
+      <Filter>CEntity\Source\stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_turret_ceiling.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\env_flare.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CRagdollProp.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_barnacle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\prop_combine_ball.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_houndeye.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CHLMachineGun.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CViewModel.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CCommand.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\pcs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\weapon_ar2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_scanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_basescanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CSpotlightEnd.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CGamePlayerEquip.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_combine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_baseactor.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_behavior_standoff.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Custom\grenade_frag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\AI\CAI_behavior_rappel.cpp">
+      <Filter>CEntity\Source\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\modify\simtimer.cpp">
+      <Filter>CEntity\Source\stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\physics_impact_damage.cpp">
+      <Filter>CEntity\Source\stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Monster\npc_combines.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CEntity\Class\CGameWeaponManager.cpp">
+      <Filter>CEntity\Source\Class</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\extension.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdk\smsdk_config.h">
+      <Filter>SourceMod SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdk\smsdk_ext.h">
+      <Filter>SourceMod SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\CE_Define.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\CE_recipientfilter.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\CECollisionProperty.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\CEntity.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\CEntityBase.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\CEntityManager.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\CTakeDamageInfo.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\cutil.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\EntityOutput.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\gamemovement.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\GameSystem.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\IEntityFactory.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\macros.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\physics.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\rtti.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\variant_t.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\vehicles.h">
+      <Filter>CEntity\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_basehumanoid.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_basenpc_physicsflyer.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Behavior.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_behavior_assault.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_behavior_follow.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Blended_Movement.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_component.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Criteria.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_goalentity.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Hint.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Initutils.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Interactions.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Link.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_localnavigator.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Memory.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_motor.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_moveprobe.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_moveshoot.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Navigator.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Network.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_NetworkManager.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Node.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_pathfinder.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_planesolver.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_ResponseSystem.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Route.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_schedule.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_senses.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Sentence.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_speech.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_Squad.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_tacticalservices.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_utils.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CSoundent.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CAI_NPC.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CAnimating.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CAnimatingOverlay.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CBeam.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CBreakable.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CCombatCharacter.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CCombatWeapon.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CCycler_Fix.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CDoor.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CDynamicLink.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CDynamicProp.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CEAI_ScriptedSequence.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CEnvExplosion.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CEnvGunfire.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CEnvLaser.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CESoundEnt.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CFlex.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CGib.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CGrenade.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CInfoTarget_Fix.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CItem.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CPhysBox.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CPhysicsProp.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CPlayer.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CProp.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CPropDoor.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CPropVehicleDriveable.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CSkyCamera.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CSmoke_trail.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CSode_Fix.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CSprite.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CSpriteTrail.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CToggle.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CTrigger.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CTriggerMultiple.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CWorld.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\ItemRespawnSystem.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\ai_activity.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\ai_waypoint.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\collisionproperty.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\datamap.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\effect_dispatch_data.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\eventlist.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\networkvar.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\npcevent.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\physics_collisionevent.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\playerlocaldata.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\playernet_vars.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\ragdoll_shared.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\sceneentity.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\sceneentity_shared.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\shareddefs.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\shot_manipulator.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\simtimer.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\takedamageinfo.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\usercmd.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\modify\vehicle_viewblend_shared.h">
+      <Filter>CEntity\Headers\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\stuff\eventqueue.h">
+      <Filter>CEntity\Headers\stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\stuff\stringregistry.h">
+      <Filter>CEntity\Headers\stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\stuff\TemplateEntities.h">
+      <Filter>CEntity\Headers\stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CDetour\detourhelpers.h">
+      <Filter>CDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CDetour\detours.h">
+      <Filter>CDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sign_func.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\asm\asm.h">
+      <Filter>asm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\env_headcrabcanister_shared.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\func_tank.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\grenade_beam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\grenade_spit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\item_healthkit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\ladder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\pickup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\player_pickup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\antlion_maker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\monstermaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_antlion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_basezombie.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_bullseye.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_headcrab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_manhack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_rollermine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_stalker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_turret_floor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_vortigaunt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\item_ammo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\env_flare.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CRagdollProp.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CSimTimer.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_barnacle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\prop_combine_ball.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_houndeye.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CHLMachineGun.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CViewModel.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CCommand.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\pcs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\weapon_ar2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_scanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_basescanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\Class\CSpotlightEnd.h">
+      <Filter>CEntity\Headers\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_combine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_baseactor.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_behavior_standoff.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Custom\grenade_frag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CEntity\AI\CAI_behavior_rappel.h">
+      <Filter>CEntity\Headers\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Monster\npc_combines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
