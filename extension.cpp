@@ -58,7 +58,6 @@ bool CommandInitialize();
 
 //extern sp_nativeinfo_t g_MonsterNatives[];
 
-SH_DECL_HOOK1(IVEngineServer, CreateEdict, SH_NOATTRIB, 0, edict_t *, int);
 SH_DECL_HOOK3_void(IServerGameDLL, ServerActivate, SH_NOATTRIB, 0, edict_t *, int, int);
 SH_DECL_HOOK1_void(IServerGameClients, SetCommandClient, SH_NOATTRIB, 0, int);
 
@@ -304,7 +303,6 @@ bool Monster::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	
 	ConVar_Register(0, this);
 
-	SH_ADD_HOOK(IVEngineServer, CreateEdict, engine, SH_MEMBER(this, &Monster::CreateEdict), false);
 	SH_ADD_HOOK(IServerGameDLL, ServerActivate, gamedll, SH_MEMBER(this, &Monster::ServerActivate), true);
 	SH_ADD_HOOK(IServerGameClients, SetCommandClient, serverclients, SH_MEMBER(this, &Monster::SetCommandClient), true);
 
@@ -322,7 +320,6 @@ bool Monster::RegisterConCommandBase(ConCommandBase *pCommand)
 
 bool Monster::SDK_OnMetamodUnload(char *error, size_t maxlength)
 {
-	SH_REMOVE_HOOK(IVEngineServer, CreateEdict, engine, SH_MEMBER(this, &Monster::CreateEdict), false);
 	SH_REMOVE_HOOK(IServerGameDLL, ServerActivate, gamedll, SH_MEMBER(this, &Monster::ServerActivate), true);
 	SH_REMOVE_HOOK(IServerGameClients, SetCommandClient, serverclients, SH_MEMBER(this, &Monster::SetCommandClient), true);
 
@@ -370,35 +367,6 @@ void Monster::Precache()
 	soundemitterbase->AddSoundOverrides("scripts/sm_monster/npc_sounds_soldier.txt", false);
 	soundemitterbase->AddSoundOverrides("scripts/sm_monster/hl2_game_sounds_weapons.txt", false);
 
-}
-
-// TODO: use cef?
-edict_t * Monster::CreateEdict(int iIndex)
-{
-	if (iIndex > 0)
-	{
-		RETURN_META_VALUE(MRES_IGNORED, 0);
-	}
-
-	int i = gpGlobals->maxClients;
-	while (engine->PEntityOfEntIndex(i) != NULL)
-	{
-		i++;
-	}
-	
-	if (i == 2048) /* Maybe we should do something about 2047? */
-	{
-		RETURN_META_VALUE(MRES_IGNORED, 0);
-	}
-	
-	edict_t * pEdict = SH_CALL(engine, &IVEngineServer::CreateEdict)(i);
-	
-	if (pEdict == NULL)
-	{
-		RETURN_META_VALUE(MRES_IGNORED, 0);
-	}
-	
-	RETURN_META_VALUE(MRES_SUPERCEDE, pEdict);
 }
 
 void Monster::ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
