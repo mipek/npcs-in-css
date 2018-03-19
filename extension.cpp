@@ -59,7 +59,6 @@ bool CommandInitialize();
 //extern sp_nativeinfo_t g_MonsterNatives[];
 
 SH_DECL_HOOK1(IVEngineServer, CreateEdict, SH_NOATTRIB, 0, edict_t *, int);
-SH_DECL_HOOK0(IServerGameDLL, GetGameDescription, SH_NOATTRIB, 0, const char*);
 SH_DECL_HOOK3_void(IServerGameDLL, ServerActivate, SH_NOATTRIB, 0, edict_t *, int, int);
 SH_DECL_HOOK1_void(IServerGameClients, SetCommandClient, SH_NOATTRIB, 0, int);
 
@@ -164,11 +163,6 @@ private:
 	bool has_error;
 } g_Test_Signature;
 #endif
-
-const char *Hook_GetGameDescription()
-{
-	RETURN_META_VALUE(MRES_SUPERCEDE, "Cooperative");
-}
 
 bool Monster::SDK_OnLoad(char *error, size_t maxlength, bool late)
 {
@@ -310,7 +304,6 @@ bool Monster::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	
 	ConVar_Register(0, this);
 
-	SH_ADD_HOOK(IServerGameDLL, GetGameDescription, gamedll, SH_STATIC(Hook_GetGameDescription), false);
 	SH_ADD_HOOK(IVEngineServer, CreateEdict, engine, SH_MEMBER(this, &Monster::CreateEdict), false);
 	SH_ADD_HOOK(IServerGameDLL, ServerActivate, gamedll, SH_MEMBER(this, &Monster::ServerActivate), true);
 	SH_ADD_HOOK(IServerGameClients, SetCommandClient, serverclients, SH_MEMBER(this, &Monster::SetCommandClient), true);
@@ -329,7 +322,6 @@ bool Monster::RegisterConCommandBase(ConCommandBase *pCommand)
 
 bool Monster::SDK_OnMetamodUnload(char *error, size_t maxlength)
 {
-	SH_REMOVE_HOOK(IServerGameDLL, GetGameDescription, gamedll, SH_STATIC(Hook_GetGameDescription), false);
 	SH_REMOVE_HOOK(IVEngineServer, CreateEdict, engine, SH_MEMBER(this, &Monster::CreateEdict), false);
 	SH_REMOVE_HOOK(IServerGameDLL, ServerActivate, gamedll, SH_MEMBER(this, &Monster::ServerActivate), true);
 	SH_REMOVE_HOOK(IServerGameClients, SetCommandClient, serverclients, SH_MEMBER(this, &Monster::SetCommandClient), true);
