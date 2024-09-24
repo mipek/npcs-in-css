@@ -6,7 +6,48 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+CAI_SquadManager *g_AI_SquadManager = NULL;
 
+CAI_Squad::CAI_Squad(string_t newName)
+#ifndef PER_ENEMY_SQUADSLOTS
+:	m_squadSlotsUsed(MAX_SQUADSLOTS)
+#endif
+{
+	Init( newName );
+}
+
+//-------------------------------------
+
+CAI_Squad::CAI_Squad()
+#ifndef PER_ENEMY_SQUADSLOTS
+:	m_squadSlotsUsed(MAX_SQUADSLOTS)
+#endif
+{
+	Init( NULL_STRING );
+}
+
+void CAI_Squad::Init(string_t newName)
+{
+	m_Name = AllocPooledString( STRING(newName) );
+	m_pNextSquad = NULL;
+	m_flSquadSoundWaitTime = 0;
+	m_SquadMembers.RemoveAll();
+
+	m_flSquadSoundWaitTime	= 0;
+
+	SetSquadInflictor( NULL );
+
+#ifdef PER_ENEMY_SQUADSLOTS
+	m_flEnemyInfoCleanupTime = 0;
+	m_pLastFoundEnemyInfo = NULL;
+#endif
+
+}
+
+void CAI_Squad::SetSquadInflictor( CBaseEntity *pInflictor )
+{
+	m_hSquadInflictor.Set(pInflictor);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Try to get one of a contiguous range of slots
@@ -18,7 +59,7 @@
 bool CAI_Squad::OccupyStrategySlotRange( CEntity *pEnemy, int slotIDStart, int slotIDEnd, int *pSlot )
 {
 #ifndef PER_ENEMY_SQUADSLOTS
-	// FIXME: combat slots need to be per enemy, not per squad.  
+	// FIXME: combat slots need to be per enemy, not per squad.
 	// As it is, once a squad is occupied it stops making even simple attacks to other things nearby.
 	// This code may make soldiers too aggressive
 	if (GetLeader() && pEnemy != GetLeader()->GetEnemy())
@@ -31,6 +72,12 @@ bool CAI_Squad::OccupyStrategySlotRange( CEntity *pEnemy, int slotIDStart, int s
 	// If I'm already occupying this slot
 	if ( *pSlot >= slotIDStart && *pSlot <= slotIDEnd)
 		return true;
+
+	/*if (!pEnemy)
+	{
+		META_CONPRINTF("[Monster] %s but GetEnemy is NULL!\n", __FUNCTION__);
+		return false;
+	}*/
 
 	for ( int i = slotIDStart; i <= slotIDEnd; i++ )
 	{
@@ -62,8 +109,8 @@ bool CAI_Squad::OccupyStrategySlotRange( CEntity *pEnemy, int slotIDStart, int s
 
 //------------------------------------------------------------------------------
 
-bool CAI_Squad::IsSlotOccupied( CEntity *pEnemy, int i ) const	
-{ 
+bool CAI_Squad::IsSlotOccupied( CEntity *pEnemy, int i ) const
+{
 	const AISquadEnemyInfo_t *pInfo = FindEnemyInfo( pEnemy );
 	return pInfo->slots.IsBitSet(i);
 }
@@ -71,23 +118,25 @@ bool CAI_Squad::IsSlotOccupied( CEntity *pEnemy, int i ) const
 
 //------------------------------------------------------------------------------
 
-void CAI_Squad::VacateSlot( CEntity *pEnemy, int i )			
-{ 
+void CAI_Squad::VacateSlot( CEntity *pEnemy, int i )
+{
 	AISquadEnemyInfo_t *pInfo = FindEnemyInfo( pEnemy );
 	pInfo->slots.Clear(i);
 }
 
 //------------------------------------------------------------------------------
 
-void CAI_Squad::OccupySlot( CEntity *pEnemy, int i )			
-{ 
+void CAI_Squad::OccupySlot( CEntity *pEnemy, int i )
+{
 	AISquadEnemyInfo_t *pInfo = FindEnemyInfo( pEnemy );
 	pInfo->slots.Set(i);
 
 }
 
-AISquadEnemyInfo_t *CAI_Squad::FindEnemyInfo( CEntity *pEnemy )
+AISquadEnemyInfo_t *CAI_Squad::FindEnemyInfo( CEntity *cent_pEnemy )
 {
+	CBaseEntity *pEnemy = cent_pEnemy ? cent_pEnemy->BaseEntity() : nullptr;
+
 	int i;
 	if ( gpGlobals->curtime > m_flEnemyInfoCleanupTime )
 	{
@@ -108,7 +157,7 @@ AISquadEnemyInfo_t *CAI_Squad::FindEnemyInfo( CEntity *pEnemy )
 					activeEnemies.Insert( pMemberEnemy->BaseEntity() );
 				}
 			}
-			
+
 			// Remove the records for deleted or unused enemies
 			for ( i = m_EnemyInfos.Count() - 1; i >= 0; --i )
 			{
@@ -118,16 +167,16 @@ AISquadEnemyInfo_t *CAI_Squad::FindEnemyInfo( CEntity *pEnemy )
 				}
 			}
 		}
-		
+
 		m_flEnemyInfoCleanupTime = gpGlobals->curtime + 30;
 	}
 
-	if ( m_pLastFoundEnemyInfo && m_pLastFoundEnemyInfo->hEnemy == pEnemy->BaseEntity())
+	if ( m_pLastFoundEnemyInfo && m_pLastFoundEnemyInfo->hEnemy == pEnemy)
 		return m_pLastFoundEnemyInfo;
 
 	for ( i = 0; i < m_EnemyInfos.Count(); i++ )
 	{
-		if ( m_EnemyInfos[i].hEnemy == pEnemy->BaseEntity() )
+		if ( m_EnemyInfos[i].hEnemy == pEnemy )
 		{
 			m_pLastFoundEnemyInfo = &m_EnemyInfos[i];
 			return &m_EnemyInfos[i];
@@ -136,7 +185,7 @@ AISquadEnemyInfo_t *CAI_Squad::FindEnemyInfo( CEntity *pEnemy )
 
 	m_pLastFoundEnemyInfo = NULL;
 	i = m_EnemyInfos.AddToTail();
-	m_EnemyInfos[i].hEnemy = pEnemy->BaseEntity();
+	m_EnemyInfos[i].hEnemy = pEnemy;
 
 	m_pLastFoundEnemyInfo = &m_EnemyInfos[i];
 	return &m_EnemyInfos[i];
@@ -223,7 +272,7 @@ int	CAI_Squad::BroadcastInteraction( int interactionType, void *data, CCombatCha
 	//Broadcast to all members of the squad
 	for ( int i = 0; i < m_SquadMembers.Count(); i++ )
 	{
-		CAI_NPC *pMember = CEntity::Instance(m_SquadMembers[i])->MyNPCPointer();		
+		CAI_NPC *pMember = CEntity::Instance(m_SquadMembers[i])->MyNPCPointer();
 		//Validate and don't send again to the sender
 		if ( ( pMember != NULL) && ( pMember != sender ) )
 		{
@@ -332,7 +381,7 @@ void CAI_Squad::RemoveFromSquad( CAI_NPC *pNPC, bool bDeath )
 	}
 	m_SquadMembers.Remove(myIndex);
 
-	// Notify squad members of death 
+	// Notify squad members of death
 	if ( bDeath )
 	{
 		for (member = 0; member < m_SquadMembers.Count(); member++)
@@ -414,7 +463,7 @@ CAI_NPC *CAI_Squad::SquadMemberInRange( const Vector &vecLocation, float flDist 
 		if (npc != NULL && (vecLocation - npc->GetAbsOrigin() ).Length2D() <= flDist)
 			return npc;
 	}
-	return false;
+	return nullptr;
 }
 
 CAI_NPC *CAI_Squad::GetSquadMemberNearestTo( const Vector &vecLocation )
@@ -440,3 +489,34 @@ CAI_NPC *CAI_Squad::GetSquadMemberNearestTo( const Vector &vecLocation )
 	return pNearest;
 }
 
+
+CAI_Squad *CAI_SquadManager::FindSquad( string_t squadName )
+{
+	CAI_Squad* pSquad = m_pSquads;
+
+	while (pSquad)
+	{
+		if (FStrEq(STRING(squadName),pSquad->GetName()))
+		{
+			return pSquad;
+		}
+		pSquad = pSquad->m_pNextSquad;
+	}
+	return NULL;
+}
+
+CAI_Squad *CAI_SquadManager::CreateSquad(string_t squadName)
+{
+	CAI_Squad *pResult = new CAI_Squad(squadName);
+
+	// ---------------------------------
+	// Only named squads get added to the squad list
+	if ( squadName != NULL_STRING )
+	{
+		pResult->m_pNextSquad = m_pSquads;
+		m_pSquads = pResult;
+	}
+	else
+		pResult->m_pNextSquad = NULL;
+	return pResult;
+}

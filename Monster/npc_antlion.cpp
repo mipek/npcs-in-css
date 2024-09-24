@@ -5,11 +5,11 @@
 #include "CAI_tacticalservices.h"
 #include "effect_dispatch_data.h"
 #include "CAI_Hint.h"
-#include "CPropVehicleDriveable.h"
+#include "CPropVehicle.h"
 #include "CEnvExplosion.h"
 #include "grenade_spit.h"
 #include "antlion_maker.h"
-
+#include "globalstate.h"
 
 LINK_ENTITY_TO_CUSTOM_CLASS( npc_antlion, cycler, CNPC_Antlion );
 
@@ -205,13 +205,12 @@ void CNPC_Antlion::Spawn( void )
 	{
 		SetModel( ANTLION_WORKER_MODEL );
 		AddSpawnFlags( SF_NPC_LONG_RANGE );
-		SetBloodColor( BLOOD_COLOR_YELLOW );
 	}
 	else
 	{
 		SetModel( ANTLION_MODEL );
-		SetBloodColor( BLOOD_COLOR_YELLOW );
 	}
+	SetBloodColor( BLOOD_COLOR_YELLOW );
 	
 	SetHullType(HULL_MEDIUM);
 	SetHullSizeNormal();
@@ -2077,15 +2076,6 @@ int CNPC_Antlion::ChooseMoveSchedule( void )
 	return SCHED_NONE;
 }
 
-void CNPC_Antlion::ZapThink_CBE( void )
-{
-	CNPC_Antlion *cent = (CNPC_Antlion *)CEntity::Instance(reinterpret_cast<CBaseEntity *>(this));
-	if(cent)
-	{
-		cent->ZapThink();
-	}
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -2100,7 +2090,7 @@ void CNPC_Antlion::ZapThink( void )
 	
 	if ( m_flZapDuration > gpGlobals->curtime )
 	{
-		SetContextThink( &CNPC_Antlion::ZapThink_CBE, gpGlobals->curtime + enginerandom->RandomFloat( 0.05f, 0.25f ), "ZapThink" );
+		SetContextThink( &CNPC_Antlion::ZapThink, gpGlobals->curtime + enginerandom->RandomFloat( 0.05f, 0.25f ), "ZapThink" );
 	}
 	else
 	{
@@ -2136,7 +2126,7 @@ int CNPC_Antlion::SelectSchedule( void )
 		// See if it's a forced, electrical flip
 		if ( m_flZapDuration > gpGlobals->curtime )
 		{
-			SetContextThink( &CNPC_Antlion::ZapThink_CBE, gpGlobals->curtime, "ZapThink" );
+			SetContextThink( &CNPC_Antlion::ZapThink, gpGlobals->curtime, "ZapThink" );
 			return SCHED_ANTLION_ZAP_FLIP;
 		}
 
@@ -3071,7 +3061,7 @@ bool CNPC_Antlion::FindBurrow( const Vector &origin, float distance, int type, b
 			GetHintNode()->Unlock(0);
 		}
 
-		SetHintNode( pHint->BaseEntity() );
+		SetHintNode( pHint );
 
 		//Lock the node
 		pHint->Lock(BaseEntity());
@@ -3112,7 +3102,7 @@ bool CNPC_Antlion::FindBurrow( const Vector &origin, float distance, int type, b
 		GetHintNode()->Unlock(0);
 	}
 
-	SetHintNode( pHint->BaseEntity() );
+	SetHintNode( pHint );
 	pHint->Lock(BaseEntity());
 
 	Vector burrowPoint;
@@ -3646,9 +3636,7 @@ bool CNPC_Antlion::IsLightDamage( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 bool CNPC_Antlion::IsAllied( void )
 {
-	return false;
-	//CE_TODO
-	//return ( GlobalEntity_GetState( "antlion_allied" ) == GLOBAL_ON );
+	return ( GlobalEntity_GetState( "antlion_allied" ) == GLOBAL_ON );
 }
 
 //-----------------------------------------------------------------------------
@@ -4270,12 +4258,12 @@ BEGIN_DATADESC( CAntlionRepellant )
 	DEFINE_INPUTFUNC( FIELD_VOID,	"Disable", InputDisable ),
 END_DATADESC()
 
-static CUtlVector< CHandle< CAntlionRepellant > >m_hRepellantList;
+static CUtlVector< CHandle< CBaseEntity > >m_hRepellantList;
 
 
 CAntlionRepellant::~CAntlionRepellant()
 {
-	m_hRepellantList.FindAndRemove( this );
+	m_hRepellantList.FindAndRemove( BaseEntity() );
 }
 
 void CAntlionRepellant::Spawn( void )
@@ -4283,26 +4271,26 @@ void CAntlionRepellant::Spawn( void )
 	BaseClass::Spawn();
 	m_bEnabled = true;
 
-	m_hRepellantList.AddToTail( this );
+	m_hRepellantList.AddToTail( BaseEntity() );
 }
 
 void CAntlionRepellant::InputEnable( inputdata_t &inputdata )
 {
 	m_bEnabled = true;
 
-	if ( m_hRepellantList.HasElement( this ) == false )
-		 m_hRepellantList.AddToTail( this );
+	if (!m_hRepellantList.HasElement(BaseEntity()))
+		 m_hRepellantList.AddToTail( BaseEntity() );
 }
 
 void CAntlionRepellant::InputDisable( inputdata_t &inputdata )
 {
 	m_bEnabled = false;
-	m_hRepellantList.FindAndRemove( this );
+	m_hRepellantList.FindAndRemove( BaseEntity() );
 }
 
 float CAntlionRepellant::GetRadius( void )
 {
-	if ( m_bEnabled == false )
+	if (!m_bEnabled)
 		 return 0.0f;
 
 	return m_flRepelRadius;
@@ -4312,10 +4300,10 @@ void CAntlionRepellant::OnRestore( void )
 {
 	BaseClass::OnRestore();
 
-	if ( m_bEnabled == true )
+	if (m_bEnabled)
 	{
-		if ( m_hRepellantList.HasElement( this ) == false )
-			 m_hRepellantList.AddToTail( this );
+		if (!m_hRepellantList.HasElement(BaseEntity()))
+			 m_hRepellantList.AddToTail( BaseEntity() );
 	}
 }
 
@@ -4325,7 +4313,7 @@ bool CAntlionRepellant::IsPositionRepellantFree( Vector vDesiredPos )
 	{
 		if ( m_hRepellantList[i] )
 		{
-			CAntlionRepellant *pRep = m_hRepellantList[i].Get();
+			CAntlionRepellant *pRep = (CAntlionRepellant*)CEntity::Instance(m_hRepellantList[i].Get());
 
 			if ( pRep )
 			{

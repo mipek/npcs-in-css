@@ -36,7 +36,7 @@ BEGIN_SIMPLE_DATADESC( CEventAction )
 END_DATADESC()
 */
 
-CMemoryPool *g_EntityListPool = NULL;
+CEMemoryPool *g_EntityListPool = NULL;
 
 FireOutputFuncType FireOutputFunc = NULL;
 

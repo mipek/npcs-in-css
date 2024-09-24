@@ -20,17 +20,16 @@
 #include "CTakeDamageInfo.h"
 #include "ammodef.h"
 
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-
-
 
 CMultiDamage *my_g_MultiDamage;
 
 void ApplyMultiDamage( void )
 {
-	Vector		vecSpot1;//where blood comes from
+	servertools->ApplyMultiDamage();
+
+	/*Vector		vecSpot1;//where blood comes from
 	Vector		vecDir;//direction blood should go
 	trace_t		tr;
 
@@ -40,18 +39,24 @@ void ApplyMultiDamage( void )
 
 	const CBaseEntity *host = te->GetSuppressHost();
 	te->SetSuppressHost( NULL );
-		
+
 	pTarget->TakeDamage( *my_g_MultiDamage );
 
 	te->SetSuppressHost( (CBaseEntity*)host );
 
 	// Damage is done, clear it out
-	ClearMultiDamage();
+	ClearMultiDamage();*/
 }
 
 void ClearMultiDamage( void )
 {
-	my_g_MultiDamage->Init( NULL, NULL, NULL, NULL, vec3_origin, vec3_origin, vec3_origin, 0, 0, 0 );
+	servertools->ClearMultiDamage();
+	//my_g_MultiDamage->Init( NULL, NULL, NULL, NULL, vec3_origin, vec3_origin, vec3_origin, 0, 0, 0 );
+}
+
+void AddMultiDamage( const CTakeDamageInfo &info, CBaseEntity *pEntity )
+{
+	servertools->AddMultiDamage(info, pEntity);
 }
 
 void CMultiDamage::Init( CBaseEntity *pTarget, CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, const Vector &reportedPosition, float flDamage, int bitsDamageType, int iKillType )
@@ -86,10 +91,12 @@ void CTakeDamageInfo::Init( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBa
 	m_vecDamagePosition = damagePosition;
 	m_vecReportedPosition = reportedPosition;
 	m_iAmmoType = -1;
+
+	m_iDamageStats = 0;
 	m_iDamagedOtherPlayers = 0;
-	m_iPlayerPenetrateCount = 0;
-	m_flDamageBonus = 0.f;
-	m_bForceFriendlyFire = false;
+	m_iPlayerPenetrationCount = 0;
+
+	m_flDamageBonus = 0.0f;
 }
 
 CTakeDamageInfo::CTakeDamageInfo()
@@ -142,8 +149,36 @@ void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBas
 	Init( pInflictor, pAttacker, pWeapon, damageForce, damagePosition, vecReported, flDamage, bitsDamageType, iKillType );
 }
 
+const char *CTakeDamageInfo::GetAmmoName() const
+{
+	const char *pszAmmoType;
+
+	if ( m_iAmmoType >= 0 )
+	{
+		pszAmmoType = GetAmmoDef()->GetAmmoOfIndex( m_iAmmoType )->pName;
+	}
+		// no ammoType, so get the ammo name from the inflictor
+	else if ( m_hInflictor != NULL )
+	{
+		pszAmmoType = CEntity::Instance(m_hInflictor)->GetClassname();
+
+		// check for physgun ammo.  unfortunate that this is in game_shared.
+		if ( Q_strcmp( pszAmmoType, "prop_physics" ) == 0 )
+		{
+			pszAmmoType = STRING( CEntity::Instance(m_hInflictor)->GetModelName() );
+		}
+	}
+	else
+	{
+		pszAmmoType = "Unknown";
+	}
+
+	return pszAmmoType;
+}
+
+
 //============================================================================================================
-// Utility functions for physics damage force calculation 
+// Utility functions for physics damage force calculation
 //============================================================================================================
 //-----------------------------------------------------------------------------
 // Purpose: Returns an impulse scale required to push an object.
@@ -262,8 +297,8 @@ CEntity* CEntityTakeDamageInfo::GetAttacker() const
 }
 
 //-----------------------------------------------------------------------------
-// Squirrel the damage value away as BaseDamage, which will later be used to 
-// calculate damage force. 
+// Squirrel the damage value away as BaseDamage, which will later be used to
+// calculate damage force.
 //-----------------------------------------------------------------------------
 void CEntityTakeDamageInfo::AdjustPlayerDamageInflictedForSkillLevel()
 {
@@ -325,7 +360,7 @@ void GuessDamageForce( CTakeDamageInfo *info, const Vector &vecForceDir, const V
 {
 	if ( info->GetDamageType() & DMG_BULLET )
 	{
-		CalculateBulletDamageForce( info, GetAmmoDef()->Index("SMG1"), vecForceDir, vecForceOrigin, flScale );
+		CalculateBulletDamageForce( info, GetAmmoDef()->Index("BULLET_PLAYER_762MM"), vecForceDir, vecForceOrigin, flScale );
 	}
 	else if ( info->GetDamageType() & DMG_BLAST )
 	{

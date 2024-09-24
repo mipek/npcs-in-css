@@ -28,7 +28,9 @@ CEAI_Enemies::~CEAI_Enemies()
 {
 	for ( CMemMap::IndexType_t i = m_Map.FirstInorder(); i != m_Map.InvalidIndex(); i = m_Map.NextInorder( i ) )
 	{
-		g_pMemAlloc->Free(m_Map[i]);
+		//g_pMemAlloc->Free(m_Map[i]);
+		// LTODO
+		delete m_Map[i];
 	}
 }
 
@@ -136,7 +138,8 @@ void CEAI_Enemies::ClearMemory(CBaseEntity *pEnemy)
 	CMemMap::IndexType_t i = m_Map.Find( pEnemy );
 	if ( i != m_Map.InvalidIndex() )
 	{
-		g_pMemAlloc->Free( m_Map[i] );
+		//g_pMemAlloc->Free( m_Map[i] ); // LTODO
+		delete m_Map[i];
 		m_Map.RemoveAt( i );
 	}
 }
@@ -215,7 +218,8 @@ void CEAI_Enemies::RefreshMemories(void)
 		CMemMap::IndexType_t iNext = m_Map.NextInorder( i ); // save so can remove
 		if ( ShouldDiscardMemory( pMemory ) )
 		{
-			g_pMemAlloc->Free(pMemory);
+			//g_pMemAlloc->Free(pMemory); // LTODO
+			delete pMemory;
 			m_Map.RemoveAt(i);
 		}
 		else if ( pMemory->hEnemy )
@@ -327,3 +331,16 @@ AI_EnemyInfo_t *CEAI_Enemies::GetDangerMemory()
 	return m_Map[i];
 }
 
+void CEAI_Enemies::SetUnforgettable( CBaseEntity *pEnemy, bool bUnforgettable )
+{
+	AI_EnemyInfo_t *pMemory = Find( pEnemy );
+	if ( pMemory )
+		pMemory->bUnforgettable = bUnforgettable;
+}
+
+void CEAI_Enemies::SetTimeValidEnemy( CBaseEntity *pEnemy, float flTime )
+{
+	AI_EnemyInfo_t *pMemory = Find( pEnemy );
+	if ( pMemory )
+		pMemory->timeValidEnemy = flTime;
+}

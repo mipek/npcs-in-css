@@ -112,9 +112,9 @@ float CCurveData::GetIntensity( ICurveDataAccessor *data, float time )
 	prev = MAX( -1, prev );
 	next = MIN( next, rampCount );
 
-	bool clamp[ 2 ];
-	CExpressionSample *esPre = GetBoundedSample( data, prev, clamp[ 0 ] );
-	CExpressionSample *esNext = GetBoundedSample( data, next, clamp[ 1 ] );
+	bool bclamp[ 2 ];
+	CExpressionSample *esPre = GetBoundedSample( data, prev, bclamp[ 0 ] );
+	CExpressionSample *esNext = GetBoundedSample( data, next, bclamp[ 1 ] );
 
 	float dt = esEnd->time - esStart->time;
 
@@ -123,12 +123,12 @@ float CCurveData::GetIntensity( ICurveDataAccessor *data, float time )
 	Vector vEnd( esEnd->time, esEnd->value, 0 );
 	Vector vNext( esNext->time, esNext->value, 0 );
 
-	if ( clamp[ 0 ] )
+	if ( bclamp[ 0 ] )
 	{
 		vPre.x = vStart.x;
 	}
 
-	if ( clamp[ 1 ] )
+	if ( bclamp[ 1 ] )
 	{
 		vNext.x = vEnd.x;
 	}
@@ -138,7 +138,7 @@ float CCurveData::GetIntensity( ICurveDataAccessor *data, float time )
 	{
 		f2 = ( time - esStart->time ) / ( dt );
 	}
-	f2 = clamp( f2, 0.0f, 1.0f );
+	f2 = (clamp)( f2, 0.0f, 1.0f );
 
 	Vector vOut;
 	int dummy;
@@ -174,7 +174,7 @@ float CCurveData::GetIntensity( ICurveDataAccessor *data, float time )
 	}
 	else
 	{
-		bool sameCurveType = earlypart == laterpart ? true : false;
+		bool sameCurveType = (earlypart == laterpart);
 		if ( sameCurveType )
 		{
 			Interpolator_CurveInterpolate( laterpart, vPre, vStart, vEnd, vNext, f2, vOut );

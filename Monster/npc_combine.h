@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -26,15 +26,22 @@
 #define SF_COMBINE_NO_GRENADEDROP ( 1 << 17 )
 #define SF_COMBINE_NO_AR2DROP ( 1 << 18 )
 
+class CGenericActor_Fix : public CAI_BaseActor
+{
+public:
+	CE_DECLARE_CLASS( CGenericActor_Fix, CAI_BaseActor );
+
+};
+
 //=========================================================
 //	>> CNPC_Combine
 //=========================================================
-class CNPC_Combine : public CAI_Actor
+class CNPC_Combine : public CGenericActor_Fix
 {
 public:
 	DECLARE_DATADESC();
 	DEFINE_CUSTOM_AI;
-	CE_DECLARE_CLASS( CNPC_Combine, CAI_Actor );
+	CE_DECLARE_CLASS( CNPC_Combine, CGenericActor_Fix );
 
 public:
 	CNPC_Combine();

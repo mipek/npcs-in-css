@@ -127,8 +127,8 @@ bool CAI_MoveProbe::TestGroundMove( const Vector &vecActualStart, const Vector &
 
 	for (;;)
 	{
-		float flStepSize = min( LOCAL_STEP_SIZE, pMoveTrace->flTotalDist - distClear );
-		if ( flStepSize < 0.001 )
+		float flStepSize = std::min( (float) LOCAL_STEP_SIZE, pMoveTrace->flTotalDist - distClear );
+		if ( flStepSize < 0.001f )
 			break;
 
 		checkStepArgs.stepSize = flStepSize;
@@ -219,7 +219,7 @@ bool CAI_MoveProbe::TestGroundMove( const Vector &vecActualStart, const Vector &
 	// and not a ledge above or below the target.
 	if (!(flags & AITGM_2D))
 	{
-		float threshold = max(  0.5f * GetHullHeight(), StepHeight() + 0.1 );
+		float threshold = std::max(  0.5f * GetHullHeight(), StepHeight() + 0.1f );
 		if (fabs(pMoveTrace->vEndPosition.z - vecDesiredEnd.z) > threshold)
 		{
 			// Ok, we ended up on a ledge above or below the desired destination
@@ -602,14 +602,14 @@ Vector CAI_MoveProbe::CalcJumpLaunchVelocity(const Vector &startPos, const Vecto
 	float minHorzHeight = 0.5 * flGravity * (minHorzTime * 0.5) * (minHorzTime * 0.5);
 
 	// jump height must be enough to hang in the air
-	*pminHeight = max( *pminHeight, minHorzHeight );
+	*pminHeight = std::max( *pminHeight, minHorzHeight );
 	// jump height must be enough to cover the step up
-	*pminHeight = max( *pminHeight, stepHeight );
+	*pminHeight = std::max( *pminHeight, stepHeight );
 
 	// time from start to apex
-	float t0 = sqrt( ( 2.0 * *pminHeight) / flGravity );
+	float t0 = sqrt( ( 2.0f * *pminHeight) / flGravity );
 	// time from apex to end
-	float t1 = sqrt( ( 2.0 * fabs( *pminHeight - stepHeight) ) / flGravity );
+	float t1 = sqrt( ( 2.0f * fabs( *pminHeight - stepHeight) ) / flGravity );
 
 	float velHorz = distance / (t0 + t1);
 

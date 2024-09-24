@@ -18,6 +18,7 @@ ConVar sk_healthcharger_rechargetime( "sk_healthcharger_rechargetime","0" );
 
 void CHealthKit::Spawn( void )
 {
+	m_bRespawn = true;
 	Precache();
 	SetModel( "models/items/healthkit.mdl" );
 	BaseClass::Spawn();
@@ -40,7 +41,7 @@ void CHealthKit::Precache( void )
 // Input  : *pPlayer - 
 // Output : 
 //-----------------------------------------------------------------------------
-bool CHealthKit::MyTouch( CPlayer *pPlayer )
+CEntity* CHealthKit::MyTouch( CPlayer *pPlayer )
 {
 	if ( pPlayer->TakeHealth( sk_healthkit.GetFloat(), DMG_GENERIC ) )
 	{
@@ -48,9 +49,9 @@ bool CHealthKit::MyTouch( CPlayer *pPlayer )
 		EmitSound( filter, pPlayer->entindex(), "HealthKit.Touch" );
 
 		Respawn();
-		return true;
+		return this;
 	}
-	return false;
+	return nullptr;
 }
 
 
@@ -58,6 +59,7 @@ bool CHealthKit::MyTouch( CPlayer *pPlayer )
 
 void CHealthVial::Spawn( void )
 {
+	m_bRespawn = true;
 	Precache();
 	SetModel( "models/healthvial.mdl" );
 	BaseClass::Spawn();
@@ -70,7 +72,7 @@ void CHealthVial::Precache( void )
 	PrecacheScriptSound( "HealthVial.Touch" );
 }
 
-bool CHealthVial::MyTouch( CPlayer *pPlayer )
+CEntity* CHealthVial::MyTouch( CPlayer *pPlayer )
 {
 	if ( pPlayer->TakeHealth( sk_healthvial.GetFloat(), DMG_GENERIC ) )
 	{
@@ -79,9 +81,9 @@ bool CHealthVial::MyTouch( CPlayer *pPlayer )
 
 		Respawn();
 		
-		return true;
+		return this;
 	}
-	return false;
+	return nullptr;
 }
 
 
@@ -254,7 +256,7 @@ void CNewWallHealth::StudioFrameAdvance( void )
 	}
 
 	// Latch prev
-	m_flPrevAnimTime = m_flAnimTime;
+	*(m_flPrevAnimTime) = m_flAnimTime;
 	// Set current
 	m_flAnimTime = gpGlobals->curtime;
 }
@@ -306,7 +308,7 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	{
 		if (m_flSoundTime <= gpGlobals->curtime)
 		{
-			m_flSoundTime = gpGlobals->curtime + 0.62;
+			m_flSoundTime = gpGlobals->curtime + 0.62f;
 			EmitSound( "WallHealth.Deny" );
 		}
 		return;
@@ -339,7 +341,7 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	{
 		m_iOn++;
 		EmitSound( "WallHealth.Start" );
-		m_flSoundTime = 0.56 + gpGlobals->curtime;
+		m_flSoundTime = 0.56f + gpGlobals->curtime;
 
 		m_OnPlayerUse.FireOutput( pActivator, this );
 	}
@@ -362,7 +364,7 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	m_OutRemainingHealth.Set(flRemaining, pActivator, BaseEntity());
 
 	// govern the rate of charge
-	m_flNextCharge = gpGlobals->curtime + 0.1;
+	m_flNextCharge = gpGlobals->curtime + 0.1f;
 }
 
 

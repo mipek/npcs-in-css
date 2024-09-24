@@ -242,6 +242,8 @@ void CNPC_Barnacle::HandleAnimEvent( animevent_t *pEvent )
 //=========================================================
 void CNPC_Barnacle::Spawn()
 {
+	BodyAngles();
+
 	Precache( );
 
 	SetModel( "models/barnacle.mdl" );
@@ -274,7 +276,7 @@ void CNPC_Barnacle::Spawn()
 		pPhys->SetMass(500);
 	}
 #endif
-	g_helpfunc.InitBoneControllers(BaseEntity());
+	InitBoneControllers();
 	InitTonguePosition();
 
 	// set eye position
@@ -661,7 +663,7 @@ bool CNPC_Barnacle::CanPickup( CCombatCharacter *pBCC )
 		Assert( pPlayer != NULL );
 
 		// Don't pick up a player held by another barnacle
-		if( pPlayer->m_bOnBarnacle )
+		if( pPlayer->HasPhysicsFlag(PFLAG_ONBARNACLE) )
 			return false;
 	}
 	else if ( pBCC->IsInAVehicle() )
@@ -1379,9 +1381,6 @@ void CNPC_Barnacle::AttachTongueToTarget( CEntity *pTouchEnt, Vector vecGrabPos 
 		CPlayer *pPlayer = static_cast<CPlayer*>(pTouchEnt);
 		if ( pPlayer->IsInAVehicle() )
 		{
-			// CE_TODO: implement me
-			Assert(!"IsInAVehicle unsupported");
-#if 0
 			pPlayer->LeaveVehicle( pPlayer->GetAbsOrigin(), pPlayer->GetAbsAngles() );
 
 			// The player could have warped through the tongue while on a high-speed vehicle.
@@ -1397,7 +1396,6 @@ void CNPC_Barnacle::AttachTongueToTarget( CEntity *pTouchEnt, Vector vecGrabPos 
 				vecNewPos.z = pPlayer->GetAbsOrigin().z;
 				pPlayer->SetAbsOrigin( vecNewPos );
 			}
-#endif
 		}
   
 		m_bPlayerWasStanding = ( ( pPlayer->GetFlags() & FL_DUCKING ) == 0 );
@@ -1510,7 +1508,7 @@ You can use this stanza to try to counterplace the constraint on the player's he
 	pTouchEnt->AddSolidFlags( FSOLID_NOT_SOLID );
 
 	m_hRagdoll.Set(AttachRagdollToTongue( pAnimating )->BaseEntity());
-	m_hRagdoll->SetDamageEntity( pAnimating->BaseEntity() );
+	m_hRagdoll->SetDamageEntity( pAnimating );
 
 	// Make it try to blend out of ragdoll on the client on deletion
 	// NOTE: This isn't fully implemented, so disable
@@ -1723,7 +1721,7 @@ void CNPC_Barnacle::BitePrey( void )
 	IPhysicsObject *pTonguePhys = m_hTongueTip->VPhysicsGetObject();
 
 	// Make it nonsolid to the world so we can pull it through the roof
-	g_helpfunc.PhysDisableEntityCollisions( m_hRagdoll->VPhysicsGetObject(), g_PhysWorldObject );
+	PhysDisableEntityCollisions( m_hRagdoll->VPhysicsGetObject(), g_PhysWorldObject );
 
 	// Stop the tongue's spring getting in the way of swallowing
 	m_hTongueTip->m_pSpring->SetSpringConstant( 0 );
@@ -2684,7 +2682,7 @@ CBarnacleTongueTip *CBarnacleTongueTip::CreateTongueTip( CNPC_Barnacle *pBarnacl
 		return NULL;
 
 	// Set the backpointer to the barnacle
-	pTip->m_hBarnacle = pBarnacle;
+	pTip->m_hBarnacle.Set(pBarnacle->GetIHandle());
 
 	// Don't collide with the world
 	IPhysicsObject *pTipPhys = pTip->VPhysicsGetObject();

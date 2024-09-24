@@ -13,7 +13,10 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar *ai_no_local_paths;
 
+const float MAX_LOCAL_NAV_DIST_GROUND[2] = { (50*12), (25*12) };
+const float MAX_LOCAL_NAV_DIST_FLY[2] = { (750*12), (750*12) };
 
 //-----------------------------------------------------------------------------
 // Purpose: Build a path between two nodes
@@ -31,10 +34,10 @@ AI_Waypoint_t *CAI_Pathfinder::FindBestPath(int startID, int endID)
 	CVarBitVec	closeBS(nNodes);
 
 	// ------------- INITIALIZE ------------------------
-	float* nodeG = (float *)stackalloc( nNodes * sizeof(float) );
-	float* nodeH = (float *)stackalloc( nNodes * sizeof(float) );
-	float* nodeF = (float *)stackalloc( nNodes * sizeof(float) );
-	int*   nodeP = (int *)stackalloc( nNodes * sizeof(int) );		// Node parent 
+	float* nodeG = (float *)alloca( nNodes * sizeof(float) );
+	float* nodeH = (float *)alloca( nNodes * sizeof(float) );
+	float* nodeF = (float *)alloca( nNodes * sizeof(float) );
+	int*   nodeP = (int *)alloca( nNodes * sizeof(int) );		// Node parent
 
 	for (int node=0;node<nNodes;node++)
 	{
@@ -713,7 +716,7 @@ AI_Waypoint_t* CAI_Pathfinder::FindShortRandomPath(int startID, float minPathLen
 	
 	MARK_TASK_EXPENSIVE();
 
-	int *nodeParent	= (int *)stackalloc( sizeof(int) * nNodes );
+	int *nodeParent	= (int *)alloca( sizeof(int) * nNodes );
 	CVarBitVec closeBS(nNodes);
 	Vector vDirection = directionIn;
 
@@ -907,4 +910,902 @@ AI_Waypoint_t* CAI_Pathfinder::FindShortRandomPath(int startID, float minPathLen
 	}
 	// Failed to get a path of full length, but return what we have
 	return MakeRouteFromParents(&nodeParent[0], neighborID);
+}
+
+void CAI_Pathfinder::UnlockRouteNodes( AI_Waypoint_t *pPath )
+{
+	CAI_Node *pNode;
+	while ( pPath )
+	{
+		if ( pPath->iNodeID != NO_NODE && ( pNode = GetNetwork()->GetNode(pPath->iNodeID) ) != NULL && pNode->IsLocked() )
+			pNode->Unlock();
+		pPath = pPath->GetNext();
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Get the next node (with wrapping) around a circularly wound path
+// Input  : nLastNode - The starting node
+//			nDirection - Direction we're moving
+//			nNumNodes - Total nodes in the chain
+//-----------------------------------------------------------------------------
+inline int GetNextPoint( int nLastNode, int nDirection, int nNumNodes )
+{
+	int nNextNode = nLastNode + nDirection;
+	if ( nNextNode > (nNumNodes-1) )
+		nNextNode = 0;
+	else if ( nNextNode < 0 )
+		nNextNode = (nNumNodes-1);
+
+	return nNextNode;
+}
+
+AI_Waypoint_t *CAI_Pathfinder::BuildRouteThroughPoints( Vector *vecPoints, int nNumPoints, int nDirection, int nStartIndex, int nEndIndex, Navigation_t navType, CBaseEntity *pTarget )
+{
+	AIMoveTrace_t endTrace;
+	endTrace.fStatus = AIMR_OK;
+
+	CAI_MoveProbe *pMoveProbe = GetOuter()->GetMoveProbe();
+
+	AI_Waypoint_t *pFirstRoute = NULL;
+	AI_Waypoint_t *pHeadRoute = NULL;
+
+	int nCurIndex = nStartIndex;
+	int nNextIndex;
+
+	// FIXME: Must be able to move to the first position (these needs some parameterization)
+	pMoveProbe->MoveLimit( navType, GetOuter()->GetAbsOrigin(), vecPoints[nStartIndex], MASK_NPCSOLID, CEntity::Instance(pTarget), &endTrace );
+	if ( IsMoveBlocked( endTrace ) )
+	{
+		// NDebugOverlay::HorzArrow( GetOuter()->GetAbsOrigin(), vecPoints[nStartIndex], 8.0f, 255, 0, 0, 0, true, 4.0f );
+		return NULL;
+	}
+
+	// NDebugOverlay::HorzArrow( GetOuter()->GetAbsOrigin(), vecPoints[nStartIndex], 8.0f, 0, 255, 0, 0, true, 4.0f );
+
+	int nRunAwayCount = 0;
+	while ( nRunAwayCount++ < nNumPoints )
+	{
+		// Advance our index in the specified direction
+		nNextIndex = GetNextPoint( nCurIndex, nDirection, nNumPoints );
+
+		// Try and build a local route between the current and next point
+		pMoveProbe->MoveLimit( navType, vecPoints[nCurIndex], vecPoints[nNextIndex], MASK_NPCSOLID, CEntity::Instance(pTarget), &endTrace );
+		if ( IsMoveBlocked( endTrace ) )
+		{
+			// TODO: Triangulate here if we failed?
+
+			// We failed, so give up
+			if ( pHeadRoute )
+			{
+				DeleteAll( pHeadRoute );
+			}
+
+			// NDebugOverlay::HorzArrow( vecPoints[nCurIndex], vecPoints[nNextIndex], 8.0f, 255, 0, 0, 0, true, 4.0f );
+			return NULL;
+		}
+
+		// NDebugOverlay::HorzArrow( vecPoints[nCurIndex], vecPoints[nNextIndex], 8.0f, 0, 255, 0, 0, true, 4.0f );
+
+		if ( pHeadRoute == NULL )
+		{
+			// Start a new route head
+			pFirstRoute = pHeadRoute = new AI_Waypoint_t( vecPoints[nCurIndex], 0.0f, navType, bits_WP_TO_DETOUR, NO_NODE );
+		}
+		else
+		{
+			// Link a new waypoint into the path
+			AI_Waypoint_t *pNewNode = new AI_Waypoint_t( vecPoints[nCurIndex], 0.0f, navType, bits_WP_TO_DETOUR|bits_WP_DONT_SIMPLIFY, NO_NODE );
+			pHeadRoute->SetNext( pNewNode );
+			pHeadRoute = pNewNode;
+		}
+
+		// See if we're done
+		if ( nNextIndex == nEndIndex )
+		{
+			AI_Waypoint_t *pNewNode = new AI_Waypoint_t( vecPoints[nEndIndex], 0.0f, navType, bits_WP_TO_DETOUR, NO_NODE );
+			pHeadRoute->SetNext( pNewNode );
+			pHeadRoute = pNewNode;
+			break;
+		}
+
+		// Advance one node
+		nCurIndex = nNextIndex;
+	}
+
+	return pFirstRoute;
+}
+
+AI_Waypoint_t *CAI_Pathfinder::BuildRoute( const Vector &vStart, const Vector &vEnd, CEntity *pTarget, float goalTolerance, Navigation_t curNavType, bool bLocalSucceedOnWithinTolerance )
+{
+	int buildFlags = 0;
+	bool bTryLocal = !ai_no_local_paths->GetBool();
+
+	// Set up build flags
+	if (curNavType == NAV_CLIMB)
+	{
+		// if I'm climbing, then only allow routes that are also climb routes
+		buildFlags = bits_BUILD_CLIMB;
+		bTryLocal = false;
+	}
+	else if ( (CapabilitiesGet() & bits_CAP_MOVE_FLY) || (CapabilitiesGet() & bits_CAP_MOVE_SWIM) )
+	{
+		buildFlags = (bits_BUILD_FLY | bits_BUILD_GIVEWAY | bits_BUILD_TRIANG);
+	}
+	else if (CapabilitiesGet() & bits_CAP_MOVE_GROUND)
+	{
+		buildFlags = (bits_BUILD_GROUND | bits_BUILD_GIVEWAY | bits_BUILD_TRIANG);
+		if ( CapabilitiesGet() & bits_CAP_MOVE_JUMP )
+		{
+			buildFlags |= bits_BUILD_JUMP;
+		}
+	}
+
+	// If our local moves can succeed if we get within the goaltolerance, set the flag
+	if ( bLocalSucceedOnWithinTolerance )
+	{
+		buildFlags |= bits_BUILD_GET_CLOSE;
+	}
+
+	AI_Waypoint_t *pResult = NULL;
+
+	//  First try a local route
+	if ( bTryLocal && CanUseLocalNavigation() )
+	{
+		pResult = BuildLocalRoute(vStart, vEnd, pTarget,
+								  bits_WP_TO_GOAL, NO_NODE,
+								  buildFlags, goalTolerance);
+	}
+
+	//  If the fails, try a node route
+	if ( !pResult )
+	{
+		pResult = BuildNodeRoute( vStart, vEnd, buildFlags, goalTolerance );
+	}
+
+	m_bIgnoreStaleLinks = false;
+
+	return pResult;
+}
+
+AI_Waypoint_t *CAI_Pathfinder::BuildNodeRoute(const Vector &vStart, const Vector &vEnd, int buildFlags, float goalTolerance)
+{
+	// ----------------------------------------------------------------------
+	//  Make sure network has nodes
+	// ----------------------------------------------------------------------
+	if (GetNetwork()->NumNodes() == 0)
+		return NULL;
+
+	// ----------------------------------------------------------------------
+	//	Find the nearest source node
+	// ----------------------------------------------------------------------
+	int srcID;
+	AI_Waypoint_t *srcRoute = BuildNearestNodeRoute( vStart, true, buildFlags, goalTolerance, &srcID );
+	if ( !srcRoute )
+	{
+		return NULL;
+	}
+
+	// ----------------------------------------------------------------------
+	//	Find the nearest destination node
+	// ----------------------------------------------------------------------
+	int destID;
+	AI_Waypoint_t *destRoute = BuildNearestNodeRoute( vEnd, false, buildFlags, goalTolerance, &destID );
+	if ( !destRoute )
+	{
+		DeleteAll( srcRoute );
+		return NULL;
+	}
+
+	// ----------------------------------------------------------------------
+	// If source and destination are the same, we can bypass finding a route
+	// ----------------------------------------------------------------------
+	if (destID == srcID)
+	{
+		AddWaypointLists(srcRoute,destRoute);
+		return srcRoute;
+	}
+
+	// If nodes are not connected by network graph, no route is possible
+	if (!GetNetwork()->IsConnected(srcID, destID))
+		return NULL;
+
+	AI_Waypoint_t *path = FindBestPath(srcID, destID);
+
+	if (!path)
+	{
+		DeleteAll(srcRoute);
+		DeleteAll(destRoute);
+		return NULL;
+	}
+
+	// Now put all the pieces together to form our route
+	AddWaypointLists(srcRoute,path);
+	AddWaypointLists(srcRoute,destRoute);
+
+	return srcRoute;
+}
+
+
+AI_Waypoint_t *CAI_Pathfinder::BuildLocalRoute(const Vector &vStart, const Vector &vEnd, const CEntity *pTarget, int endFlags, int nodeID, int buildFlags, float goalTolerance)
+{
+	// Get waypoint yaw
+	float flYaw;
+	if (nodeID != NO_NODE)
+	{
+		flYaw = GetNetwork()->GetNode(nodeID)->GetYaw();
+	}
+	else
+	{
+		flYaw = 0;
+	}
+
+	// Try a ground route if requested
+	if (buildFlags & bits_BUILD_GROUND)
+	{
+		AI_Waypoint_t *groundRoute = BuildGroundRoute(vStart,vEnd,pTarget,endFlags,nodeID,buildFlags,flYaw,goalTolerance);
+
+		if (groundRoute)
+		{
+			return groundRoute;
+		}
+	}
+
+	// Try a fly route if requested
+	if ( buildFlags & bits_BUILD_FLY )
+	{
+		AI_Waypoint_t *flyRoute = BuildFlyRoute(vStart,vEnd,pTarget,endFlags,nodeID,buildFlags,flYaw,goalTolerance);
+
+		if (flyRoute)
+		{
+			return flyRoute;
+		}
+	}
+
+	// Try a jump route if NPC can jump and requested
+	if ((buildFlags & bits_BUILD_JUMP) && (CapabilitiesGet() & bits_CAP_MOVE_JUMP))
+	{
+		AI_Waypoint_t *jumpRoute = BuildJumpRoute(vStart,vEnd,pTarget,endFlags,nodeID,buildFlags,flYaw);
+
+		if (jumpRoute)
+		{
+			return jumpRoute;
+		}
+	}
+
+	// Try a climb route if NPC can climb and requested
+	if ((buildFlags & bits_BUILD_CLIMB)	&& (CapabilitiesGet() & bits_CAP_MOVE_CLIMB))
+	{
+		AI_Waypoint_t *climbRoute = BuildClimbRoute(vStart,vEnd,pTarget,endFlags,nodeID,buildFlags,flYaw);
+
+		if (climbRoute)
+		{
+			return climbRoute;
+		}
+	}
+
+	// Everything failed so return a NULL route
+	return NULL;
+}
+
+
+AI_Waypoint_t *CAI_Pathfinder::BuildRadialRoute( const Vector &vStartPos, const Vector &vCenterPos, const Vector &vGoalPos, float flRadius, float flArc, float flStepDist, bool bClockwise, float goalTolerance, bool bAirRoute /*= false*/ )
+{
+	MARK_TASK_EXPENSIVE();
+
+	// ------------------------------------------------------------------------------
+	// Make sure we have a minimum distance between nodes.  For the given
+	// radius, calculate the angular step necessary for this distance.
+	// IMPORTANT: flStepDist must be large enough that given the
+	//			  NPC's movment speed that it can come to a stop
+	// ------------------------------------------------------------------------------
+	float flAngleStep = 2.0f * atan((0.5f*flStepDist)/flRadius);
+
+	// Flip direction if clockwise
+	if ( bClockwise )
+	{
+		flArc		*= -1;
+		flAngleStep *= -1;
+	}
+
+	// Calculate the start angle on the arc in world coordinates
+	Vector vStartDir = ( vStartPos - vCenterPos );
+	VectorNormalize( vStartDir );
+
+	// Get our control angles
+	float flStartAngle	= DEG2RAD(UTIL_VecToYaw(vStartDir));
+	float flEndAngle	= flStartAngle + DEG2RAD(flArc);
+
+	//  Offset set our first node by one arc step so NPC doesn't run perpendicular to the arc when starting a different radius
+	flStartAngle += flAngleStep;
+
+	AI_Waypoint_t*	pHeadRoute	= NULL;	// Pointer to the beginning of the route chains
+	AI_Waypoint_t*	pNextRoute	= NULL; // Next leg of the route
+	AI_Waypoint_t*  pLastRoute	= NULL; // The last route chain added to the head
+	Vector			vLastPos	= vStartPos; // Last position along the arc in worldspace
+	int				fRouteBits = ( bAirRoute ) ? bits_BUILD_FLY : bits_BUILD_GROUND; // Whether this is an air route or not
+	float			flCurAngle = flStartAngle; // Starting angle
+	Vector			vNextPos;
+
+	// Make sure that we've got somewhere to go.  This generally means your trying to walk too small an arc.
+	Assert( ( bClockwise && flCurAngle > flEndAngle ) || ( !bClockwise && flCurAngle < flEndAngle ) );
+
+	// Start iterating through our arc
+	while( 1 )
+	{
+		// See if we've ended our run
+		if ( ( bClockwise && flCurAngle <= flEndAngle ) || ( !bClockwise && flCurAngle >= flEndAngle ) )
+			break;
+
+		// Get our next position along the arc
+		vNextPos	= vCenterPos;
+		vNextPos.x	+= flRadius * cos( flCurAngle );
+		vNextPos.y	+= flRadius * sin( flCurAngle );
+
+		// Build a route from the last position to the current one
+		pNextRoute = BuildLocalRoute( vLastPos, vNextPos, NULL, 0, NO_NODE, fRouteBits, goalTolerance);
+
+		// If we can't find a route, we failed
+		if ( pNextRoute == NULL )
+			return NULL;
+
+		// Don't simplify the route (otherwise we'll cut corners where we don't want to!
+		pNextRoute->ModifyFlags( bits_WP_DONT_SIMPLIFY, true );
+
+		if ( pHeadRoute )
+		{
+			// Tack the routes together
+			AddWaypointLists( pHeadRoute, pNextRoute );
+		}
+		else
+		{
+			// Otherwise we're now the previous route
+			pHeadRoute = pNextRoute;
+		}
+
+		// Move our position
+		vLastPos  = vNextPos;
+		pLastRoute = pNextRoute;
+
+		// Move our current angle
+		flCurAngle += flAngleStep;
+	}
+
+	// NOTE: We could also simply build a local route with no curve, but it's unlikely that's what was intended by the caller
+	if ( pHeadRoute == NULL )
+		return NULL;
+
+	// Append a path to the final position
+	pLastRoute = BuildLocalRoute( vLastPos, vGoalPos, NULL, 0, NO_NODE, bAirRoute ? bits_BUILD_FLY : bits_BUILD_GROUND, goalTolerance );
+	if ( pLastRoute == NULL )
+		return NULL;
+
+	// Allow us to simplify the last leg of the route
+	pLastRoute->ModifyFlags( bits_WP_DONT_SIMPLIFY, false );
+	pLastRoute->ModifyFlags( bits_WP_TO_GOAL, true );
+
+	// Add them together
+	AddWaypointLists( pHeadRoute, pLastRoute );
+
+	// Give back the complete route
+	return pHeadRoute;
+}
+
+
+
+AI_Waypoint_t *CAI_Pathfinder::BuildTriangulationRoute(
+		const Vector &vStart, // from where
+		const Vector &vEnd,	// to where
+		const CEntity *pTarget,	// an entity I can ignore
+		int endFlags,			// add these WP flags to the last waypoint
+		int nodeID,			// node id for the last waypoint
+		float flYaw,			// ideal yaw for the last waypoint
+		float flDistToBlocker,// how far away is the obstruction from the start?
+		Navigation_t navType)
+{
+	Vector vApex;
+	if (!Triangulate(navType, vStart, vEnd, flDistToBlocker, pTarget, &vApex ))
+		return NULL;
+
+
+	//-----------------------------------------------------------------------------
+	// it worked, create a route
+	//-----------------------------------------------------------------------------
+	AI_Waypoint_t *pWayPoint2 = new AI_Waypoint_t( vEnd, flYaw, navType, endFlags, nodeID );
+
+	// FIXME: Compute a reasonable yaw here
+	AI_Waypoint_t *waypoint1 = new AI_Waypoint_t( vApex, 0, navType, bits_WP_TO_DETOUR, NO_NODE );
+	waypoint1->SetNext(pWayPoint2);
+
+	return waypoint1;
+}
+
+inline int ClosestPointToPosition( const Vector &vecPosition, Vector *vecPoints, int nNumPoints )
+{
+	int   nBestNode = -1;
+	float flBestDistSqr = FLT_MAX;
+	float flDistSqr;
+	for ( int i = 0; i < nNumPoints; i++ )
+	{
+		flDistSqr = ( vecPoints[i] - vecPosition ).LengthSqr();
+		if ( flDistSqr < flBestDistSqr )
+		{
+			flBestDistSqr = flDistSqr;
+			nBestNode = i;
+		}
+	}
+
+	return nBestNode;
+}
+
+inline int ShortestDirectionThroughPoints( const Vector &vecStart, int nStartPoint, int nEndPoint, Vector *vecPoints, int nNumPoints )
+{
+	const int nClockwise = 1;
+	const int nCounterClockwise = -1;
+
+	// Find the quickest direction around the object
+	int nCurPoint = nStartPoint;
+	int nNextPoint = GetNextPoint( nStartPoint, 1, nNumPoints );
+
+	float flStartDistSqr = ( vecStart - vecPoints[nStartPoint] ).LengthSqr();
+	float flDistanceSqr = flStartDistSqr;
+
+	// Try going clockwise first
+	for ( int i = 0; i < nNumPoints; i++ )
+	{
+		flDistanceSqr += ( vecPoints[nCurPoint] - vecPoints[nNextPoint] ).LengthSqr();
+
+		if ( nNextPoint == nEndPoint )
+			break;
+
+		nNextPoint = GetNextPoint( nNextPoint, 1, nNumPoints );
+	}
+
+	// Save this to test against
+	float flBestDistanceSqr = flDistanceSqr;
+
+	// Start from the beginning again
+	flDistanceSqr = flStartDistSqr;
+
+	nCurPoint = nStartPoint;
+	nNextPoint = GetNextPoint( nStartPoint, -1, nNumPoints );
+
+	// Now go the other way and see if it's shorter to do so
+	for ( int i = 0; i < nNumPoints; i++ )
+	{
+		flDistanceSqr += ( vecPoints[nCurPoint] - vecPoints[nNextPoint] ).LengthSqr();
+
+		// We've gone over our maximum so we can't be shorter
+		if ( flDistanceSqr > flBestDistanceSqr )
+			break;
+
+		// We hit the end, we're shorter
+		if ( nNextPoint == nEndPoint )
+			return nCounterClockwise;
+
+		nNextPoint = GetNextPoint( nNextPoint, -1, nNumPoints );
+	}
+
+	return nClockwise;
+}
+
+
+
+AI_Waypoint_t *CAI_Pathfinder::BuildOBBAvoidanceRoute(	const Vector &vStart, const Vector &vEnd,
+														  const CBaseEntity *pObstruction, // obstruction to avoid
+														  const CBaseEntity *pTarget,		 // target to ignore
+														  Navigation_t navType )
+{
+	CEntity *cent_pObstruction = CEntity::Instance(pObstruction);
+	// If the point we're navigating to is within our OBB, then fail
+	// TODO: We could potentially also just try to get as near as possible
+	if ( cent_pObstruction->CollisionProp()->IsPointInBounds( vEnd ) )
+		return NULL;
+
+	// Find out how much we'll need to inflate the collision bounds to let us move past
+	Vector vecSize = cent_pObstruction->CollisionProp_Actual()->OBBSize();
+	float flWidth = GetOuter()->GetHullWidth() * 0.5f;
+
+	float flWidthPercX = ( flWidth / vecSize.x );
+	float flWidthPercY = ( flWidth / vecSize.y );
+
+	// Find the points around the object, bloating it by our hull width
+	// The ordering of these corners wind clockwise around the object, starting at the top left
+	Vector vecPoints[4];
+	cent_pObstruction->CollisionProp()->NormalizedToWorldSpace( Vector(  -flWidthPercX, 1+flWidthPercY, 0.25f ), &vecPoints[0] );
+	cent_pObstruction->CollisionProp()->NormalizedToWorldSpace( Vector( 1+flWidthPercX, 1+flWidthPercY, 0.25f ), &vecPoints[1] );
+	cent_pObstruction->CollisionProp()->NormalizedToWorldSpace( Vector( 1+flWidthPercX,  -flWidthPercY, 0.25f ), &vecPoints[2] );
+	cent_pObstruction->CollisionProp()->NormalizedToWorldSpace( Vector(  -flWidthPercX,  -flWidthPercY, 0.25f ), &vecPoints[3] );
+
+	// Find the two points nearest our goals
+	int nStartPoint = ClosestPointToPosition( vStart, vecPoints, ARRAYSIZE( vecPoints ) );
+	int nEndPoint = ClosestPointToPosition( vEnd, vecPoints, ARRAYSIZE( vecPoints ) );
+
+	// We won't be able to build a route if we're moving no distance between points
+	if ( nStartPoint == nEndPoint )
+		return NULL;
+
+	// Find the shortest path around this wound polygon (direction is how to step through array)
+	int nDirection = ShortestDirectionThroughPoints( vStart, nStartPoint, nEndPoint, vecPoints, ARRAYSIZE( vecPoints ) );
+
+	// Attempt to build a route in our direction
+	AI_Waypoint_t *pRoute = BuildRouteThroughPoints( vecPoints, ARRAYSIZE(vecPoints), nDirection, nStartPoint, nEndPoint, navType, (CBaseEntity *) pTarget );
+	if ( pRoute == NULL )
+	{
+		// Failed that way, so try the opposite
+		pRoute = BuildRouteThroughPoints( vecPoints, ARRAYSIZE(vecPoints), (-nDirection), nStartPoint, nEndPoint, navType, (CBaseEntity *) pTarget );
+		if ( pRoute == NULL )
+			return NULL;
+	}
+
+	return pRoute;
+}
+
+AI_Waypoint_t *CAI_Pathfinder::BuildClimbRoute(const Vector &vStart, const Vector &vEnd, const CEntity *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw)
+{
+	// Only allowed to climb to climb nodes
+	return BuildSimpleRoute( NAV_CLIMB, vStart, vEnd, pTarget,
+							 endFlags, nodeID, NODE_CLIMB, flYaw );
+}
+
+AI_Waypoint_t *CAI_Pathfinder::BuildJumpRoute(const Vector &vStart, const Vector &vEnd,
+											  const CEntity *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw)
+{
+	// Only allowed to jump to ground nodes
+	return BuildSimpleRoute( NAV_JUMP, vStart, vEnd, pTarget,
+							 endFlags, nodeID, NODE_GROUND, flYaw );
+}
+
+AI_Waypoint_t *CAI_Pathfinder::BuildFlyRoute(const Vector &vStart, const Vector &vEnd,
+											 const CEntity *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw, float goalTolerance)
+{
+	return BuildComplexRoute( NAV_FLY, vStart, vEnd, pTarget,
+							  endFlags, nodeID, buildFlags, flYaw, goalTolerance, MAX_LOCAL_NAV_DIST_FLY[UseStrongOptimizations()] );
+}
+
+AI_Waypoint_t *CAI_Pathfinder::BuildGroundRoute(const Vector &vStart, const Vector &vEnd,
+												const CEntity *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw, float goalTolerance)
+{
+	return BuildComplexRoute( NAV_GROUND, vStart, vEnd, pTarget,
+							  endFlags, nodeID, buildFlags, flYaw, goalTolerance, MAX_LOCAL_NAV_DIST_GROUND[UseStrongOptimizations()] );
+}
+
+AI_Waypoint_t *CAI_Pathfinder::BuildSimpleRoute( Navigation_t navType, const Vector &vStart,
+												 const Vector &vEnd, const CEntity *pTarget, int endFlags, int nodeID,
+												 int nodeTargetType, float flYaw )
+{
+	Assert( navType == NAV_JUMP || navType == NAV_CLIMB ); // this is what this here function is for
+	// Only allowed to jump to ground nodes
+	if ((nodeID == NO_NODE)	|| (GetNetwork()->GetNode(nodeID)->GetType() == nodeTargetType) )
+	{
+		AIMoveTrace_t moveTrace;
+		GetOuter()->GetMoveProbe()->MoveLimit( navType, vStart, vEnd, MASK_NPCSOLID, pTarget, &moveTrace );
+
+		// If I was able to make the move, or the vEnd is the
+		// goal and I'm within tolerance, just move to vEnd
+		if (!IsMoveBlocked(moveTrace))
+		{
+			// It worked so return a route of length one to the endpoint
+			return new AI_Waypoint_t( vEnd, flYaw, navType, endFlags, nodeID );
+		}
+	}
+	return NULL;
+}
+
+static float ComputePathDistance( Navigation_t navType, const Vector &start, const Vector &end )
+{
+	if (navType == NAV_GROUND)
+	{
+		return (end - start).Length2D();
+	}
+	else
+	{
+		return (end - start).Length();
+	}
+}
+
+AI_Waypoint_t *CAI_Pathfinder::BuildComplexRoute( Navigation_t navType, const Vector &vStart,
+												  const Vector &vEnd, const CEntity *pTarget, int endFlags, int nodeID,
+												  int buildFlags, float flYaw, float goalTolerance, float maxLocalNavDistance )
+{
+	float flTotalDist = ComputePathDistance( navType, vStart, vEnd );
+	if ( flTotalDist < 0.0625 )
+	{
+		return new AI_Waypoint_t( vEnd, flYaw, navType, endFlags, nodeID );
+	}
+
+	unsigned int collideFlags = (buildFlags & bits_BUILD_IGNORE_NPCS) ? MASK_NPCSOLID_BRUSHONLY : MASK_NPCSOLID;
+
+	bool bCheckGround = (GetOuter()->CapabilitiesGet() & bits_CAP_SKIP_NAV_GROUND_CHECK) ? false : true;
+
+	if ( flTotalDist <= maxLocalNavDistance )
+	{
+		AIMoveTrace_t moveTrace;
+
+		GetOuter()->GetMoveProbe()->MoveLimit( navType, vStart, vEnd, collideFlags, pTarget, (bCheckGround) ? 100 : 0, &moveTrace);
+
+		// If I was able to make the move...
+		if (!IsMoveBlocked(moveTrace))
+		{
+			// It worked so return a route of length one to the endpoint
+			return new AI_Waypoint_t( vEnd, flYaw, navType, endFlags, nodeID );
+		}
+
+		// ...or the vEnd is thegoal and I'm within tolerance, just move to vEnd
+		if ( (buildFlags & bits_BUILD_GET_CLOSE) &&
+			 (endFlags & bits_WP_TO_GOAL) &&
+			 moveTrace.flDistObstructed <= goalTolerance )
+		{
+			return new AI_Waypoint_t( vEnd, flYaw, navType, endFlags, nodeID );
+		}
+
+		// -------------------------------------------------------------------
+		// Try to triangulate if requested
+		// -------------------------------------------------------------------
+
+		if (buildFlags & bits_BUILD_TRIANG)
+		{
+			if ( !UseStrongOptimizations() || ( GetOuter()->GetState() == NPC_STATE_SCRIPT || GetOuter()->IsCurSchedule( SCHED_SCENE_GENERIC, false ) ) )
+			{
+				float flTotalDist = ComputePathDistance( navType, vStart, vEnd );
+
+				AI_Waypoint_t *triangRoute = BuildTriangulationRoute(vStart, vEnd, pTarget,
+																	 endFlags, nodeID, flYaw, flTotalDist - moveTrace.flDistObstructed, navType);
+
+				if (triangRoute)
+				{
+					return triangRoute;
+				}
+			}
+		}
+
+		// -------------------------------------------------------------------
+		// Try to giveway if requested
+		// -------------------------------------------------------------------
+		if (moveTrace.fStatus == AIMR_BLOCKED_NPC && (buildFlags & bits_BUILD_GIVEWAY))
+		{
+			// If I can't get there even ignoring NPCs, don't bother to request a giveway
+			AIMoveTrace_t moveTrace2;
+			GetOuter()->GetMoveProbe()->MoveLimit( navType, vStart, vEnd, MASK_NPCSOLID_BRUSHONLY, pTarget, (bCheckGround) ? 100 : 0, &moveTrace2 );
+
+			if (!IsMoveBlocked(moveTrace2))
+			{
+				// If I can clear the way return a route of length one to the target location
+				if ( CanGiveWay(vStart, vEnd, moveTrace.pObstruction) )
+				{
+					return new AI_Waypoint_t( vEnd, flYaw, navType, endFlags, nodeID );
+				}
+			}
+		}
+	}
+	return NULL;
+}
+
+#define MAX_NODE_TRIES 4
+#define MAX_TRIANGULATIONS 2
+
+class CPathfindNearestNodeFilter : public INearestNodeFilter
+{
+public:
+	CPathfindNearestNodeFilter( CAI_Pathfinder *pPathfinder, const Vector &vGoal, bool bToNode, int buildFlags, float goalTolerance )
+			:	m_pPathfinder( pPathfinder ),
+				 m_nTries(0),
+				 m_vGoal( vGoal ),
+				 m_bToNode( bToNode ),
+				 m_goalTolerance( goalTolerance ),
+				 m_moveTypes( buildFlags & ( bits_BUILD_GROUND | bits_BUILD_FLY | bits_BUILD_JUMP | bits_BUILD_CLIMB ) ),
+				 m_pRoute( NULL )
+	{
+		COMPILE_TIME_ASSERT( (int)bits_BUILD_GROUND == (int)bits_CAP_MOVE_GROUND && (int)bits_BUILD_FLY == (int)bits_CAP_MOVE_FLY && (int)bits_BUILD_JUMP == (int)bits_CAP_MOVE_JUMP && (int)bits_BUILD_CLIMB == (int)bits_CAP_MOVE_CLIMB );
+	}
+
+	bool IsValid( CAI_Node *pNode )
+	{
+		int nStaleLinks = 0;
+		if ( !m_pPathfinder->m_bIgnoreStaleLinks )
+		{
+			int hull = m_pPathfinder->GetOuter()->GetHullType();
+			for ( int i = 0; i < pNode->NumLinks(); i++ )
+			{
+				CAI_Link *pLink = pNode->GetLinkByIndex( i );
+				if ( pLink->m_LinkInfo & ( bits_LINK_STALE_SUGGESTED | bits_LINK_OFF ) )
+				{
+					nStaleLinks++;
+				}
+				else if ( ( pLink->m_iAcceptedMoveTypes[hull] & m_moveTypes ) == 0 )
+				{
+					nStaleLinks++;
+				}
+			}
+		}
+
+		if ( nStaleLinks && nStaleLinks == pNode->NumLinks() )
+			return false;
+
+		int buildFlags = ( m_nTries < MAX_TRIANGULATIONS ) ? ( bits_BUILD_IGNORE_NPCS | bits_BUILD_TRIANG ) : bits_BUILD_IGNORE_NPCS;
+
+		if ( m_bToNode )
+			m_pRoute = m_pPathfinder->RouteToNode( m_vGoal, buildFlags, pNode->GetId(), m_goalTolerance );
+		else
+			m_pRoute = m_pPathfinder->RouteFromNode( m_vGoal, buildFlags, pNode->GetId(), m_goalTolerance );
+
+		m_nTries++;
+
+		return ( m_pRoute != NULL );
+	}
+
+	bool ShouldContinue()
+	{
+		return ( !m_pRoute && m_nTries < MAX_NODE_TRIES );
+	}
+
+	CAI_Pathfinder *m_pPathfinder;
+	int				m_nTries;
+	Vector			m_vGoal;
+	bool			m_bToNode;
+	float			m_goalTolerance;
+	int				m_moveTypes;
+
+	AI_Waypoint_t *	m_pRoute;
+};
+
+
+AI_Waypoint_t *CAI_Pathfinder::BuildNearestNodeRoute( const Vector &vGoal, bool bToNode, int buildFlags, float goalTolerance, int *pNearestNode )
+{
+	CPathfindNearestNodeFilter filter( this, vGoal, bToNode, buildFlags, goalTolerance );
+	*pNearestNode  = GetNetwork()->NearestNodeToPoint( GetOuter(), vGoal, true, &filter );
+
+	return filter.m_pRoute;
+}
+
+bool CAI_Pathfinder::UseStrongOptimizations()
+{
+	if ( !AIStrongOpt() )
+	{
+		return false;
+	}
+
+	if( GetOuter()->Classify() == CLASS_PLAYER_ALLY_VITAL )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CAI_Pathfinder::CanGiveWay( const Vector& vStart, const Vector& vEnd, CBaseEntity *pBlocker)
+{
+	// FIXME: make this a CAI_BaseNPC member function
+	CAI_NPC *pNPCBlocker = CEntity::Instance(pBlocker)->MyNPCPointer();
+	if (pNPCBlocker && pNPCBlocker->edict())
+	{
+		Disposition_t eDispBlockerToMe = pNPCBlocker->IRelationType( GetOuter()->BaseEntity() );
+		if ( ( eDispBlockerToMe == D_LI ) || ( eDispBlockerToMe == D_NU ) )
+		{
+			return true;
+		}
+
+		return false;
+
+		// FIXME: this is called in route creation, not navigation.  It shouldn't actually make
+		// anyone get out of their way, just see if they'll honor the request.
+		// things like locked doors, enemies and such should refuse, all others shouldn't.
+		// things like breakables should know who is trying to break them, though a door hidden behind
+		// some boxes shouldn't be known to the AI even though a route should connect through them but
+		// be turned off.
+
+		/*
+		Vector moveDir	   = (vEnd - vStart).Normalize();
+		Vector blockerDir  = (pNPCBlocker->GetLocalOrigin()  - vStart);
+		float  blockerDist = DotProduct(moveDir,blockerDir);
+		Vector blockPos	   = vStart + (moveDir*blockerDist);
+
+		if (pNPCBlocker->RequestGiveWay ( m_owner->GetLocalOrigin(), blockPos, moveDir, m_owner->m_eHull))
+		{
+			return true;
+		}
+		*/
+	}
+	return false;
+}
+
+static int NPCBuildFlags( CAI_NPC *pNPC, const Vector &vecOrigin )
+{
+	// If vecOrigin the the npc's position and npc is climbing only climb nodes allowed
+	if (pNPC->GetLocalOrigin() == vecOrigin && pNPC->GetNavType() == NAV_CLIMB)
+	{
+		return bits_BUILD_CLIMB;
+	}
+	else if (pNPC->CapabilitiesGet() & bits_CAP_MOVE_FLY)
+	{
+		return bits_BUILD_FLY | bits_BUILD_GIVEWAY;
+	}
+	else if (pNPC->CapabilitiesGet() & bits_CAP_MOVE_GROUND)
+	{
+		int buildFlags = bits_BUILD_GROUND | bits_BUILD_GIVEWAY;
+		if (pNPC->CapabilitiesGet() & bits_CAP_MOVE_JUMP)
+		{
+			buildFlags |= bits_BUILD_JUMP;
+		}
+
+		return buildFlags;
+	}
+	return 0;
+}
+
+AI_Waypoint_t* CAI_Pathfinder::RouteFromNode(const Vector &vecOrigin, int buildFlags, int nodeID, float goalTolerance)
+{
+	buildFlags |= NPCBuildFlags( GetOuter(), vecOrigin );
+	buildFlags |= bits_BUILD_GET_CLOSE;
+
+	// Check if vecOrigin is already at the smallest node
+	// FIXME: an equals check is a bit sloppy, this should be a tolerance
+	CAI_Node *pNode = GetNetwork()->GetNode(nodeID);
+	const Vector &vecNodePosition = pNode->GetPosition(GetHullType());
+
+	if (vecOrigin == vecNodePosition)
+	{
+		return CreateNodeWaypoint( GetHullType(), nodeID, bits_WP_TO_GOAL );
+	}
+
+	// Otherwise try to build a local route from the node
+	AI_Waypoint_t* pResult = BuildLocalRoute( vecNodePosition,
+											  vecOrigin, NULL, bits_WP_TO_GOAL, NO_NODE, buildFlags, goalTolerance);
+
+	// Handle case of target hanging over edge near climb dismount
+	if ( !pResult &&
+		 pNode->GetType() == NODE_CLIMB &&
+		 ( vecOrigin - vecNodePosition ).Length2DSqr() < 32.0*32.0 &&
+		 GetOuter()->GetMoveProbe()->CheckStandPosition(vecNodePosition, MASK_NPCSOLID_BRUSHONLY ) )
+	{
+		pResult = new AI_Waypoint_t( vecOrigin, 0, NAV_GROUND, bits_WP_TO_GOAL, nodeID );
+	}
+
+	return pResult;
+}
+
+AI_Waypoint_t* CAI_Pathfinder::RouteToNode(const Vector &vecOrigin, int buildFlags, int nodeID, float goalTolerance)
+{
+	buildFlags |= NPCBuildFlags( GetOuter(), vecOrigin );
+	buildFlags &= ~bits_BUILD_GET_CLOSE;
+
+	// Check if vecOrigin is already at the smallest node
+
+	// FIXME: an equals check is a bit sloppy, this should be a tolerance
+	const Vector &vecNodePosition = GetNetwork()->GetNode(nodeID)->GetPosition(GetHullType());
+	if (vecOrigin == vecNodePosition)
+	{
+		return CreateNodeWaypoint( GetHullType(), nodeID, bits_WP_TO_GOAL );
+	}
+
+	// Otherwise try to build a local route to the node
+	AI_Waypoint_t *pResult = BuildLocalRoute(vecOrigin,
+											 vecNodePosition, NULL, bits_WP_TO_NODE, nodeID, buildFlags, goalTolerance);
+	if ( pResult )
+		pResult->iNodeID = nodeID;
+	return pResult;
+}
+
+
+AI_Waypoint_t* CAI_Pathfinder::CreateNodeWaypoint( Hull_t hullType, int nodeID, int nodeFlags )
+{
+	CAI_Node *pNode = GetNetwork()->GetNode(nodeID);
+
+	Navigation_t navType;
+	switch(pNode->GetType())
+	{
+		case NODE_CLIMB:
+			navType = NAV_CLIMB;
+			break;
+
+		case NODE_AIR:
+			navType = NAV_FLY;
+			break;
+
+		default:
+			navType = NAV_GROUND;
+			break;
+	}
+
+	return new AI_Waypoint_t( pNode->GetPosition(hullType), pNode->GetYaw(), navType, ( bits_WP_TO_NODE | nodeFlags) , nodeID );
 }

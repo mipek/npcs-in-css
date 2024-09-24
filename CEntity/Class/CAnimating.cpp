@@ -59,10 +59,6 @@ SH_DECL_MANUALHOOK0(CanBecomeRagdoll, 0, 0, 0, bool);
 DECLARE_HOOK(CanBecomeRagdoll, CAnimating);
 DECLARE_DEFAULTHANDLER(CAnimating, CanBecomeRagdoll, bool, (), ());
 
-SH_DECL_MANUALHOOK2_void(GetVelocity, 0, 0, 0, Vector *, AngularImpulse *);
-DECLARE_HOOK(GetVelocity, CAnimating);
-DECLARE_DEFAULTHANDLER_void(CAnimating, GetVelocity, (Vector *vVelocity, AngularImpulse *vAngVelocity), (vVelocity, vAngVelocity));
-
 SH_DECL_MANUALHOOK0_void(PopulatePoseParameters, 0, 0, 0);
 DECLARE_HOOK(PopulatePoseParameters, CAnimating);
 DECLARE_DEFAULTHANDLER_void(CAnimating, PopulatePoseParameters, (), ()); 
@@ -83,6 +79,21 @@ SH_DECL_MANUALHOOK1_void(DispatchAnimEvents, 0, 0, 0, CBaseEntity *);
 DECLARE_HOOK(DispatchAnimEvents, CAnimating);
 DECLARE_DEFAULTHANDLER_void(CAnimating, DispatchAnimEvents,(CBaseEntity *eventHandler), (eventHandler));
 
+SH_DECL_MANUALHOOK0_void(InitBoneControllers, 0, 0, 0);
+DECLARE_HOOK(InitBoneControllers, CAnimating);
+DECLARE_DEFAULTHANDLER_void(CAnimating, InitBoneControllers, (), ());
+
+SH_DECL_MANUALHOOK0(IsActivityFinished, 0, 0, 0, bool);
+DECLARE_HOOK(IsActivityFinished, CAnimating);
+DECLARE_DEFAULTHANDLER(CAnimating, IsActivityFinished, bool, (), ());
+
+SH_DECL_MANUALHOOK2_void(SetupBones, 0, 0, 0, matrix3x4_t *, int);
+DECLARE_HOOK(SetupBones, CAnimating);
+DECLARE_DEFAULTHANDLER_void(CAnimating, SetupBones, (matrix3x4_t *pBoneToWorld, int boneMask), (pBoneToWorld, boneMask));
+
+SH_DECL_MANUALHOOK1_void(CalculateIKLocks, 0, 0, 0, float);
+DECLARE_HOOK(CalculateIKLocks, CAnimating);
+DECLARE_DEFAULTHANDLER_void(CAnimating, CalculateIKLocks, (float currentTime), (currentTime));
 
 
 
@@ -100,50 +111,59 @@ DECLARE_DETOUR(Dissolve, CAnimating);
 DECLARE_DEFAULTHANDLER_DETOUR(CAnimating, Dissolve, bool, (const char *pMaterialName, float flStartTime, bool bNPCOnly, int nDissolveType, Vector vDissolverOrigin, int iMagnitude), (pMaterialName, flStartTime, bNPCOnly, nDissolveType, vDissolverOrigin, iMagnitude));
 
 
-
 //Sendprops
 DEFINE_PROP(m_flPlaybackRate,CAnimating);
 DEFINE_PROP(m_flPoseParameter,CAnimating);
 DEFINE_PROP(m_nBody,CAnimating);
-DEFINE_PROP(m_nSkin,CAnimating);
 DEFINE_PROP(m_nNewSequenceParity,CAnimating);
 DEFINE_PROP(m_nResetEventsParity,CAnimating);
 DEFINE_PROP(m_nHitboxSet,CAnimating);
 DEFINE_PROP(m_nMuzzleFlashParity,CAnimating);
+DEFINE_PROP(m_bClientSideFrameReset,CAnimating);
+DEFINE_PROP(m_bClientSideAnimation,CAnimating);
+DEFINE_PROP(m_flEncodedController,CAnimating);
+DEFINE_PROP(m_nSkin,CAnimating);
+DEFINE_PROP(m_nForceBone,CAnimating);
+DEFINE_PROP(m_flModelScale,CAnimating);
 
 
 
 //Datamaps
 DEFINE_PROP(m_flCycle,CAnimating);
 DEFINE_PROP(m_nSequence,CAnimating);
+DEFINE_PROP(m_flFadeScale,CAnimating);
 DEFINE_PROP(m_bSequenceLoops,CAnimating);
 DEFINE_PROP(m_flGroundSpeed,CAnimating);
 DEFINE_PROP(m_bSequenceFinished,CAnimating);
 DEFINE_PROP(m_flLastEventCheck,CAnimating);
 DEFINE_PROP(m_fBoneCacheFlags,CAnimating);
-
+DEFINE_PROP(m_pIk,CAnimating);
+DEFINE_PROP(m_iIKCounter,CAnimating);
 
 
 #define MAX_ANIMTIME_INTERVAL 0.2f
 
-CAnimating::CAnimating()
+CAnimating::CAnimating(): my_m_pIk(nullptr)
 {
 
 }
 
-// GetModelPtr got inlined so we use this little hack
+void CAnimating::UpdateOnRemove()
+{
+	if(my_m_pIk != NULL)
+	{
+		delete my_m_pIk;
+		my_m_pIk = NULL;
+		m_pIk = NULL;
+	}
+	BaseClass::UpdateOnRemove();
+}
+
 CStudioHdr *CAnimating::GetModelPtr()
 {
 	CBaseEntity *pBaseEntity = BaseEntity();
 	assert(pBaseEntity);
 
-#if 0
-	CStudioHdr *m_pStudioHdr = *reinterpret_cast<CStudioHdr**>(pBaseEntity + 0x450);
-	if( !m_pStudioHdr && GetModel() )
-	{
-		g_helpfunc.LockStudioHdr(pBaseEntity);
-	}
-#endif
 	return g_helpfunc.GetModelPtr(pBaseEntity);
 }
 
@@ -157,12 +177,12 @@ float CAnimating::GetAnimTimeInterval() const
 	if (m_flAnimTime < gpGlobals->curtime)
 	{
 		// estimate what it'll be this frame
-		flInterval = clamp( gpGlobals->curtime - *m_flAnimTime, 0, MAX_ANIMTIME_INTERVAL );
+		flInterval = clamp( gpGlobals->curtime - *m_flAnimTime, 0.0f, MAX_ANIMTIME_INTERVAL );
 	}
 	else
 	{
 		// report actual
-		flInterval = clamp( *m_flAnimTime - *m_flPrevAnimTime, 0, MAX_ANIMTIME_INTERVAL );
+		flInterval = clamp( *m_flAnimTime - *m_flPrevAnimTime, 0.0f, MAX_ANIMTIME_INTERVAL );
 	}
 	return flInterval;
 }
@@ -428,6 +448,11 @@ float CAnimating::GetPoseParameter( int iParameter )
 	}
 
 	return 0.0;
+}
+
+float CAnimating::GetPoseParameter( const char *name )
+{
+	return GetPoseParameter( LookupPoseParameter( name ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -833,7 +858,7 @@ bool CAnimating::ComputeHitboxSurroundingBox( Vector *pVecWorldMins, Vector *pVe
 }
 
 
-void CAnimating::DoMuzzleFlash()
+void CAnimating::DoMuzzleFlash_Animating()
 {
 	m_nMuzzleFlashParity = (*(m_nMuzzleFlashParity)+1) & ((1 << EF_MUZZLEFLASH_BITS) - 1);
 }
@@ -928,6 +953,18 @@ float CAnimating::EdgeLimitPoseParameter( int iParameter, float flValue, float f
 	return RangeCompressor( flValue, Pose.start, Pose.end, flBase );
 }
 
+int CAnimating::SelectHeaviestSequence ( Activity activity )
+{
+	Assert( GetModelPtr() );
+	return ::SelectHeaviestSequence( GetModelPtr(), activity );
+}
+
+int CAnimating::ExtractBbox( int sequence, Vector& mins, Vector& maxs )
+{
+	Assert( GetModelPtr() );
+	return ::ExtractBbox( GetModelPtr( ), sequence, mins, maxs );
+}
+
 int CAnimating::GetHitboxSet()
 {
 	static int offs = -1;
@@ -941,4 +978,78 @@ int CAnimating::GetHitboxSet()
 	}
 
 	return *reinterpret_cast<int*>((unsigned long)BaseEntity() + offs);
+}
+
+void CAnimating::EnableServerIK()
+{
+	CIKContext *temp_m_pIk = m_pIk;
+	if (!temp_m_pIk)
+	{
+		my_m_pIk = new CIKContext;
+		m_pIk = my_m_pIk;
+		m_iIKCounter = 0;
+	}
+}
+
+Activity CAnimating::GetSequenceActivity( int iSequence )
+{
+	if( iSequence == -1 )
+	{
+		return ACT_INVALID;
+	}
+
+	if ( !GetModelPtr() )
+		return ACT_INVALID;
+
+	return (Activity)::GetSequenceActivity( GetModelPtr(), iSequence );
+}
+
+float CAnimating::GetBoneController ( int iController )
+{
+	Assert( GetModelPtr() );
+
+	CStudioHdr *pmodel = (CStudioHdr*)GetModelPtr();
+
+	float value = *(float *)(((uint8_t *)(BaseEntity())) + m_flEncodedController.offset + (iController*4));
+	return Studio_GetController( pmodel, iController, value );
+}
+
+float CAnimating::SetBoneController ( int iController, float flValue )
+{
+	Assert( GetModelPtr() );
+
+	CStudioHdr *pmodel = (CStudioHdr*)GetModelPtr();
+
+	Assert(iController >= 0 && iController < NUM_BONECTRLS);
+
+	float newValue;
+	float retVal = Studio_SetController( pmodel, iController, flValue, newValue );
+	*(float *)(((uint8_t *)(BaseEntity())) + m_flEncodedController.offset + (iController*4)) = newValue;
+	return retVal;
+}
+
+void CAnimating::ResetClientsideFrame( void )
+{
+	bool value = m_bClientSideFrameReset;
+	m_bClientSideFrameReset = !value;
+}
+
+bool CAnimating::GetAttachmentLocal( int iAttachment, Vector &origin, QAngle &angles )
+{
+	matrix3x4_t attachmentToEntity;
+
+	bool bRet = GetAttachmentLocal( iAttachment, attachmentToEntity );
+	MatrixAngles( attachmentToEntity, angles, origin );
+	return bRet;
+}
+
+
+bool CAnimating::GetAttachmentLocal( int iAttachment, matrix3x4_t &attachmentToLocal )
+{
+	matrix3x4_t attachmentToWorld;
+	bool bRet = GetAttachment(iAttachment, attachmentToWorld);
+	matrix3x4_t worldToEntity;
+	MatrixInvert( EntityToWorldTransform(), worldToEntity );
+	ConcatTransforms( worldToEntity, attachmentToWorld, attachmentToLocal );
+	return bRet;
 }

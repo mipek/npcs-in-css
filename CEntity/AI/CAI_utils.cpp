@@ -6,7 +6,7 @@
 
 #include "CEntity.h"
 #include "CAI_utils.h"
-#include "CAI_memory.h"
+#include "CAI_Memory.h"
 #include "CAI_NPC.h"
 #include "CAI_moveprobe.h"
 #include "vphysics/object_hash.h"
@@ -113,7 +113,12 @@ void CAI_ShotRegulator::SetBurstShotsRemaining( int shots )
 	m_nBurstShotsRemaining = shots;
 }
 
-
+void CAI_ShotRegulator::SetParameters( int minShotsPerBurst, int maxShotsPerBurst, float minRestTime, float maxRestTime )
+{
+	SetBurstShotCountRange( minShotsPerBurst, maxShotsPerBurst );
+	SetRestInterval( minRestTime, maxRestTime );
+	Reset( false );
+}
 
 
 //-----------------------------------------------------------------------------
@@ -135,9 +140,9 @@ bool CTraceFilterNav::ShouldHitEntity( IHandleEntity *pHandleEntity, int content
 
 	if(pEntity == NULL)
 	{
-		edict_t *pEdict = servergameents->BaseEntityToEdict(cbase);
-		int index = engine->IndexOfEdict(pEdict);
-		META_CONPRINTF("%d %s\n", index, pEdict->GetClassNameA());
+		IServerNetworkable *networkable = cbase->GetNetworkable();
+		int index = networkable ? engine->IndexOfEdict(networkable->GetEdict()) : -1;
+		META_CONPRINTF("ShouldHitEntity %d %s\n", index, networkable ? networkable->GetClassName() : "<null>");
 	}
 	if ( m_pProber == pEntity )
 		return false;
@@ -277,3 +282,192 @@ void CAI_ShotRegulator::Reset( bool bStartShooting )
 	}
 }
 
+void CAI_ShotRegulator::FireNoEarlierThan( float flTime )
+{
+	if ( flTime > m_flNextShotTime )
+	{
+		m_flNextShotTime = flTime;
+	}
+}
+
+// CAI_FreePass
+
+BEGIN_SIMPLE_DATADESC( AI_FreePassParams_t )
+
+					DEFINE_KEYFIELD( timeToTrigger,			FIELD_FLOAT, "freepass_timetotrigger"),
+					DEFINE_KEYFIELD( duration,				FIELD_FLOAT, "freepass_duration"),
+					DEFINE_KEYFIELD( moveTolerance,			FIELD_FLOAT, "freepass_movetolerance"),
+					DEFINE_KEYFIELD( refillRate,			FIELD_FLOAT, "freepass_refillrate"),
+					DEFINE_FIELD(	 coverDist,				FIELD_FLOAT),
+					DEFINE_KEYFIELD( peekTime,				FIELD_FLOAT, "freepass_peektime"),
+					DEFINE_FIELD(	 peekTimeAfterDamage,	FIELD_FLOAT),
+					DEFINE_FIELD(	 peekEyeDist,			FIELD_FLOAT),
+					DEFINE_FIELD(	 peekEyeDistZ,			FIELD_FLOAT),
+
+END_DATADESC()
+
+BEGIN_SIMPLE_DATADESC( CAI_FreePass )
+
+					DEFINE_FIELD( m_hTarget, FIELD_EHANDLE ),
+					DEFINE_FIELD( m_FreePassTimeRemaining,	FIELD_FLOAT ),
+					DEFINE_EMBEDDED( m_FreePassMoveMonitor ),
+					DEFINE_EMBEDDED( m_Params ),
+
+END_DATADESC()
+
+void CAI_FreePass::Update( )
+{
+	CEntity *pTarget = GetPassTarget();
+	if ( !pTarget || m_Params.duration < 0.1 )
+		return;
+
+	//---------------------------------
+	//
+	// Free pass logic
+	//
+	AI_EnemyInfo_t *pTargetInfo = GetOuter()->GetEnemies()->Find( pTarget->BaseEntity() );
+
+	// This works with old data because need to do before base class so as to not choose as enemy
+	if ( !HasPass() )
+	{
+		float timePlayerLastSeen = (pTargetInfo) ? pTargetInfo->timeLastSeen : AI_INVALID_TIME;
+		float lastTimeDamagedBy = (pTargetInfo) ? pTargetInfo->timeLastReceivedDamageFrom : AI_INVALID_TIME;
+
+		if ( timePlayerLastSeen == AI_INVALID_TIME || gpGlobals->curtime - timePlayerLastSeen > .15 ) // If didn't see the player last think
+		{
+			trace_t tr;
+			UTIL_TraceLine( pTarget->EyePosition(), GetOuter()->EyePosition(), MASK_BLOCKLOS, GetOuter()->BaseEntity(), COLLISION_GROUP_NONE, &tr );
+			if ( tr.fraction != 1.0 && tr.m_pEnt != pTarget->BaseEntity() )
+			{
+				float dist = (tr.endpos - tr.startpos).Length() * tr.fraction;
+
+				if ( dist < m_Params.coverDist )
+				{
+					if ( ( timePlayerLastSeen == AI_INVALID_TIME || gpGlobals->curtime - timePlayerLastSeen > m_Params.timeToTrigger ) &&
+						 ( lastTimeDamagedBy == AI_INVALID_TIME || gpGlobals->curtime - lastTimeDamagedBy > m_Params.timeToTrigger ) )
+					{
+						m_FreePassTimeRemaining = m_Params.duration;
+						m_FreePassMoveMonitor.SetMark( pTarget, m_Params.moveTolerance );
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		float temp = m_FreePassTimeRemaining;
+		m_FreePassTimeRemaining = 0;
+		CAI_Senses *pSenses = GetOuter()->GetSenses();
+		bool bCanSee = ( pSenses && pSenses->ShouldSeeEntity( pTarget->BaseEntity() ) && pSenses->CanSeeEntity( pTarget->BaseEntity() ) );
+		m_FreePassTimeRemaining = temp;
+
+		if ( bCanSee )
+		{
+			if ( !m_FreePassMoveMonitor.TargetMoved( pTarget ) )
+				m_FreePassTimeRemaining -= 0.1;
+			else
+				Revoke( true );
+		}
+		else
+		{
+			m_FreePassTimeRemaining += 0.1 * m_Params.refillRate;
+			if ( m_FreePassTimeRemaining > m_Params.duration )
+				m_FreePassTimeRemaining = m_Params.duration;
+			m_FreePassMoveMonitor.SetMark( pTarget, m_Params.moveTolerance );
+		}
+	}
+}
+
+//---------------------------------------------------------
+//---------------------------------------------------------
+bool CAI_FreePass::HasPass()
+{
+	return ( m_FreePassTimeRemaining > 0 );
+}
+
+//---------------------------------------------------------
+//---------------------------------------------------------
+void CAI_FreePass::Revoke( bool bUpdateMemory )
+{
+	m_FreePassTimeRemaining = 0;
+	if ( bUpdateMemory && GetPassTarget() )
+	{
+		GetOuter()->UpdateEnemyMemory( GetPassTarget()->BaseEntity(), GetPassTarget()->GetAbsOrigin() );
+	}
+}
+
+//---------------------------------------------------------
+//---------------------------------------------------------
+bool CAI_FreePass::ShouldAllowFVisible(bool bBaseResult )
+{
+	CEntity *	pTarget 	= GetPassTarget();
+	AI_EnemyInfo_t *pTargetInfo = GetOuter()->GetEnemies()->Find( (pTarget)?pTarget->BaseEntity():NULL );
+
+	if ( !bBaseResult || HasPass() )
+		return false;
+
+	bool bIsVisible = true;
+
+	// Peek logic
+	if ( m_Params.peekTime > 0.1 )
+	{
+		float lastTimeSeen = (pTargetInfo) ? pTargetInfo->timeLastSeen : AI_INVALID_TIME;
+		float lastTimeDamagedBy = (pTargetInfo) ? pTargetInfo->timeLastReceivedDamageFrom : AI_INVALID_TIME;
+
+		if ( ( lastTimeSeen == AI_INVALID_TIME || gpGlobals->curtime - lastTimeSeen > m_Params.peekTime ) &&
+			 ( lastTimeDamagedBy == AI_INVALID_TIME || gpGlobals->curtime - lastTimeDamagedBy > m_Params.peekTimeAfterDamage ) )
+		{
+			Vector vToTarget;
+
+			VectorSubtract( pTarget->EyePosition(), GetOuter()->EyePosition(), vToTarget );
+			vToTarget.z = 0.0f;
+			VectorNormalize( vToTarget );
+
+			Vector vecRight( -vToTarget.y, vToTarget.x, 0.0f );
+			trace_t	tr;
+
+			UTIL_TraceLine( GetOuter()->EyePosition(), pTarget->EyePosition() + (vecRight * m_Params.peekEyeDist - Vector( 0, 0, m_Params.peekEyeDistZ )), MASK_BLOCKLOS, GetOuter()->BaseEntity(), COLLISION_GROUP_NONE, &tr );
+			if ( tr.fraction != 1.0 && tr.m_pEnt != pTarget->BaseEntity() )
+			{
+				bIsVisible = false;
+			}
+
+			if ( bIsVisible )
+			{
+				UTIL_TraceLine( GetOuter()->EyePosition(), pTarget->EyePosition() + (-vecRight * m_Params.peekEyeDist - Vector( 0, 0, m_Params.peekEyeDistZ )), MASK_BLOCKLOS, GetOuter()->BaseEntity(), COLLISION_GROUP_NONE, &tr );
+				if ( tr.fraction != 1.0 && tr.m_pEnt != pTarget->BaseEntity() )
+				{
+					bIsVisible = false;
+				}
+			}
+		}
+	}
+
+	return bIsVisible;
+}
+
+void CAI_FreePass::Reset( float passTime, float moveTolerance )
+{
+	CEntity *pTarget = GetPassTarget();
+
+	if ( !pTarget || m_Params.duration < 0.1 )
+		return;
+
+	if ( passTime == -1 )
+	{
+		m_FreePassTimeRemaining = m_Params.duration;
+	}
+	else
+	{
+		m_FreePassTimeRemaining = passTime;
+	}
+
+	if ( moveTolerance == -1  )
+	{
+		m_FreePassMoveMonitor.SetMark( pTarget, m_Params.moveTolerance );
+	}
+	else
+	{
+		m_FreePassMoveMonitor.SetMark( pTarget, moveTolerance );
+	}
+}

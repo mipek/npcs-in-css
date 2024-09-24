@@ -141,8 +141,8 @@ void CAnimatingOverlay::SetLayerCycle( int iLayer, float flCycle, float flPrevCy
 	CAnimationLayer	*p_m_AnimOverlay = &m_AnimOverlay->Element(iLayer);
 	if (!p_m_AnimOverlay->m_bLooping)
 	{
-		flCycle = clamp( flCycle, 0.0, 1.0 );
-		flPrevCycle = clamp( flPrevCycle, 0.0, 1.0 );
+		flCycle = clamp( flCycle, 0.0f, 1.0f );
+		flPrevCycle = clamp( flPrevCycle, 0.0f, 1.0f );
 	}
 	p_m_AnimOverlay->m_flCycle = flCycle;
 	p_m_AnimOverlay->m_flPrevCycle = flPrevCycle;
@@ -192,7 +192,7 @@ int CAnimatingOverlay::AllocateLayer( int iPriority )
 		{
 			if (p_m_AnimOverlay->m_nPriority <= iPriority)
 			{
-				iNewOrder = max( iNewOrder, p_m_AnimOverlay->m_nOrder + 1 );
+				iNewOrder = std::max( iNewOrder, p_m_AnimOverlay->m_nOrder + 1 );
 			}
 		}
 		else if (p_m_AnimOverlay->IsDying())
@@ -334,7 +334,7 @@ void CAnimatingOverlay::SetLayerPriority( int iLayer, int iPriority )
 		{
 			if (p_m_AnimOverlay->m_nPriority <= iPriority)
 			{
-				iNewOrder = max( iNewOrder, p_m_AnimOverlay->m_nOrder + 1 );
+				iNewOrder = std::max( iNewOrder, p_m_AnimOverlay->m_nOrder + 1 );
 			}
 		}
 	}

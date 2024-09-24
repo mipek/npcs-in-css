@@ -4,12 +4,12 @@
 #include "CEntityManager.h"
 #include "CCommand.h"
 
-class CServerCommandLog : public CServerCommand
+class CEPointServerCommand : public CServerCommand
 {
 public:
-	CE_DECLARE_CLASS(CServerCommandLog, CServerCommand);
+	CE_DECLARE_CLASS(CEPointServerCommand, CServerCommand);
 
-	virtual void InputCommand(inputdata_t *inputdata);
+	void InputCommand(inputdata_t *inputdata) override;
 };
 
 #endif // _INCLUDE_CSERVERCOMMANDLOG_H_

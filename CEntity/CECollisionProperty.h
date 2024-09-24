@@ -36,8 +36,12 @@ public:
 	bool				IsSolidFlagSet( int flagMask ) const;
 	void				CalcNearestPoint( const Vector &vecWorldPt, Vector *pVecNearestWorldPt ) const;
 	const Vector &		WorldToCollisionSpace( const Vector &in, Vector *pResult ) const;
-	const Vector&	OBBMins( ) const;
-	const Vector&	OBBMaxs( ) const;
+	const Vector &		WorldDirectionToCollisionSpace( const Vector &in, Vector *pResult ) const;
+	bool				IsPointInBounds( const Vector &vecWorldPt ) const;
+	const Vector &		WorldToNormalizedSpace( const Vector &in, Vector *pResult ) const;
+	const Vector &		CollisionToNormalizedSpace( const Vector &in, Vector *pResult ) const;
+	const Vector&		OBBMins( ) const;
+	const Vector&		OBBMaxs( ) const;
 	inline const Vector&	OBBSize( ) const
 	{
 		Vector &temp = AllocTempVector();

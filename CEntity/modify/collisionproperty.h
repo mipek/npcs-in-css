@@ -223,7 +223,7 @@ private:
 	CBaseEntity *GetOuter();
 	const CBaseEntity *GetOuter() const;
 
-private:
+public:
 	CBaseEntity *m_pOuter;
 
 	CNetworkVector( m_vecMins );

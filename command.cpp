@@ -2,6 +2,7 @@
 #include "CAI_NPC.h"
 #include "eventqueue.h"
 #include "CCombatWeapon.h"
+#include "sdk/smsdk_config.h"
 
 ConVar *sv_gravity = NULL;
 ConVar *phys_pushscale = NULL;
@@ -51,31 +52,52 @@ ConVar *flex_maxplayertime = NULL;
 ConVar *flex_minplayertime = NULL;
 
 ConVar *ai_find_lateral_los = NULL;
-
 ConVar *npc_sentences = NULL;
 
-ConVar *ai_find_lateral_cover = NULL;
+ConVar *rr_debugresponses = NULL;
+ConVar *sk_ally_regen_time = NULL;
+ConVar *sv_npc_talker_maxdist = NULL;
+ConVar *ai_no_talk_delay = NULL;
+ConVar *rr_debug_qa = NULL;
+//ConVar *npc_ally_deathmessage = NULL;
 
+ConVar *ai_no_local_paths = NULL;
+
+ConVar *ai_use_think_optimizations = NULL;
+ConVar *ai_use_efficiency = NULL;
+ConVar *ai_efficiency_override = NULL;
+ConVar *ai_frametime_limit = NULL;
+ConVar *ai_default_efficient = NULL;
+ConVar *ai_shot_stats = NULL;
+ConVar *ai_shot_stats_term = NULL;
+
+ConVar *ai_find_lateral_cover = NULL;
+ConVar *think_limit = NULL;
+
+ConVar *mat_dxlevel = NULL;
+ConVar *npc_vphysics = NULL;
+
+ConVar *ai_no_steer = NULL;
+ConVar *ai_debug_directnavprobe = NULL;
+
+ConVar *r_JeepViewZHeight = NULL;
+ConVar *r_JeepViewDampenFreq = NULL;
+ConVar *r_JeepViewDampenDamp = NULL;
+ConVar *r_VehicleViewDampen = NULL;
+ConVar *r_vehicleBrakeRate = NULL;
+
+ConVar *xbox_throttlebias = NULL;
+ConVar *xbox_throttlespoof = NULL;
+ConVar *xbox_autothrottle = NULL;
+ConVar *xbox_steering_deadzone = NULL;
+
+ConVar *g_debug_vehicledriver = NULL;
+ConVar *g_debug_npc_vehicle_roles = NULL;
+ConVar *g_jeepexitspeed = NULL;
 
 ConVar npc_create_equipment("npc_create_equipment", "");
 
-void CC_Weapon_GiveGun( const CCommand &args )
-{
-	int index = g_Monster.GetCommandClient();
-	CPlayer* pPlayer = UTIL_PlayerByIndex(index);
-	if(pPlayer == NULL)
-		return;
-
-	CCombatWeapon *gun = dynamic_cast< CCombatWeapon * >( CreateEntityByName(args[1]) );
-	if (gun)
-	{
-		gun->SetLocalOrigin(pPlayer->GetLocalOrigin());
-		gun->AddSpawnFlags(SF_NORESPAWN);
-		DispatchSpawn(gun->BaseEntity());
-		gun->Equip(pPlayer->BaseEntity());
-		gun->Touch(pPlayer);
-	}
-}
+ConVar monster_version("monster_version", SMEXT_CONF_VERSION, FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_SPONLY|FCVAR_DONTRECORD);
 
 void CC_NPC_Create( const CCommand &args )
 {
@@ -149,6 +171,16 @@ void cmd1_CommandCallback(const CCommand &command)
 	} else {
 		Vector vec(129.54f, 34.93f, 207.84f);//(118.25f, -490.82f, 90.03f);
 
+		// test
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ ) {
+			CPlayer *pPlayer = UTIL_PlayerByIndex(i);
+			if (pPlayer) {
+				vec = pPlayer->GetAbsOrigin();
+				break;
+			}
+		}
+
+
 		//vec.Init(6220.0f, 2813.0f, 1090.0f);
 
 		//vec.Init(73.18,-54.81,-60.0);
@@ -156,7 +188,7 @@ void cmd1_CommandCallback(const CCommand &command)
 		//vec.Init(952.65466,61.566082,-58.339985);
 
 
-		CEntity *cent = CreateEntityByName("npc_barnacle");
+		//CEntity *cent = CreateEntityByName("npc_barnacle");
 		//CEntity *cent = CreateEntityByName("npc_headcrab_fast");
 		//CEntity *cent = CreateEntityByName("npc_headcrab_black");
 
@@ -198,7 +230,7 @@ void cmd1_CommandCallback(const CCommand &command)
 		//cent->DispatchKeyValue("additionalequipment","weapon_ak47");
 		//cent->DispatchKeyValue("tacticalvariant","1");
 
-		CBaseEntity *cbase = cent->BaseEntity();
+		/*CBaseEntity *cbase = cent->BaseEntity();
 
 		CAI_NPC *hc = dynamic_cast<CAI_NPC *>(cent);
 		
@@ -209,7 +241,7 @@ void cmd1_CommandCallback(const CCommand &command)
 		//cent->AddSpawnFlags(4096);
 
 		cent->Spawn();
-		cent->Activate();
+		cent->Activate();*/
 
 
 		//hc->GetSequenceKeyValues( 0 );
@@ -219,15 +251,81 @@ void cmd1_CommandCallback(const CCommand &command)
 
 		//hc->Dissolve(NULL, gpGlobals->curtime, false, 0 );
 
-		edict_t *pEdict = servergameents->BaseEntityToEdict(cbase);
-		META_CONPRINTF("%p %d %d\n",cbase, cent->entindex_non_network(), engine->IndexOfEdict(pEdict));
+#if 0
+		//CEntity *cent = CreateEntityByName("prop_vehicle_jeep");
+		CEntity *cent = CreateEntityByName("prop_vehicle_prisoner_pod");
+		cent->CustomDispatchKeyValue("vehiclescript", "scripts/vehicles/prisoner_pod.txt");
+		//cent->CustomDispatchKeyValue("model", "models/buggy.mdl");
+		cent->CustomDispatchKeyValue("model", "models/vehicles/prisoner_pod.mdl");
+		cent->CustomDispatchKeyValue("solid","6");
+		cent->CustomDispatchKeyValue("skin","0");
+		cent->CustomDispatchKeyValue("actionScale","1");
+		cent->CustomDispatchKeyValue("EnableGun","1");
+		cent->CustomDispatchKeyValue("ignorenormals","0");
+		cent->CustomDispatchKeyValue("fadescale","1");
+		cent->CustomDispatchKeyValue("fademindist","-1");
+		cent->CustomDispatchKeyValue("VehicleLocked","0");
+		cent->CustomDispatchKeyValue("screenspacefade","0");
+#endif
 
+		CEntity *cent = CreateEntityByName("npc_strider");
+
+		cent->Teleport(&vec, NULL,NULL);
+		cent->Spawn();
+		cent->Activate();
+
+
+		META_CONPRINTF("%p %d %d\n",cent->BaseEntity(), cent->entindex_non_network(), cent->entindex());
+	}
+}
+
+void monster_spawn_jeep(const CCommand &command)
+{
+	int client = g_Monster.GetCommandClient();
+	if(client)
+	{
+		gamehelpers->TextMsg(client, TEXTMSG_DEST_CHAT, "[MONSTER] You don't have access to this command!");
+	} else {
+		if (command.ArgC() < 2) {
+			META_CONPRINTF("monster_spawnjeep <userid>\n");
+			return;
+		}
+
+		int userid = atoi(command.Arg(1));
+		client = playerhelpers->GetClientOfUserId(userid);
+
+		CPlayer *pPlayer = UTIL_PlayerByIndex(client);
+		if (pPlayer && pPlayer->IsAlive()) {
+			Vector vec = pPlayer->GetAbsOrigin();
+			vec.z += 10.0f;
+
+			CEntity *cent = CreateEntityByName("prop_vehicle_jeep");
+			cent->CustomDispatchKeyValue("vehiclescript", "scripts/vehicles/jeep_test.txt");
+			cent->CustomDispatchKeyValue("model", "models/buggy.mdl");
+			cent->CustomDispatchKeyValue("solid","6");
+			cent->CustomDispatchKeyValue("skin","0");
+			cent->CustomDispatchKeyValue("actionScale","1");
+			cent->CustomDispatchKeyValue("ignorenormals","0");
+			cent->CustomDispatchKeyValue("fadescale","1");
+			cent->CustomDispatchKeyValue("fademindist","-1");
+			cent->CustomDispatchKeyValue("VehicleLocked","0");
+			cent->CustomDispatchKeyValue("screenspacefade","0");
+
+			cent->Teleport(&vec, NULL,NULL);
+			cent->Spawn();
+			cent->Activate();
+		} else {
+			META_CONPRINTF("monster_spawnjeep: invalid userid (not a living player)\n");
+		}
 	}
 }
 
 void monster_dump_CommandCallback(const CCommand &command)
 {
-	GetEntityManager()->PrintDump();
+	if (g_Monster.GetCommandClient() == 0)
+	{
+		GetEntityManager()->PrintDump();
+	}
 }
 
 #define GET_CONVAR(name) \
@@ -243,7 +341,7 @@ bool CommandInitialize()
 	new ConCommand("monster_dump",monster_dump_CommandCallback, "", 0);
 	new ConCommand("npc_create", CC_NPC_Create, "Creates an NPC of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT|FCVAR_GAMEDLL);
 
-	new ConCommand("sm_givegun", CC_Weapon_GiveGun, "", 0);
+	new ConCommand("monster_spawnjeep", monster_spawn_jeep, "", 0);
 
 	GET_CONVAR(sv_gravity);
 	GET_CONVAR(phys_pushscale);
@@ -276,7 +374,7 @@ bool CommandInitialize()
 
 	GET_CONVAR(ammo_hegrenade_max);
 	GET_CONVAR(sk_autoaim_mode);
-	
+
 	GET_CONVAR(sv_strict_notarget);
 
 	GET_CONVAR(ai_shot_bias_min);
@@ -297,6 +395,45 @@ bool CommandInitialize()
 	GET_CONVAR(npc_sentences);
 
 	GET_CONVAR(ai_find_lateral_cover);
+	GET_CONVAR(think_limit);
+
+	GET_CONVAR(rr_debugresponses);
+	GET_CONVAR(sk_ally_regen_time);
+	GET_CONVAR(sv_npc_talker_maxdist);
+	GET_CONVAR(ai_no_talk_delay);
+	GET_CONVAR(rr_debug_qa);
+	//GET_CONVAR(npc_ally_deathmessage);
+
+	GET_CONVAR(ai_no_local_paths);
+
+	GET_CONVAR(ai_use_think_optimizations);
+	GET_CONVAR(ai_use_efficiency);
+	GET_CONVAR(ai_efficiency_override);
+	GET_CONVAR(ai_frametime_limit);
+	GET_CONVAR(ai_default_efficient);
+	GET_CONVAR(ai_shot_stats);
+	GET_CONVAR(ai_shot_stats_term);
+
+	GET_CONVAR(mat_dxlevel);
+	GET_CONVAR(npc_vphysics);
+
+	GET_CONVAR(ai_no_steer);
+	GET_CONVAR(ai_debug_directnavprobe);
+
+	GET_CONVAR(r_JeepViewZHeight);
+	GET_CONVAR(r_JeepViewDampenFreq);
+	GET_CONVAR(r_JeepViewDampenDamp);
+	GET_CONVAR(r_VehicleViewDampen);
+	GET_CONVAR(r_vehicleBrakeRate);
+
+	GET_CONVAR(xbox_throttlebias);
+	GET_CONVAR(xbox_throttlespoof);
+	GET_CONVAR(xbox_autothrottle);
+	GET_CONVAR(xbox_steering_deadzone);
+
+	GET_CONVAR(g_debug_vehicledriver);
+	GET_CONVAR(g_debug_npc_vehicle_roles);
+	GET_CONVAR(g_jeepexitspeed);
 
 	return true;
 }

@@ -7,10 +7,10 @@
 
 #define GOAL_POSITION_INVALID	Vector( FLT_MAX, FLT_MAX, FLT_MAX )
 
-ConVar DrawBattleLines( "ai_drawbattlelines", "0", FCVAR_CHEAT );
+//ConVar DrawBattleLines( "ai_drawbattlelines", "0", FCVAR_CHEAT );
 
 
-static AI_StandoffParams_t AI_DEFAULT_STANDOFF_PARAMS = { AIHCR_MOVE_ON_COVER, true, 1.5, 2.5, 1, 3, 25, 0 };
+static AI_StandoffParams_t AI_DEFAULT_STANDOFF_PARAMS = { AIHCR_MOVE_ON_COVER, true, false, 1.5, 2.5, 1, 3, 25, 0 };
 
 #define MAKE_ACTMAP_KEY( posture, activity ) ( (((unsigned)(posture)) << 16) | ((unsigned)(activity)) )
 
@@ -142,7 +142,7 @@ END_DATADESC();
 
 //-------------------------------------
 
-CAI_StandoffBehavior::CAI_StandoffBehavior( CEntity *pOuter )
+CAI_StandoffBehavior::CAI_StandoffBehavior( CAI_NPC *pOuter )
  :	CAI_MappedActivityBehavior_Temporary( pOuter )
 {
 	m_fActive = false;

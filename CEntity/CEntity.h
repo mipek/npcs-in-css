@@ -178,17 +178,21 @@ class CECollisionProperty;
 class CAI_NPC;
 class CE_CSkyCamera;
 class IResponseSystem;
+class IEntitySaveUtils;
 
 #define CONCEPT_WEIGHT 5.0f
 
 #define VPHYSICS_MAX_OBJECT_LIST_COUNT	1024
 
+#define DMG_SNIPER			(DMG_LASTGENERICFLAG<<1)	// This is sniper damage
+#define DMG_MISSILEDEFENSE	(DMG_LASTGENERICFLAG<<2)	// The only kind of damage missiles take. (special missile defense)
 
 extern CEntity *pEntityData[ENTITY_ARRAY_SIZE];
 
 extern ConVar *sv_gravity;
 extern ConVar *phys_pushscale;
 extern ConVar *hl2_episodic;
+extern ConVar *think_limit;
 
 
 //-----------------------------------------------------------------------------
@@ -243,6 +247,7 @@ struct constraint_anchor_t
 typedef void (CEntity::*BASEPTR)(void);
 typedef void (CEntity::*ENTITYFUNCPTR)(CEntity *pOther);
 typedef void (CEntity::*USEPTR)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+typedef void (CEntity::*INPUTFUNC)(inputdata_t &data);
 
 typedef void (CBaseEntity::*VALVE_BASEPTR)(void);
 typedef void (CBaseEntity::*VALVE_ENTITYFUNCPTR)(CBaseEntity *pOther);
@@ -266,12 +271,21 @@ class AI_CriteriaSet;
 	ret Internal##name params; \
 	static ret (ThisClass::* name##_Actual) params;
 
+#define DECLARE_DEFAULTHEADER_WITHOUT_SOURCEHOOK(name, ret, params) \
+	static ret Internal##name params;
+
 #define SetThink(a) ThinkSet(static_cast <void (CEntity::*)(void)> (a), 0, NULL)
 #define SetContextThink( a, b, context ) ThinkSet( static_cast <void (CEntity::*)(void)> (a), (b), context )
 
 #define SetTouch( a ) ce_m_pfnTouch = static_cast <void (CEntity::*)(CEntity *)> (a)
 #define SetUse( a ) ce_m_pfnUse = static_cast <void (CEntity::*)(CBaseEntity *, CBaseEntity *, USE_TYPE , float)> (a)
 
+enum thinkmethods_t
+{
+	THINK_FIRE_ALL_FUNCTIONS,
+	THINK_FIRE_BASE_ONLY,
+	THINK_FIRE_ALL_BUT_BASE,
+};
 
 struct thinkfunc_t
 {
@@ -391,6 +405,22 @@ public: // CEntity
 
 	static float GetSoundDuration( const char *soundname, char const *actormodel );
 
+	template< class T >
+	static T *NextEntByClass( T *start )
+	{
+		CEntity *x;
+		for (x = CEntity::Instance(g_helpfunc.NextEnt( start?start->BaseEntity():nullptr ));
+			x;
+			x = CEntity::Instance(g_helpfunc.NextEnt( x->BaseEntity() )))
+		{
+			start = dynamic_cast<T*>( x );
+			if ( start ) {
+				return start;
+			}
+		}
+		return nullptr;
+	}
+
 public: // CBaseEntity virtuals
 	virtual bool IsCustomEntity() { return false; }
 
@@ -422,6 +452,7 @@ public: // CBaseEntity virtuals
 	virtual bool IsAlive();
 	virtual const Vector &WorldSpaceCenter() const;
 	virtual void PhysicsSimulate();
+	virtual bool SUB_AllowedToFade();
 	virtual int	BloodColor();
 	virtual void StopLoopingSounds();
 	virtual void SetOwnerEntity( CBaseEntity* pOwner );
@@ -438,6 +469,7 @@ public: // CBaseEntity virtuals
 	virtual Vector GetAutoAimCenter();
 	virtual Vector EyePosition();
 	virtual void OnRestore( void );
+	virtual void OnSave( IEntitySaveUtils *pUtils );
 	virtual void ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName = NULL );
 	virtual	bool TestHitboxes(const Ray_t &ray, unsigned int fContentsMask, trace_t& tr);
 	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
@@ -470,6 +502,16 @@ public: // CBaseEntity virtuals
 	virtual bool CanBeSeenBy( CBaseEntity *pNPC );
 	virtual bool IsViewable();
 	virtual IResponseSystem *GetResponseSystem();
+	virtual void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = NULL);
+	virtual void DoImpactEffect( trace_t &tr, int nDamageType );
+	virtual CBaseEntity	*CB_GetEnemy();
+	virtual CBaseEntity	*CB_GetEnemy_const() const;
+	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
+	virtual void DispatchResponse( const char *conceptName );
+	virtual bool ShouldAttractAutoAim( CBaseEntity *pAimingEnt );
+	virtual bool TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace );
+	virtual bool VPhysicsIsFlesh();
+	virtual void UpdatePhysicsShadowToCurrentPosition( float deltaTime );
 
 public:
 	void SetLocalOrigin(const Vector& origin);
@@ -482,6 +524,10 @@ public:
 	void PhysicsMarkEntitiesAsTouching( CBaseEntity *other, trace_t &trace );
 	IPhysicsObject *VPhysicsInitNormal( SolidType_t solidType, int nSolidFlags, bool createAsleep, solid_t *pSolid = NULL);
 	IPhysicsObject *VPhysicsInitStatic( void );
+	//void PhysicsDispatchThink(BASEPTR thinkFunc);
+	bool PhysicsRunThink(thinkmethods_t thinkMethod);
+	bool PhysicsRunSpecificThink(int i, BASEPTR thinkFunc);
+	void PhysicsDispatchThink( BASEPTR thinkFunc );
 	bool CBaseEntity_FVisible( const Vector &vecTarget, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
 
 public:
@@ -617,6 +663,8 @@ public: // CBaseEntity non virtual helpers
 
 	void ComputeAbsPosition( const Vector &vecLocalPosition, Vector *pAbsPosition );
 
+	void VPhysicsSetObject( IPhysicsObject *pPhysics );
+
 public: //custom
 	CECollisionProperty *col_ptr;
 
@@ -708,6 +756,8 @@ public: // custom
 	void		SUB_Remove();
 	void		SUB_DoNothing();
 	void		SUB_TouchNothing(CEntity *pOther);
+	void		SUB_FadeOut();
+	void		SUB_PerformFadeOut();
 
 	void		Remove();
 	void		ViewPunch( const QAngle &angleOffset );
@@ -734,6 +784,9 @@ public: // custom
 
 	void		SetLocalAngularVelocity( const QAngle &vecAngVelocity );
 	const QAngle &GetLocalAngularVelocity() const;
+	void		SetLocalVelocity( const Vector &vecVelocity );
+
+	void		InvalidatePhysicsRecursive( int nChangeFlags );
 
 	unsigned char GetParentAttachment() const;
 
@@ -753,6 +806,9 @@ public: // custom
 	int			RegisterThinkContext( const char *szContext );
 	int			GetNextThinkTick( const char *szContext = NULL );
 
+	int			GetIndexForCEntityThinkContext( const char *pszContext );
+	int			RegisterCEntityThinkContext( const char *szContext );
+
 	void		GenderExpandString( char const *in, char *out, int maxlen );
 	
 	void		AddContext( const char *nameandvalue );
@@ -764,12 +820,35 @@ public: // custom
 		int firingEntID = -1, int attachmentID = -1, float iDamage = 0.0f, 
 		CBaseEntity *pAttacker = NULL, bool bFirstShotAccurate = false );
 
+	matrix3x4_t& GetParentToWorldTransform( matrix3x4_t &tempMatrix );
+
+	void SetParentAttachment( const char *szInputName, const char *szAttachment, bool bMaintainOffset );
+
+	void		AppendContextToCriteria( AI_CriteriaSet& set, const char *prefix = "" );
+	void		RemoveExpiredConcepts( void );
+	int			GetContextCount();
+	bool		ContextExpired( int index );
+	const char *GetContextValue( int index );
+
+	void SendOnKilledGameEvent( const CTakeDamageInfo &info );
 
 	bool		CustomDispatchKeyValue(const char *szKeyName, const char *szValue);
 	bool		CustomAcceptInput(const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID);
 
 	inline bool IsSimulatedEveryTick() const { return m_bSimulatedEveryTick; }
 	inline void SetSimulatedEveryTick( bool sim ) { m_bSimulatedEveryTick = sim; }
+
+	void		SetShadowCastDistance( float flDistance );
+	float		GetShadowCastDistance( void )	const;
+
+	void		SetElasticity( float flElasticity );
+	float		GetElasticity( void ) const;
+
+	float		GetSimulationTime() const;
+	void		SetSimulationTime( float st );
+
+	bool 		IsAnimatedEveryTick() const;
+	void 		SetAnimatedEveryTick( bool anim );
 
 private:
 	bool		NameMatchesComplex( const char *pszNameOrWildcard );
@@ -800,9 +879,11 @@ public: // All the internal hook implementations for the above virtuals
 	DECLARE_DEFAULTHEADER(Event_Killed, void, (const CTakeDamageInfo &info));
 	DECLARE_DEFAULTHEADER(TraceAttack, void, (const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator));
 	DECLARE_DEFAULTHEADER(BodyTarget, Vector, (const Vector &posSrc, bool bNoisy));
+	DECLARE_DEFAULTHEADER_WITHOUT_SOURCEHOOK(GetServerVehicle, IServerVehicle*, (CBaseEntity *thisptr));
 	DECLARE_DEFAULTHEADER(IsAlive, bool, ());
 	DECLARE_DEFAULTHEADER(WorldSpaceCenter, const Vector &, () const);
 	DECLARE_DEFAULTHEADER(PhysicsSimulate, void, ());
+	DECLARE_DEFAULTHEADER(SUB_AllowedToFade, bool, ());
 	DECLARE_DEFAULTHEADER(BloodColor, int, ());
 	DECLARE_DEFAULTHEADER(StopLoopingSounds, void, ());
 	DECLARE_DEFAULTHEADER(SetOwnerEntity, void, (CBaseEntity* pOwner));
@@ -820,6 +901,7 @@ public: // All the internal hook implementations for the above virtuals
 	DECLARE_DEFAULTHEADER(GetAutoAimCenter, Vector, ());
 	DECLARE_DEFAULTHEADER(EyePosition, Vector, ());
 	DECLARE_DEFAULTHEADER(OnRestore, void, ());
+	DECLARE_DEFAULTHEADER(OnSave, void, ( IEntitySaveUtils *pUtils ));
 	DECLARE_DEFAULTHEADER(ImpactTrace, void, ( trace_t *pTrace, int iDamageType, const char *pCustomImpactName));
 	DECLARE_DEFAULTHEADER(TestHitboxes, bool, (const Ray_t &ray, unsigned int fContentsMask, trace_t& tr));
 	DECLARE_DEFAULTHEADER(VPhysicsCollision, void, (int index, gamevcollisionevent_t *pEvent ));
@@ -852,6 +934,16 @@ public: // All the internal hook implementations for the above virtuals
 	DECLARE_DEFAULTHEADER(CanBeSeenBy, bool, ( CBaseEntity *pNPC ));
 	DECLARE_DEFAULTHEADER(IsViewable, bool, ());
 	DECLARE_DEFAULTHEADER(GetResponseSystem, IResponseSystem *, ());
+	DECLARE_DEFAULTHEADER(GetVelocity, void, (Vector *vVelocity, AngularImpulse *vAngVelocity));
+	DECLARE_DEFAULTHEADER(DoImpactEffect, void, ( trace_t &tr, int nDamageType ));
+	DECLARE_DEFAULTHEADER(CB_GetEnemy, CBaseEntity *,());
+	DECLARE_DEFAULTHEADER(CB_GetEnemy_const, CBaseEntity *,() const);
+	DECLARE_DEFAULTHEADER(MakeTracer, void, ( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType ));
+	DECLARE_DEFAULTHEADER(DispatchResponse, void, ( const char *conceptName ));
+	DECLARE_DEFAULTHEADER(ShouldAttractAutoAim, bool, ( CBaseEntity *pAimingEnt ));
+	DECLARE_DEFAULTHEADER(TestCollision, bool, (const Ray_t& ray, unsigned int mask, trace_t& trace));
+	DECLARE_DEFAULTHEADER(VPhysicsIsFlesh, bool, ());
+	DECLARE_DEFAULTHEADER(UpdatePhysicsShadowToCurrentPosition, void, ( float deltaTime ));
 
 public:
 	DECLARE_DEFAULTHEADER_DETOUR(SetLocalOrigin, void, (const Vector& origin));
@@ -863,6 +955,8 @@ public:
 	DECLARE_DEFAULTHEADER_DETOUR(VPhysicsInitShadow, IPhysicsObject *, ( bool allowPhysicsMovement, bool allowPhysicsRotation, solid_t *pSolid));
 	DECLARE_DEFAULTHEADER_DETOUR(VPhysicsInitNormal, IPhysicsObject *, ( SolidType_t solidType, int nSolidFlags, bool createAsleep, solid_t *pSolid ));
 	DECLARE_DEFAULTHEADER_DETOUR(VPhysicsInitStatic, IPhysicsObject *, ());
+	//DECLARE_DEFAULTHEADER_DETOUR(PhysicsDispatchThink, void, (BASEPTR thinkFunc));
+	DECLARE_DEFAULTHEADER_DETOUR(PhysicsRunThink, bool, (thinkmethods_t thinkMethod));
 
 protected: // CEntity	
 	CBaseEntity *m_pEntity;
@@ -877,11 +971,18 @@ protected: //Sendprops
 	DECLARE_SENDPROP(color32, m_clrRender);
 	DECLARE_SENDPROP(unsigned char, m_nSolidType);
 	DECLARE_SENDPROP(Vector, m_vecMins);
-	DECLARE_SENDPROP(Vector, m_vecMaxs);	
+	DECLARE_SENDPROP(Vector, m_vecMaxs);
 	DECLARE_SENDPROP(short, m_nModelIndex);
 	DECLARE_SENDPROP(QAngle, m_angRotation);
 	DECLARE_SENDPROP(unsigned char, m_iParentAttachment);
-
+	DECLARE_SENDPROP(float, m_flShadowCastDistance);
+	DECLARE_SENDPROP(float, m_flElasticity);
+	DECLARE_SENDPROP(Vector, m_vecMinsPreScaled);
+	DECLARE_SENDPROP(Vector, m_vecMaxsPreScaled);
+	DECLARE_SENDPROP(Vector, m_vecSpecifiedSurroundingMinsPreScaled);
+	DECLARE_SENDPROP(Vector, m_vecSpecifiedSurroundingMaxsPreScaled);
+	DECLARE_SENDPROP(float, m_flSimulationTime);
+	DECLARE_SENDPROP(bool, m_bAnimatedEveryTick);
 public:
 	DECLARE_SENDPROP(unsigned char, m_nRenderMode);
 	DECLARE_SENDPROP(unsigned char, m_nRenderFX);
@@ -948,11 +1049,11 @@ public:
 	DECLARE_DATAMAP(int, m_spawnflags);
 
 
-
 	/* Thinking Stuff */
 	void (CEntity::*ce_m_pfnThink)(void);
 	void (CEntity::*ce_m_pfnTouch)(CEntity *pOther);
 	void (CEntity::*ce_m_pfnUse)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	CUtlVector< thinkfunc_t > ce_m_aThinkFunctions;
 	
 	friend class CECollisionProperty;
 };
@@ -1224,6 +1325,49 @@ inline float CEntity::GetLocalTime( void ) const
 	return m_flLocalTime; 
 }
 
+
+inline void	CEntity::SetShadowCastDistance( float flDistance )
+{
+	m_flShadowCastDistance = flDistance;
+}
+
+inline float CEntity::GetShadowCastDistance( void )	const
+{
+	return m_flShadowCastDistance;
+}
+
+inline void	CEntity::SetElasticity( float flElasticity )
+{
+	m_flElasticity = flElasticity;
+}
+
+inline float CEntity::GetElasticity( void )	const
+{
+	return m_flElasticity;
+}
+
+inline float CEntity::GetSimulationTime() const
+{
+	return m_flSimulationTime;
+}
+
+inline void CEntity::SetSimulationTime( float st )
+{
+	m_flSimulationTime = st;
+}
+
+inline bool CEntity::IsAnimatedEveryTick() const
+{
+	return m_bAnimatedEveryTick;
+}
+
+inline void CEntity::SetAnimatedEveryTick( bool anim )
+{
+	if ( m_bAnimatedEveryTick != anim )
+	{
+		m_bAnimatedEveryTick = anim;
+	}
+}
 
 
 

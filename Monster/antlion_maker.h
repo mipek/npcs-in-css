@@ -82,9 +82,7 @@ public:
 
 
 	void	BlockedCheckFunc( void );
-	void	BlockedCheckFunc_CBE( void );
 	void	FindNodesCloseToPlayer( void );
-	void	FindNodesCloseToPlayer_CBE( void );
 	void	DoBlockedEffects( CEntity *pBlocker, Vector vOrigin );
 
 	CEntity	*AllHintsFromClusterBlocked( CE_AI_Hint *pNode, bool &bChosenHintBlocked );
@@ -109,7 +107,6 @@ protected:
 	// Pool behavior for coast
 	void		PoolAdd( int iNumToAdd );
 	void		PoolRegenThink( void );
-	void		PoolRegenThink_CBE( void );
 
 
 protected:

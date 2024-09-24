@@ -168,7 +168,7 @@ int	CAI_Network::NearestNodeToPoint( CAI_NPC *pNPC, const Vector &vecOrigin, boo
 	// ---------------------------------------------------------------
 	CNodeFilter filter( pNPC, vecOrigin );
 
-	AI_NearNode_t *pBuffer = (AI_NearNode_t *)stackalloc( sizeof(AI_NearNode_t) * MAX_NEAR_NODES );
+	AI_NearNode_t *pBuffer = (AI_NearNode_t *)alloca( sizeof(AI_NearNode_t) * MAX_NEAR_NODES );
 	CNodeList list( pBuffer, MAX_NEAR_NODES );
 
 	// OPTIMIZE: If not flying, this box should be smaller in Z (2 * height?)
@@ -412,4 +412,35 @@ float CAI_Network::GetNodeYaw( int nodeID )
 	}
 
 	return m_pAInode[nodeID]->GetYaw();
+}
+
+bool CAI_Network::IsConnected(int srcID, int destID)
+{
+	if (srcID > m_iNumNodes || destID > m_iNumNodes)
+	{
+		DevMsg("IsConnected called with invalid node IDs!\n");
+		return false;
+	}
+
+	if ( srcID == destID )
+		return true;
+
+	int srcZone = m_pAInode[srcID]->GetZone();
+	int destZone = m_pAInode[destID]->GetZone();
+
+	if ( srcZone == AI_NODE_ZONE_SOLO || destZone == AI_NODE_ZONE_SOLO )
+		return false;
+
+	if ( srcZone == AI_NODE_ZONE_UNIVERSAL || destZone == AI_NODE_ZONE_UNIVERSAL ) // only happens in WC edit case
+		return true;
+
+#ifdef DEBUG
+	if ( srcZone == AI_NODE_ZONE_UNKNOWN || destZone == AI_NODE_ZONE_UNKNOWN )
+	{
+		DevMsg( "Warning: Node found in unknown zone\n" );
+		return true;
+	}
+#endif
+
+	return ( srcZone == destZone );
 }

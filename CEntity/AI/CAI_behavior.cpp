@@ -8,7 +8,7 @@
 #include "CEntity.h"
 
 #include "isaverestore.h"
-#include "CAI_behavior.h"
+#include "CAI_Behavior.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!

@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -21,6 +21,10 @@
 #include "player_pickup.h"
 #include "CEnvExplosion.h"
 #include "CE_recipientfilter.h"
+
+// explode.h
+extern short	g_sModelIndexFireball;
+extern short	g_sModelIndexSmoke;
 
 ConVar sk_npc_turret_ceiling_bullet_damage("sk_npc_turret_ceiling_bullet_damage", "5");
 
@@ -84,8 +88,6 @@ enum eyeState_t
 //
 // Ceiling Turret
 //
-
-extern int g_sModelIndexSmoke;
 
 class CNPC_CeilingTurret : public CNPCBaseInteractive<CE_Cycler_Fix>, public CDefaultPlayerPickupVPhysics
 {
@@ -1064,17 +1066,17 @@ void CNPC_CeilingTurret::SetHeight( float height )
 
 	if ( mins.x > maxs.x )
 	{
-		swap( mins.x, maxs.x );
+		std::swap( mins.x, maxs.x );
 	}
 
 	if ( mins.y > maxs.y )
 	{
-		swap( mins.y, maxs.y );
+		std::swap( mins.y, maxs.y );
 	}
 
 	if ( mins.z > maxs.z )
 	{
-		swap( mins.z, maxs.z );
+		std::swap( mins.z, maxs.z );
 	}
 
 	SetCollisionBounds( mins, maxs );

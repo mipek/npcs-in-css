@@ -34,13 +34,13 @@ struct EventQueuePrioritizedEvent_t
 	DECLARE_SIMPLE_DATADESC();
 
 public:
-	inline void* operator new( size_t size ) {  return s_Allocator->Alloc(size); }
-	inline void* operator new( size_t size, int nBlockUse, const char *pFileName, int nLine ) { return s_Allocator->Alloc(size); }
-	inline void  operator delete( void* p ) { s_Allocator->Free(p); }
-	inline void  operator delete( void* p, int nBlockUse, const char *pFileName, int nLine ) { s_Allocator->Free(p); }
+	//inline void* operator new( size_t size ) {  return s_Allocator->Alloc(size); }
+	//inline void* operator new( size_t size, int nBlockUse, const char *pFileName, int nLine ) { return s_Allocator->Alloc(size); }
+	//inline void  operator delete( void* p ) { s_Allocator->Free(p); }
+	//inline void  operator delete( void* p, int nBlockUse, const char *pFileName, int nLine ) { s_Allocator->Free(p); }
 
 public:
-	static   CMemoryPool   *s_Allocator;
+	static   CUtlMemoryPool   *s_Allocator;
 
 	//DECLARE_FIXEDSIZE_ALLOCATOR( PrioritizedEvent_t );
 };

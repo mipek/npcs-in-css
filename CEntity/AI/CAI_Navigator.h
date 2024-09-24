@@ -98,7 +98,7 @@ enum AI_NavGoalFlags_t
 {
 	// While navigating, try to face the destination point
 	AIN_YAW_TO_DEST			= 0x01,
-	
+
 	// If I'm a goal of type GOALTYPE_TARGETENT, update my goal position every time I think
 	AIN_UPDATE_TARGET_POS	= 0x02,
 
@@ -114,10 +114,10 @@ enum AI_NavSetGoalFlags_t
 {
 	// Reset the navigator's navigation to the default state
 	AIN_CLEAR_PREVIOUS_STATE 	= 0x01,
-	
+
 	// Clear out the target entity, while retaining other settings
 	AIN_CLEAR_TARGET			= 0x02,
-	
+
 	// If the navigate fails, return navigation to the default state
 	AIN_DISCARD_IF_FAIL			= 0x04,
 
@@ -153,14 +153,14 @@ struct AI_NavGoal_t
 {
 	// Goal is unspecifed, or not a specific location
 	AI_NavGoal_t( GoalType_t    type	  = GOALTYPE_INVALID,
-				  Activity		activity  = AIN_DEF_ACTIVITY, 
+				  Activity		activity  = AIN_DEF_ACTIVITY,
 				  float			tolerance = AIN_DEF_TOLERANCE,
 				  unsigned 		flags     = AIN_DEF_FLAGS,
 				  CBaseEntity * pTarget   = AIN_DEF_TARGET);
-	
+
 	// Goal is a specific location, and GOALTYPE_LOCATION
 	AI_NavGoal_t( const Vector &dest,
-				  Activity		activity  = AIN_DEF_ACTIVITY, 
+				  Activity		activity  = AIN_DEF_ACTIVITY,
 				  float			tolerance = AIN_DEF_TOLERANCE,
 				  unsigned 		flags     = AIN_DEF_FLAGS,
 				  CBaseEntity * pTarget   = AIN_DEF_TARGET);
@@ -168,28 +168,28 @@ struct AI_NavGoal_t
 	// Goal is a specific location and goal type
 	AI_NavGoal_t( GoalType_t 	type,
 				  const Vector &dest,
-				  Activity		activity  = AIN_DEF_ACTIVITY, 
+				  Activity		activity  = AIN_DEF_ACTIVITY,
 				  float			tolerance = AIN_DEF_TOLERANCE,
 				  unsigned 		flags     = AIN_DEF_FLAGS,
 				  CBaseEntity * pTarget   = AIN_DEF_TARGET);
 
 	// Goal is a specific node, and GOALTYPE_LOCATION
 	AI_NavGoal_t( AI_PathNode_t	destNode,
-				  Activity		activity  = AIN_DEF_ACTIVITY, 
+				  Activity		activity  = AIN_DEF_ACTIVITY,
 				  float			tolerance = AIN_DEF_TOLERANCE,
 				  unsigned 		flags     = AIN_DEF_FLAGS,
 				  CBaseEntity *	pTarget   = AIN_DEF_TARGET);
-				  
+
 	// Goal is a specific location and goal type
 	AI_NavGoal_t( GoalType_t	type,
 				  AI_PathNode_t	destNode,
-				  Activity		activity  = AIN_DEF_ACTIVITY, 
+				  Activity		activity  = AIN_DEF_ACTIVITY,
 				  float			tolerance = AIN_DEF_TOLERANCE,
 				  unsigned 		flags     = AIN_DEF_FLAGS,
 				  CBaseEntity *	pTarget   = AIN_DEF_TARGET);
-				  
+
 	//----------------------------------
-	
+
 	// What type of goal is this
 	GoalType_t 		type;
 
@@ -199,7 +199,7 @@ struct AI_NavGoal_t
 
 	// The activity to use, or none if a previosly set activity should be used
 	Activity		activity;
-	
+
 	// The predicted activity used after arrival
 	Activity		arrivalActivity;
 	int				arrivalSequence;
@@ -223,24 +223,24 @@ struct AI_NavGoal_t
 // 			specifically "flying" about it, other than it came from an attempte
 //			to consolodate duplicated code in the various fliers. It may serve
 //			a more general purpose in the future. The constructor takes those
-//			arguments that can usually be specified just once (as in a 
+//			arguments that can usually be specified just once (as in a
 //			local static constructor)
 //-------------------------------------
 
 struct AI_ProgressFlyPathParams_t
 {
-	AI_ProgressFlyPathParams_t( unsigned collisionMask, 
-							   	float strictPointTolerance = 32.0, float blockTolerance = 0.0,
-							   	float waypointTolerance = 100, float goalTolerance = 12,
-							   	AI_NpcBlockHandling_t blockHandling = AISF_BLOCK )
-	 :	collisionMask( collisionMask ),
-		strictPointTolerance( strictPointTolerance ),
-		blockTolerance( blockTolerance ),
-		waypointTolerance( waypointTolerance ),
-		goalTolerance( goalTolerance ),
-		blockHandling( blockHandling ),
-		pTarget( NULL ),
-		bTrySimplify( true )
+	AI_ProgressFlyPathParams_t( unsigned _collisionMask,
+								float _strictPointTolerance = 32.0, float _blockTolerance = 0.0,
+								float _waypointTolerance = 100, float _goalTolerance = 12,
+								AI_NpcBlockHandling_t _blockHandling = AISF_BLOCK )
+			:	collisionMask( _collisionMask ),
+				 strictPointTolerance( _strictPointTolerance ),
+				 blockTolerance( _blockTolerance ),
+				 waypointTolerance( _waypointTolerance ),
+				 goalTolerance( _goalTolerance ),
+				 blockHandling( _blockHandling ),
+				 pTarget( NULL ),
+				 bTrySimplify( true )
 	{
 	}
 
@@ -251,15 +251,15 @@ struct AI_ProgressFlyPathParams_t
 	}
 
 	//----------------------------------
-	
+
 	// Fields that tend to stay constant
 	unsigned 				collisionMask;
 	float 					strictPointTolerance;
 	float 					blockTolerance; 		// @TODO (toml 07-03-02): rename "blockTolerance". This is specifically the "simplify" block tolerance. See SimplifyFlyPath()
 	float 					waypointTolerance;
 	float 					goalTolerance;			// @TODO (toml 07-03-02): goalTolerance appears to have come into existence because
-													// noone had set a good tolerance in the path itself. It is therefore redundant,
-													// and more than likely should be excised
+	// noone had set a good tolerance in the path itself. It is therefore redundant,
+	// and more than likely should be excised
 	AI_NpcBlockHandling_t 	blockHandling;			// @TODO (toml 07-03-02): rename "blockHandling". This is specifically the "simplify" block handling. See SimplifyFlyPath()
 
 	// Fields that tend to change
@@ -279,12 +279,12 @@ class CAI_Navigator : public CAI_Component,
 	typedef CAI_Component BaseClass;
 public:
 	// --------------------------------
-	
+
 	CAI_Navigator(CAI_NPC *pOuter);
 	virtual ~CAI_Navigator();
 
 	virtual void Init( CAI_Network *pNetwork );
-	
+
 	// --------------------------------
 
 	void SetPathcornerPathfinding( bool fNewVal)					{ m_bNoPathcornerPathfinds = !fNewVal; }
@@ -296,33 +296,33 @@ public:
 
 	void Save( ISave &save );
 	void Restore( IRestore &restore );
-	
+
 	// --------------------------------
 	// Methods to issue movement directives
 	// --------------------------------
 
 	// Simple pathfind
 	virtual bool 		SetGoal( const AI_NavGoal_t &goal, unsigned flags = 0 );
-	
+
 	// Change the target of the path
 	virtual bool		SetGoalTarget( CBaseEntity *pEntity, const Vector &offset );
-	
+
 	// Fancy pathing
 	bool				SetRadialGoal( const Vector &destination, const Vector &center, float radius, float arc, float stepDist, bool bClockwise, bool bAirRoute = false );
 	bool 				SetRandomGoal( float minPathLength, const Vector &dir = vec3_origin );
 	bool 				SetRandomGoal( const Vector &from, float minPathLength, const Vector &dir = vec3_origin );
 	bool				SetDirectGoal( const Vector &goalPos, Navigation_t navType = NAV_GROUND );
-	
+
 	bool				SetWanderGoal( float minRadius, float maxRadius );
 	bool				SetVectorGoal( const Vector &dir, float targetDist, float minDist = 0, bool fShouldDeflect = false );
 	bool				SetVectorGoalFromTarget( const Vector &goalPos, float minDist = 0, bool fShouldDeflect = false );
 
 	bool				FindVectorGoal( Vector *pResult, const Vector &dir, float targetDist, float minDist = 0, bool fShouldDeflect = false );
-	
+
 	// Path manipulation
 	bool 				PrependLocalAvoidance( float distObstacle, const AIMoveTrace_t &directTrace );
 	void 				PrependWaypoint( const Vector &newPoint, Navigation_t navType, unsigned waypointFlags = 0 );
-	
+
 	// Query or change the movement activity
 	Activity 			GetMovementActivity() const;
 	Activity 			SetMovementActivity(Activity activity);
@@ -357,7 +357,7 @@ public:
 	const Vector &		GetGoalPos() const;
 	CBaseEntity *		GetGoalTarget();
 	int					GetGoalFlags() const;
-	
+
 	const Vector &		GetCurWaypointPos() const;
 	int 				GetCurWaypointFlags() const;
 
@@ -377,7 +377,7 @@ public:
 	// Update the goal position to reflect current conditions
 	bool 				RefindPathToGoal( bool fSignalTaskStatus = true, bool bDontIgnoreBadLinks = false );
 	bool 				UpdateGoalPos( const Vector & );
-	
+
 	// Wrap up current locomotion
 	void				StopMoving( bool bImmediate = true );
 
@@ -386,12 +386,20 @@ public:
 
 	// --------------------------------
 
-	void				SetAllowBigStep( CEntity *pEntToStepOff )	{ if ( pEntToStepOff != NULL || !(pEntToStepOff->IsWorld()) ) m_hBigStepGroundEnt = pEntToStepOff->BaseEntity(); }
+	void				SetAllowBigStep( CEntity *pEntToStepOff )
+	{
+		if(pEntToStepOff == NULL) {
+			m_hBigStepGroundEnt = NULL;
+			return;
+		}
+		if ( !(pEntToStepOff->IsWorld()) )
+			m_hBigStepGroundEnt = pEntToStepOff->BaseEntity();
+	}
 
 	// --------------------------------
 	bool				SetGoalFromStoppingPath();
 	void				IgnoreStoppingPath();
-	
+
 	// --------------------------------
 	// Navigation mode
 	// --------------------------------
@@ -399,11 +407,11 @@ public:
 	void				SetNavType( Navigation_t navType );
 
 	bool 				IsInterruptable() const				{ return ( m_navType != NAV_CLIMB && m_navType != NAV_JUMP ); }
-	
+
 	// --------------------------------
 	// Pathing
 	// --------------------------------
-	
+
 	AI_NavPathProgress_t ProgressFlyPath( const AI_ProgressFlyPathParams_t &params); // note: will not return "blocked"
 
 	AI_PathNode_t		GetNearestNode();
@@ -412,19 +420,19 @@ public:
 	CAI_Network *		GetNetwork()						{ return m_pAINetwork; }
 	const CAI_Network *	GetNetwork() const					{ return m_pAINetwork; }
 	void 				SetNetwork( CAI_Network *pNetwork ) { m_pAINetwork = pNetwork; }
-	
+
 	CAI_Path *			GetPath()							{ return m_pPath; }
 	const CAI_Path *	GetPath() const						{ return m_pPath; }
 
 	void				AdvancePath();
 
 	virtual bool		SimplifyPath( bool bFirstForPath = false, float maxDist = -1 );
-	void				SimplifyFlyPath( unsigned collisionMask, const CBaseEntity *pTarget, 
+	void				SimplifyFlyPath( unsigned collisionMask, const CBaseEntity *pTarget,
 										 float strictPointTolerance = 32.0, float blockTolerance = 0.0,
 										 AI_NpcBlockHandling_t blockHandling = AISF_BLOCK);
 	bool				SimplifyFlyPath(  const AI_ProgressFlyPathParams_t &params );
-	
-	bool				CanFitAtNode(int nodeNum, unsigned int collisionMask = MASK_NPCSOLID_BRUSHONLY); 
+
+	bool				CanFitAtNode(int nodeNum, unsigned int collisionMask = MASK_NPCSOLID_BRUSHONLY);
 	float				MovementCost( int moveType, Vector &vecStart, Vector &vecEnd );
 
 	bool				CanFitAtPosition( const Vector &vStartPos, unsigned int collisionMask, bool bIgnoreTransients = false, bool bAllowPlayerAvoid = true );
@@ -439,21 +447,21 @@ public:
 	// Miscellany
 	// --------------------------------
 
-	float				CalcYawSpeed();
+	virtual float		CalcYawSpeed();
 	float				GetStepDownMultiplier();
 	CEntity *			GetNextPathcorner( CEntity *pPathCorner );
 	virtual void		OnScheduleChange();
-	
+
 	// --------------------------------
-	
+
 	// See comments at CAI_BaseNPC::Move()
 	virtual bool		Move( float flInterval = 0.1 );
 
 	// --------------------------------
 
 	CEntity *			GetBlockingEntity()	{ return CEntity::Instance(m_hLastBlockingEnt); }
-	
-protected:
+
+public:
 	// --------------------------------
 	//
 	// Common services provided by CAI_BaseNPC
@@ -480,30 +488,30 @@ protected:
 	virtual void		OnClearPath(void);
 
 	// --------------------------------
-	
+
 	virtual void OnNewGoal();
 	virtual void OnNavComplete();
-			void OnNavFailed( bool bMovement = false );
-			void OnNavFailed( AI_TaskFailureCode_t code, bool bMovement = false );
-			void OnNavFailed( const char *pszGeneralFailText, bool bMovement = false );
-	
+	void OnNavFailed( bool bMovement = false );
+	void OnNavFailed( AI_TaskFailureCode_t code, bool bMovement = false );
+	void OnNavFailed( const char *pszGeneralFailText, bool bMovement = false );
+
 	// --------------------------------
-	
- 	virtual AIMoveResult_t MoveNormal();
+
+	virtual AIMoveResult_t MoveNormal();
 
 	// Navigation execution
 	virtual AIMoveResult_t MoveClimb();
 	virtual AIMoveResult_t MoveJump();
 
 	// --------------------------------
-	
+
 	virtual AIMoveResult_t MoveEnact( const AILocalMoveGoal_t &baseMove );
-		
-protected:
+
+public:
 	// made this virtual so strider can implement hover behavior with a navigator
 	virtual void 		MoveCalcBaseGoal(  AILocalMoveGoal_t *pMoveGoal);
-	
-private:
+
+public:
 	virtual bool		OnCalcBaseMove( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult );
 	virtual bool		OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult );
 	virtual bool		OnFailedSteer( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult );
@@ -512,9 +520,9 @@ private:
 	virtual bool		OnMoveStalled( const AILocalMoveGoal_t &move );
 	virtual bool		OnMoveExecuteFailed( const AILocalMoveGoal_t &move, const AIMoveTrace_t &trace, AIMotorMoveResult_t fMotorResult, AIMoveResult_t *pResult );
 	virtual bool		OnMoveBlocked( AIMoveResult_t *pResult );
-	
+
 	void ResetCalculations();
-	
+
 	// Methods shared between ground and fly movement
 	bool 				PreMove();
 	virtual bool 		MoveUpdateWaypoint( AIMoveResult_t *pResult );
@@ -543,7 +551,7 @@ private:
 	bool				DoFindPath( void );							// Find a route
 	bool				DoFindPathToPathcorner( CEntity *pPathCorner );
 
-protected:
+public:
 	virtual bool		DoFindPathToPos(void);
 	virtual	bool		ShouldOptimizeInitialPathSegment( AI_Waypoint_t * ) { return true; }
 
@@ -551,7 +559,7 @@ private:
 	void				ClearPath(void);
 	void				SaveStoppingPath( void );
 
-protected:
+public:
 	virtual bool 		GetStoppingPath( CAI_WaypointList *pClippedWaypoints );
 
 private:
@@ -576,11 +584,11 @@ private:
 	bool 				SimplifyPathQuick();
 	void				SimplifyPathInsertSimplification( AI_Waypoint_t *pSegmentStart, const Vector &point );
 
-    // ---------------------------------
+	// ---------------------------------
 
 	static bool			ActivityIsLocomotive( Activity );
-    
-    // ---------------------------------
+
+	// ---------------------------------
 
 	Navigation_t		m_navType;									// My current navigation type (walk,fly)
 	bool				m_fNavComplete;
@@ -591,7 +599,7 @@ private:
 	CAI_MoveProbe *		m_pMoveProbe;
 	CAI_LocalNavigator *m_pLocalNavigator;
 
-    // ---------------------------------
+	// ---------------------------------
 
 	CAI_Network*		m_pAINetwork;			 					// My current AINetwork
 	CAI_Path*			m_pPath;									// My current route
@@ -603,7 +611,7 @@ private:
 
 	bool				m_bValidateActivitySpeed;
 	bool				m_bCalledStartMove;
-	
+
 	bool				m_bNotOnNetwork;							// This NPC has no reachable nodes!
 
 	float				m_flNextSimplifyTime;						// next time we should try to simplify our route
@@ -621,13 +629,13 @@ private:
 	float				m_timePathRebuildNext;						// Global time to try rebuilding again
 
 	// --------------
-	
+
 	bool				m_fRememberStaleNodes;
 	bool				m_bNoPathcornerPathfinds;
 	bool				m_bLocalSucceedOnWithinTolerance;
 
 	// --------------
-	
+
 	bool				m_fPeerMoveWait;
 	EHANDLE				m_hPeerWaitingOn;
 	CSimTimer 			m_PeerWaitMoveTimer;
@@ -659,94 +667,94 @@ public:
 //-----------------------------------------------------------------------------
 
 inline AI_NavGoal_t::AI_NavGoal_t( GoalType_t   type,
-								   Activity		activity, 
+								   Activity		activity,
 								   float		tolerance,
 								   unsigned 	flags,
 								   CBaseEntity *pTarget)
- :	type(type),
-	dest(AIN_NO_DEST),
-	destNode(AIN_NO_NODE),
-	activity(activity),
-	arrivalActivity( AIN_DEF_ACTIVITY ),
-	arrivalSequence( ACT_INVALID ),
-	tolerance(tolerance),
-	maxInitialSimplificationDist(-1),
-	flags(flags),
-	pTarget(pTarget)
+		:	type(type),
+			 dest(AIN_NO_DEST),
+			 destNode(AIN_NO_NODE),
+			 activity(activity),
+			 arrivalActivity( AIN_DEF_ACTIVITY ),
+			 arrivalSequence( ACT_INVALID ),
+			 tolerance(tolerance),
+			 maxInitialSimplificationDist(-1),
+			 flags(flags),
+			 pTarget(pTarget)
 {
 }
 
 inline AI_NavGoal_t::AI_NavGoal_t( const Vector &dest,
-								   Activity		activity, 
+								   Activity		activity,
 								   float		tolerance,
 								   unsigned 	flags,
 								   CBaseEntity *pTarget)
- :	type(GOALTYPE_LOCATION),
-	dest(dest),
-	destNode(AIN_NO_NODE),
-	activity(activity),
-	arrivalActivity( AIN_DEF_ACTIVITY ),
-	arrivalSequence( ACT_INVALID ),
-	tolerance(tolerance),
-	maxInitialSimplificationDist(-1),
-	flags(flags),
-	pTarget(pTarget)
+		:	type(GOALTYPE_LOCATION),
+			 dest(dest),
+			 destNode(AIN_NO_NODE),
+			 activity(activity),
+			 arrivalActivity( AIN_DEF_ACTIVITY ),
+			 arrivalSequence( ACT_INVALID ),
+			 tolerance(tolerance),
+			 maxInitialSimplificationDist(-1),
+			 flags(flags),
+			 pTarget(pTarget)
 {
 }
 
 inline AI_NavGoal_t::AI_NavGoal_t( GoalType_t 	type,
 								   const Vector &dest,
-								   Activity		activity, 
+								   Activity		activity,
 								   float		tolerance,
 								   unsigned 	flags,
 								   CBaseEntity *pTarget)
- :	type(type),
-	dest(dest),
-	destNode(AIN_NO_NODE),
-	activity(activity),
-	arrivalActivity( AIN_DEF_ACTIVITY ),
-	arrivalSequence( ACT_INVALID ),
-	tolerance(tolerance),
-	maxInitialSimplificationDist(-1),
-	flags(flags),
-	pTarget(pTarget)
+		:	type(type),
+			 dest(dest),
+			 destNode(AIN_NO_NODE),
+			 activity(activity),
+			 arrivalActivity( AIN_DEF_ACTIVITY ),
+			 arrivalSequence( ACT_INVALID ),
+			 tolerance(tolerance),
+			 maxInitialSimplificationDist(-1),
+			 flags(flags),
+			 pTarget(pTarget)
 {
 }
 
 inline AI_NavGoal_t::AI_NavGoal_t( AI_PathNode_t destNode,
-								   Activity		 activity, 
+								   Activity		 activity,
 								   float		 tolerance,
 								   unsigned 	 flags,
 								   CBaseEntity * pTarget)
- :	type(GOALTYPE_LOCATION),
-	dest(AIN_NO_DEST),
-	destNode(destNode),
-	activity(activity),
-	arrivalActivity( AIN_DEF_ACTIVITY ),
-	arrivalSequence( ACT_INVALID ),
-	tolerance(tolerance),
-	maxInitialSimplificationDist(-1),
-	flags(flags),
-	pTarget(pTarget)
+		:	type(GOALTYPE_LOCATION),
+			 dest(AIN_NO_DEST),
+			 destNode(destNode),
+			 activity(activity),
+			 arrivalActivity( AIN_DEF_ACTIVITY ),
+			 arrivalSequence( ACT_INVALID ),
+			 tolerance(tolerance),
+			 maxInitialSimplificationDist(-1),
+			 flags(flags),
+			 pTarget(pTarget)
 {
 }
 
 inline AI_NavGoal_t::AI_NavGoal_t( GoalType_t	 type,
 								   AI_PathNode_t destNode,
-								   Activity		 activity, 
+								   Activity		 activity,
 								   float		 tolerance,
 								   unsigned 	 flags,
 								   CBaseEntity * pTarget)
- :	type(type),
-	dest(AIN_NO_DEST),
-	destNode(destNode),
-	activity(activity),
-	arrivalActivity( AIN_DEF_ACTIVITY ),
-	arrivalSequence( ACT_INVALID ),
-	tolerance(tolerance),
-	maxInitialSimplificationDist(-1),
-	flags(flags),
-	pTarget(pTarget)
+		:	type(type),
+			 dest(AIN_NO_DEST),
+			 destNode(destNode),
+			 activity(activity),
+			 arrivalActivity( AIN_DEF_ACTIVITY ),
+			 arrivalSequence( ACT_INVALID ),
+			 tolerance(tolerance),
+			 maxInitialSimplificationDist(-1),
+			 flags(flags),
+			 pTarget(pTarget)
 {
 }
 

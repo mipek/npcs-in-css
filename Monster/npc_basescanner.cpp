@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -65,7 +65,7 @@ extern float	GetFloorZ(const Vector &origin);
 static const char *s_pDiveBombSoundThinkContext = "DiveBombSoundThinkContext";
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CNPC_BaseScanner::CNPC_BaseScanner()
 {
@@ -78,7 +78,7 @@ CNPC_BaseScanner::CNPC_BaseScanner()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::Spawn(void)
 {
@@ -146,10 +146,10 @@ void CNPC_BaseScanner::Spawn(void)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CNPC_BaseScanner::UpdateEfficiency( bool bInPVS )	
+void CNPC_BaseScanner::UpdateEfficiency( bool bInPVS )
 {
-	SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL ); 
-	SetMoveEfficiency( AIME_NORMAL ); 
+	SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL );
+	SetMoveEfficiency( AIME_NORMAL );
 }
 
 //-----------------------------------------------------------------------------
@@ -207,7 +207,7 @@ int CNPC_BaseScanner::SelectSchedule(void)
 	// -------------------------------
 	if ( HasCondition(COND_LIGHT_DAMAGE) || HasCondition(COND_HEAVY_DAMAGE) )
 	{
-		if ( IsHeldByPhyscannon( ) ) 
+		if ( IsHeldByPhyscannon( ) )
 			return SCHED_SMALL_FLINCH;
 
 		if ( m_NPCState == NPC_STATE_IDLE )
@@ -229,7 +229,7 @@ int CNPC_BaseScanner::SelectSchedule(void)
 	}
 
 	// I'm being held by the physcannon... struggle!
-	if ( IsHeldByPhyscannon( ) ) 
+	if ( IsHeldByPhyscannon( ) )
 		return SCHED_SCANNER_HELD_BY_PHYSCANNON;
 
 	// ----------------------------------------------------------
@@ -261,7 +261,7 @@ int CNPC_BaseScanner::SelectSchedule(void)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::OnScheduleChange( void )
 {
@@ -299,9 +299,9 @@ int CNPC_BaseScanner::MeleeAttack1Conditions( float flDot, float flDist )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : eOldState - 
-//			eNewState - 
+// Purpose:
+// Input  : eOldState -
+//			eNewState -
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::OnStateChange( NPC_STATE eOldState, NPC_STATE eNewState )
 {
@@ -316,8 +316,8 @@ void CNPC_BaseScanner::OnStateChange( NPC_STATE eOldState, NPC_STATE eNewState )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pTask - 
+// Purpose:
+// Input  : pTask -
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::StartTask( const Task_t *pTask )
 {
@@ -431,7 +431,7 @@ void CNPC_BaseScanner::TraceAttack( const CTakeDamageInfo &info, const Vector &v
 }
 
 //-----------------------------------------------------------------------------
-// Take damage from being thrown by a physcannon 
+// Take damage from being thrown by a physcannon
 //-----------------------------------------------------------------------------
 #define SCANNER_SMASH_SPEED 250.0	// How fast a scanner must slam into something to take full damage
 void CNPC_BaseScanner::TakeDamageFromPhyscannon( CPlayer *pPlayer )
@@ -586,18 +586,18 @@ void CNPC_BaseScanner::Gib( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPhysGunUser - 
-//			bPunting - 
+// Purpose:
+// Input  : *pPhysGunUser -
+//			bPunting -
 //-----------------------------------------------------------------------------
-void CNPC_BaseScanner::OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t reason )
+void CNPC_BaseScanner::OnPhysGunPickup( CBaseEntity *pPhysGunUser, PhysGunPickup_t reason )
 {
-	m_hPhysicsAttacker.Set(pPhysGunUser->BaseEntity());
+	m_hPhysicsAttacker.Set(pPhysGunUser);
 	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
 
 	if ( reason == PUNTED_BY_CANNON )
 	{
-		// There's about to be a massive change in velocity. 
+		// There's about to be a massive change in velocity.
 		// Think immediately to handle changes in m_vCurrentVelocity;
 		SetNextThink( gpGlobals->curtime + 0.01f );
 
@@ -613,12 +613,12 @@ void CNPC_BaseScanner::OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t r
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPhysGunUser - 
+// Purpose:
+// Input  : *pPhysGunUser -
 //-----------------------------------------------------------------------------
-void CNPC_BaseScanner::OnPhysGunDrop( CPlayer *pPhysGunUser, PhysGunDrop_t Reason )
+void CNPC_BaseScanner::OnPhysGunDrop( CBaseEntity *pPhysGunUser, PhysGunDrop_t Reason )
 {
-	m_hPhysicsAttacker.Set(pPhysGunUser->BaseEntity());
+	m_hPhysicsAttacker.Set(pPhysGunUser);
 	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
 
 	ClearCondition( COND_SCANNER_GRABBED_BY_PHYSCANNON );
@@ -628,7 +628,7 @@ void CNPC_BaseScanner::OnPhysGunDrop( CPlayer *pPhysGunUser, PhysGunDrop_t Reaso
 	{
 		m_flEngineStallTime = gpGlobals->curtime + 2.0f;
 
-		// There's about to be a massive change in velocity. 
+		// There's about to be a massive change in velocity.
 		// Think immediately to handle changes in m_vCurrentVelocity;
 		SetNextThink( gpGlobals->curtime + 0.01f );
 		ScannerEmitSound( "DiveBomb" );
@@ -664,17 +664,17 @@ void CNPC_BaseScanner::StopLoopingSounds(void)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pInflictor - 
-//			pAttacker - 
-//			flDamage - 
-//			bitsDamageType - 
+// Purpose:
+// Input  : pInflictor -
+//			pAttacker -
+//			flDamage -
+//			bitsDamageType -
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::Event_Killed( const CTakeDamageInfo &info )
 {
 	// Copy off the takedamage info that killed me, since we're not going to call
 	// up into the base class's Event_Killed() until we gib. (gibbing is ultimate death)
-	m_KilledInfo = info;	
+	m_KilledInfo = info;
 
 	// Interrupt whatever schedule I'm on
 	SetCondition(COND_SCHEDULE_DONE);
@@ -684,9 +684,9 @@ void CNPC_BaseScanner::Event_Killed( const CTakeDamageInfo &info )
 	{
 		Vector vecDelta = GetLocalOrigin() - GetEnemy()->GetLocalOrigin();
 		if ( ( vecDelta.z > 120 ) && ( vecDelta.Length() > 360 ) )
-		{	
+		{
 			// If I'm divebombing, don't take any more damage. It will make Event_Killed() be called again.
-			// This is especially bad if someone machineguns the divebombing scanner. 
+			// This is especially bad if someone machineguns the divebombing scanner.
 			AttackDivebomb();
 			return;
 		}
@@ -824,7 +824,7 @@ void CNPC_BaseScanner::PlayFlySound(void)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::ScannerEmitSound( const char *pszSoundName )
 {
@@ -860,7 +860,7 @@ void CNPC_BaseScanner::SpeakSentence( int sentenceType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::InputSetFlightSpeed(inputdata_t &inputdata)
 {
@@ -873,7 +873,7 @@ void CNPC_BaseScanner::InputSetFlightSpeed(inputdata_t &inputdata)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::StartSmokeTrail( void )
 {
@@ -895,7 +895,7 @@ void CNPC_BaseScanner::StartSmokeTrail( void )
 		m_pSmokeTrail->m_StartColor.ptr->Init( 0.5f, 0.5f, 0.5f );
 		m_pSmokeTrail->m_EndColor.ptr->Init( 0, 0, 0 );
 		m_pSmokeTrail->SetLifetime( 500.0f );
-		m_pSmokeTrail->FollowEntity( BaseEntity() );
+		m_pSmokeTrail->FollowEntity( this );
 	}
 }
 
@@ -970,7 +970,7 @@ void CNPC_BaseScanner::MoveExecute_Alive(float flInterval)
 	UpdateHead( flInterval );
 
 	// Control the tail based on our vertical travel
-	float tailPerc = clamp( GetCurrentVelocity().z, -150, 250 );
+	float tailPerc = clamp( GetCurrentVelocity().z, -150.0f, 250.0f );
 	tailPerc = SimpleSplineRemapVal( tailPerc, -150, 250, -25, 80 );
 
 	SetPoseParameter( m_nPoseTail, tailPerc );
@@ -978,7 +978,7 @@ void CNPC_BaseScanner::MoveExecute_Alive(float flInterval)
 	// Spin the dynamo based upon our speed
 	float flCurrentDynamo = GetPoseParameter( m_nPoseDynamo );
 	float speed	= GetCurrentVelocity().Length();
-	float flDynamoSpeed = (maxSpeed > 0 ? speed / maxSpeed : 1.0) * 60;
+	float flDynamoSpeed = (maxSpeed > 0 ? speed / maxSpeed : 1.0f) * 60.0f;
 	flCurrentDynamo -= flDynamoSpeed;
 	if ( flCurrentDynamo < -180.0 )
 	{
@@ -991,7 +991,7 @@ void CNPC_BaseScanner::MoveExecute_Alive(float flInterval)
 
 //-----------------------------------------------------------------------------
 // Purpose: Handles movement towards the last move target.
-// Input  : flInterval - 
+// Input  : flInterval -
 //-----------------------------------------------------------------------------
 bool CNPC_BaseScanner::OverridePathMove( CEntity *pMoveTarget, float flInterval )
 {
@@ -1014,8 +1014,8 @@ bool CNPC_BaseScanner::OverridePathMove( CEntity *pMoveTarget, float flInterval 
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flInterval - 
+// Purpose:
+// Input  : flInterval -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CNPC_BaseScanner::OverrideMove( float flInterval )
@@ -1037,7 +1037,7 @@ bool CNPC_BaseScanner::OverrideMove( float flInterval )
 		// the (long-standing) behavior.
 		if ( true ) //!GetNavigator()->IsGoalActive() || ( GetNavigator()->GetCurWaypointFlags() | bits_WP_TO_PATHCORNER ) )
 		{
-			// Select move target 
+			// Select move target
 			if ( GetTarget() != NULL )
 			{
 				pMoveTarget = GetTarget();
@@ -1047,7 +1047,7 @@ bool CNPC_BaseScanner::OverrideMove( float flInterval )
 				pMoveTarget = GetEnemy();
 			}
 
-			// Select move target position 
+			// Select move target position
 			if ( GetEnemy() != NULL )
 			{
 				vMoveTargetPos = GetEnemy()->GetAbsOrigin();
@@ -1079,9 +1079,9 @@ bool CNPC_BaseScanner::OverrideMove( float flInterval )
 
 				SetCondition( COND_SCANNER_FLY_CLEAR );
 			}
-			else		
+			else
 			{
-				//HANDY DEBUG TOOL	
+				//HANDY DEBUG TOOL
 				/*if ( g_debug_basescanner.GetBool() )
 				{
 					NDebugOverlay::Line(GetLocalOrigin(), vMoveTargetPos, 255,0,0, true, 0);
@@ -1100,7 +1100,7 @@ bool CNPC_BaseScanner::OverrideMove( float flInterval )
 				BlendPhyscannonLaunchSpeed();
 				return true;
 			}
-		}	
+		}
 		// ----------------------------------------------
 		//	If attacking
 		// ----------------------------------------------
@@ -1124,11 +1124,11 @@ bool CNPC_BaseScanner::OverrideMove( float flInterval )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &goalPos - 
-//			&startPos - 
-//			idealRange - 
-//			idealHeight - 
+// Purpose:
+// Input  : &goalPos -
+//			&startPos -
+//			idealRange -
+//			idealHeight -
 // Output : Vector
 //-----------------------------------------------------------------------------
 Vector CNPC_BaseScanner::IdealGoalForMovement( const Vector &goalPos, const Vector &startPos, float idealRange, float idealHeightDiff )
@@ -1174,8 +1174,8 @@ Vector CNPC_BaseScanner::IdealGoalForMovement( const Vector &goalPos, const Vect
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flInterval - 
+// Purpose:
+// Input  : flInterval -
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::MoveToAttack(float flInterval)
 {
@@ -1287,7 +1287,7 @@ void CNPC_BaseScanner::MoveToTarget( float flInterval, const Vector &vecMoveTarg
 }
 
 //-----------------------------------------------------------------------------
-// Danger sounds. 
+// Danger sounds.
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::DiveBombSoundThink()
 {
@@ -1328,8 +1328,8 @@ void CNPC_BaseScanner::DiveBombSoundThink()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flInterval - 
+// Purpose:
+// Input  : flInterval -
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::MoveToDivebomb(float flInterval)
 {
@@ -1341,7 +1341,7 @@ void CNPC_BaseScanner::MoveToDivebomb(float flInterval)
 	Vector vFlyDirection  = vEnemyPos - GetLocalOrigin();
 	VectorNormalize( vFlyDirection );
 
-	// Set net velocity 
+	// Set net velocity
 	MoveInDirection( flInterval, m_vecDiveBombDirection, myAccel, myAccel, myDecay);
 
 	// Spin out of control.
@@ -1358,7 +1358,7 @@ void CNPC_BaseScanner::MoveToDivebomb(float flInterval)
 
 #if 0
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CNPC_BaseScanner::IsEnemyPlayerInSuit()
 {
@@ -1378,7 +1378,7 @@ bool CNPC_BaseScanner::IsEnemyPlayerInSuit()
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : float
 //-----------------------------------------------------------------------------
 float CNPC_BaseScanner::GetGoalDistance( void )
@@ -1404,8 +1404,8 @@ float CNPC_BaseScanner::GetGoalDistance( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &vOut - 
+// Purpose:
+// Input  : &vOut -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CNPC_BaseScanner::GetGoalDirection( Vector *vOut )
@@ -1473,13 +1473,13 @@ Vector CNPC_BaseScanner::VelocityToEvade(CCombatCharacter *pEnemy)
 
 #if 0
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CNPC_BaseScanner::DrawDebugTextOverlays(void)
 {
 	int nOffset = BaseClass::DrawDebugTextOverlays();
 
-	if ( m_debugOverlays & OVERLAY_TEXT_BIT ) 
+	if ( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		Vector vel;
 		GetVelocity( &vel, NULL );
@@ -1495,11 +1495,11 @@ int CNPC_BaseScanner::DrawDebugTextOverlays(void)
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : float
 //-----------------------------------------------------------------------------
-float CNPC_BaseScanner::GetHeadTurnRate( void ) 
-{ 
+float CNPC_BaseScanner::GetHeadTurnRate( void )
+{
 	if ( GetEnemy() )
 		return 800.0f;
 
@@ -1507,7 +1507,7 @@ float CNPC_BaseScanner::GetHeadTurnRate( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 inline CEntity *CNPC_BaseScanner::EntityToWatch( void )
@@ -1516,8 +1516,8 @@ inline CEntity *CNPC_BaseScanner::EntityToWatch( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flInterval - 
+// Purpose:
+// Input  : flInterval -
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::UpdateHead( float flInterval )
 {
@@ -1565,18 +1565,18 @@ void CNPC_BaseScanner::UpdateHead( float flInterval )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &linear - 
-//			&angular - 
+// Purpose:
+// Input  : &linear -
+//			&angular -
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::ClampMotorForces( Vector &linear, AngularImpulse &angular )
-{ 
+{
 	// limit reaction forces
 	if ( m_nFlyMode != SCANNER_FLY_DIVE )
 	{
-		linear.x = clamp( linear.x, -500, 500 );
-		linear.y = clamp( linear.y, -500, 500 );
-		linear.z = clamp( linear.z, -500, 500 );
+		linear.x = clamp( linear.x, -500.0f, 500.0f );
+		linear.y = clamp( linear.y, -500.0f, 500.0f );
+		linear.z = clamp( linear.z, -500.0f, 500.0f );
 	}
 
 	// If we're dive bombing, we need to drop faster than normal
@@ -1596,8 +1596,8 @@ void CNPC_BaseScanner::ClampMotorForces( Vector &linear, AngularImpulse &angular
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
 void CNPC_BaseScanner::InputSetDistanceOverride( inputdata_t &inputdata )
 {
@@ -1661,7 +1661,7 @@ void CNPC_BaseScanner::PainSound( const CTakeDamageInfo &info )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 float CNPC_BaseScanner::GetMaxSpeed()
 {
@@ -1778,7 +1778,7 @@ AI_BEGIN_CUSTOM_NPC( npc_basescanner, CNPC_BaseScanner )
 	//=========================================================
 	// > SCHED_SCANNER_CHASE_ENEMY
 	//
-	//  Different interrupts than normal chase enemy.  
+	//  Different interrupts than normal chase enemy.
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
@@ -1853,5 +1853,5 @@ AI_BEGIN_CUSTOM_NPC( npc_basescanner, CNPC_BaseScanner )
 		"		COND_HEAVY_DAMAGE"
 		"		COND_SCANNER_RELEASED_FROM_PHYSCANNON"
 	)
-	
+
 AI_END_CUSTOM_NPC()

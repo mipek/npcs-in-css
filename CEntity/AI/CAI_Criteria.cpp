@@ -41,14 +41,17 @@ void AI_CriteriaSet::AppendCriteria( const char *criteria, const char *value /*=
 	{
 		CritEntry_t entry;
 		entry.criterianame = criteria;
-		MEM_ALLOC_CREDIT();
+		//MEM_ALLOC_CREDIT();
+		entry.SetValue(value);
+		entry.weight = weight;
 		idx = m_Lookup.Insert( entry );
 	}
-
-	CritEntry_t *entry = &m_Lookup[ idx ];
-
-	entry->SetValue( value );
-	entry->weight = weight;
+	else
+	{
+		CritEntry_t *entry = &m_Lookup[ idx ];
+		entry->SetValue( value );
+		entry->weight = weight;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -113,18 +116,20 @@ AI_Response::~AI_Response()
 	if(m_pCriteria)
 	{
 		m_pCriteria->m_Lookup.Purge();
-		g_pMemAlloc->Free(m_pCriteria);
+		//g_pMemAlloc->Free(m_pCriteria);
+		delete m_pCriteria;
 	}
-	if(m_szContext)
+	/*if(m_szContext)
 	{
 		g_pMemAlloc->Free(m_szContext);
 	}
-	delete[] m_szContext;
+	delete[] m_szContext;*/
 }
 
 void AI_Response::SetContext( const char *context )
 {
-	g_pMemAlloc->Free(m_szContext);
+	// LTODO
+	/*g_pMemAlloc->Free(m_szContext);
 	m_szContext = NULL;
 
 	if ( context )
@@ -133,7 +138,24 @@ void AI_Response::SetContext( const char *context )
 		m_szContext = new char[ len + 1 ];
 		Q_memcpy( m_szContext, context, len );
 		m_szContext[ len ] = 0;
+	}*/
+	m_szContext = context;
+}
+
+AI_Response &AI_Response::operator=( const AI_Response &from )
+{
+	Assert( (void*)(&m_Type) == (void*)this );
+	if(m_pCriteria)
+	{
+		//g_pMemAlloc->Free(m_pCriteria);
 	}
+	m_pCriteria = NULL;
+	memcpy( this, &from, sizeof(*this) );
+	m_pCriteria = NULL;
+	m_szContext = NULL;
+	SetContext( from.m_szContext );
+	m_bApplyContextToWorld = from.m_bApplyContextToWorld;
+	return *this;
 }
 
 bool AI_Response::ShouldBreakOnNonIdle( void ) const
@@ -198,6 +220,47 @@ soundlevel_t AI_Response::GetSoundLevel() const
 	return SNDLVL_TALKING;
 }
 
+float AI_Response::GetRespeakDelay( void ) const
+{
+	if ( m_Params.flags & AI_ResponseParams::RG_RESPEAKDELAY )
+	{
+		interval_t temp;
+		m_Params.respeakdelay.ToInterval( temp );
+		return RandomInterval( temp );
+	}
+
+	return 0.0f;
+}
+
+
+bool AI_Response::GetSpeakOnce( void ) const
+{
+	if ( m_Params.flags & AI_ResponseParams::RG_SPEAKONCE )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+float AI_Response::GetWeaponDelay( void ) const
+{
+	if ( m_Params.flags & AI_ResponseParams::RG_WEAPONDELAY )
+	{
+		interval_t temp;
+		m_Params.weapondelay.ToInterval( temp );
+		return RandomInterval( temp );
+	}
+
+	return 0.0f;
+}
+
+void AI_Response::Release()
+{
+	Msg("[Monster] AI_Response::Release\n");
+	delete this;
+}
 
 const char *SplitContext( const char *raw, char *key, int keylen, char *value, int valuelen, float *duration )
 {

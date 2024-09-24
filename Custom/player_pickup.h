@@ -77,5 +77,10 @@ void Pickup_ForcePlayerToDropThisObject( CEntity *pTarget );
 void Pickup_OnPhysGunDrop( CEntity *pDroppedObject, CPlayer *pPlayer, PhysGunDrop_t reason );
 void Pickup_OnPhysGunPickup( CEntity *pPickedUpObject, CPlayer *pPlayer, PhysGunPickup_t reason = PICKED_UP_BY_CANNON );
 
-#endif
+bool Pickup_OnAttemptPhysGunPickup( CEntity *pPickedUpObject, CPlayer *pPlayer, PhysGunPickup_t reason = PICKED_UP_BY_CANNON );
+bool Pickup_ShouldPuntUseLaunchForces( CEntity *pObject, PhysGunForce_t reason );
+bool Pickup_ForcePhysGunOpen( CEntity *pObject, CPlayer *pPlayer );
 
+AngularImpulse Pickup_PhysGunLaunchAngularImpulse( CEntity *pObject, PhysGunForce_t reason );
+
+#endif

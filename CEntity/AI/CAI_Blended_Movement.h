@@ -225,7 +225,7 @@ public:
 
 	CAI_Motor *CreateMotor()
 	{
-		MEM_ALLOC_CREDIT();
+		//MEM_ALLOC_CREDIT();
 		return new CAI_BlendedMotor( this );
 	}
 

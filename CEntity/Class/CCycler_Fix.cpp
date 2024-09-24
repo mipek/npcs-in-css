@@ -1,11 +1,14 @@
 
 #include "CCycler_Fix.h"
-
+#include "weapon_replace.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 
+BEGIN_DATADESC( CE_Cycler_Fix )
+					DEFINE_KEYFIELD( m_iNpchealth, FIELD_INTEGER, "npchealth" ),
+END_DATADESC()
 
 #define	MIN_PHYSICS_FLINCH_DAMAGE	5.0f
 
@@ -91,7 +94,8 @@ int CE_Cycler_Fix::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 	// If we're not allowed to die, refuse to die
 	// Allow my interaction partner to kill me though
 
-	if ( m_iHealth <= 0 && HasInteractionCantDie() && attacker != m_hInteractionPartner )
+	CAI_NPC *npc = m_hInteractionPartner->Get();
+	if ( m_iHealth <= 0 && HasInteractionCantDie() && attacker != npc )
 	{
 		m_iHealth = 1;
 	}
@@ -254,3 +258,20 @@ void CE_Cycler_Fix::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 	g_helpfunc.CBaseEntity_Use(BaseEntity(), pActivator, pCaller, useType, value);
 }
 
+bool CE_Cycler_Fix::DispatchKeyValue( const char *szKeyName, const char *szValue )
+{
+	if(stricmp(szKeyName, "additionalequipment") == 0 && szValue[0] != '0' && strlen(szValue) > 0)
+	{
+		return BaseClass::DispatchKeyValue(szKeyName, NPC_WeaponReplace(szValue));
+	}
+
+	return BaseClass::DispatchKeyValue(szKeyName, szValue);
+}
+
+void CE_Cycler_Fix::NPCInit()
+{
+	if(m_iNpchealth > 0) {
+		m_iHealth = m_iNpchealth;
+	}
+	BaseClass::NPCInit();
+}

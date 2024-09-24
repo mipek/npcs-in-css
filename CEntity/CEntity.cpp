@@ -75,10 +75,11 @@ SH_DECL_MANUALHOOK2_void(DecalTrace, 0, 0, 0, trace_t *, char const *);
 SH_DECL_MANUALHOOK1_void(Event_Killed, 0, 0, 0, const CTakeDamageInfo &);
 SH_DECL_MANUALHOOK4_void(TraceAttack, 0, 0, 0, const CTakeDamageInfo &, const Vector &, trace_t *, CDmgAccumulator *);
 SH_DECL_MANUALHOOK2(BodyTarget, 0, 0, 0, Vector, const Vector &, bool);
-SH_DECL_MANUALHOOK0(GetServerVehicle, 0, 0, 0, IServerVehicle *);
+//SH_DECL_MANUALHOOK0(GetServerVehicle, 0, 0, 0, IServerVehicle *);
 SH_DECL_MANUALHOOK0(IsAlive, 0, 0, 0, bool);
 SH_DECL_MANUALHOOK0(WorldSpaceCenter, 0, 0, 0, const Vector &);
 SH_DECL_MANUALHOOK0_void(PhysicsSimulate, 0, 0, 0);
+SH_DECL_MANUALHOOK0(SUB_AllowedToFade, 0, 0, 0, bool);
 SH_DECL_MANUALHOOK0(BloodColor, 0, 0, 0, int);
 SH_DECL_MANUALHOOK0_void(StopLoopingSounds, 0, 0, 0);
 SH_DECL_MANUALHOOK1_void(SetOwnerEntity, 0, 0, 0, CBaseEntity *);
@@ -96,6 +97,7 @@ SH_DECL_MANUALHOOK0(EarPosition, 0, 0,0, Vector);
 SH_DECL_MANUALHOOK0(GetAutoAimCenter, 0, 0,0, Vector);
 SH_DECL_MANUALHOOK0(EyePosition, 0, 0,0, Vector);
 SH_DECL_MANUALHOOK0_void(OnRestore, 0, 0, 0);
+SH_DECL_MANUALHOOK1_void(OnSave, 0, 0, 0, IEntitySaveUtils *);
 SH_DECL_MANUALHOOK3_void(ImpactTrace, 0, 0, 0, trace_t *, int , const char *);
 SH_DECL_MANUALHOOK3(TestHitboxes, 0, 0, 0, bool, const Ray_t &, unsigned int , trace_t&);
 SH_DECL_MANUALHOOK2_void(VPhysicsCollision, 0, 0, 0, int, gamevcollisionevent_t *);
@@ -129,8 +131,16 @@ SH_DECL_MANUALHOOK2_void(SetTransmit, 0, 0, 0, CCheckTransmitInfo *, bool);
 SH_DECL_MANUALHOOK1(CanBeSeenBy, 0, 0, 0, bool, CBaseEntity *);
 SH_DECL_MANUALHOOK0(IsViewable, 0, 0, 0, bool);
 SH_DECL_MANUALHOOK0(GetResponseSystem, 0, 0, 0, IResponseSystem *);
-
-
+SH_DECL_MANUALHOOK2_void(GetVelocity, 0, 0, 0, Vector *, AngularImpulse *);
+SH_DECL_MANUALHOOK2_void(DoImpactEffect, 0, 0, 0, trace_t &, int);
+SH_DECL_MANUALHOOK0(CB_GetEnemy, 0, 0, 0, CBaseEntity	*);
+SH_DECL_MANUALHOOK0(CB_GetEnemy_const, 0, 0, 0, CBaseEntity	*);
+SH_DECL_MANUALHOOK3_void(MakeTracer, 0, 0, 0, const Vector &, const trace_t &, int);
+SH_DECL_MANUALHOOK1_void(DispatchResponse, 0, 0, 0, const char *);
+SH_DECL_MANUALHOOK1(ShouldAttractAutoAim, 0, 0, 0, bool, CBaseEntity * );
+SH_DECL_MANUALHOOK3(TestCollision, 0, 0, 0, bool, const Ray_t& , unsigned int , trace_t& );
+SH_DECL_MANUALHOOK0(VPhysicsIsFlesh, 0, 0, 0, bool);
+SH_DECL_MANUALHOOK1_void(UpdatePhysicsShadowToCurrentPosition, 0, 0, 0, float);
 
 DECLARE_HOOK(Teleport, CEntity);
 DECLARE_HOOK(UpdateOnRemove, CEntity);
@@ -155,10 +165,11 @@ DECLARE_HOOK(DecalTrace, CEntity);
 DECLARE_HOOK(Event_Killed, CEntity);
 DECLARE_HOOK(TraceAttack, CEntity);
 DECLARE_HOOK(BodyTarget, CEntity);
-//DECLARE_HOOK(GetServerVehicle, CEntity);
+DECLARE_HOOK_WITHOUT_SOURCEHOOK(GetServerVehicle, CEntity); // TODO: figure out why it crashes when using SH (is it accessed in a separate VPhysics thread?)
 DECLARE_HOOK(IsAlive, CEntity);
 DECLARE_HOOK(WorldSpaceCenter, CEntity);
 DECLARE_HOOK(PhysicsSimulate, CEntity);
+DECLARE_HOOK(SUB_AllowedToFade, CEntity);
 DECLARE_HOOK(BloodColor, CEntity);
 DECLARE_HOOK(StopLoopingSounds, CEntity);
 DECLARE_HOOK(SetOwnerEntity, CEntity);
@@ -176,6 +187,7 @@ DECLARE_HOOK(EarPosition, CEntity);
 DECLARE_HOOK(GetAutoAimCenter, CEntity);
 DECLARE_HOOK(EyePosition, CEntity);
 DECLARE_HOOK(OnRestore, CEntity);
+DECLARE_HOOK(OnSave, CEntity);
 DECLARE_HOOK(ImpactTrace, CEntity);
 DECLARE_HOOK(TestHitboxes, CEntity);
 DECLARE_HOOK(VPhysicsCollision, CEntity);
@@ -192,7 +204,6 @@ DECLARE_HOOK(ModifyOrAppendCriteria, CEntity);
 DECLARE_HOOK(DeathNotice, CEntity);
 DECLARE_HOOK(PassesDamageFilter, CEntity);
 DECLARE_HOOK(Precache, CEntity);
-
 DECLARE_HOOK(DispatchKeyValue, CEntity);
 DECLARE_HOOK(OnEntityEvent, CEntity);
 DECLARE_HOOK(VPhysicsDestroyObject, CEntity);
@@ -210,6 +221,16 @@ DECLARE_HOOK(SetTransmit, CEntity);
 DECLARE_HOOK(CanBeSeenBy, CEntity);
 DECLARE_HOOK(IsViewable, CEntity);
 DECLARE_HOOK(GetResponseSystem, CEntity);
+DECLARE_HOOK(GetVelocity, CEntity);
+DECLARE_HOOK(DoImpactEffect, CEntity);
+DECLARE_HOOK(CB_GetEnemy, CEntity);
+DECLARE_HOOK(CB_GetEnemy_const, CEntity);
+DECLARE_HOOK(MakeTracer, CEntity);
+DECLARE_HOOK(DispatchResponse, CEntity);
+DECLARE_HOOK(ShouldAttractAutoAim, CEntity);
+DECLARE_HOOK(TestCollision, CEntity);
+DECLARE_HOOK(VPhysicsIsFlesh, CEntity);
+DECLARE_HOOK(UpdatePhysicsShadowToCurrentPosition, CEntity);
 
 DECLARE_DEFAULTHANDLER_void(CEntity, Teleport, (const Vector *origin, const QAngle* angles, const Vector *velocity), (origin, angles, velocity));
 DECLARE_DEFAULTHANDLER_void(CEntity, Spawn, (), ());
@@ -226,9 +247,11 @@ DECLARE_DEFAULTHANDLER_void(CEntity,DecalTrace, (trace_t *pTrace, char const *de
 DECLARE_DEFAULTHANDLER_void(CEntity,Event_Killed, (const CTakeDamageInfo &info), (info));
 DECLARE_DEFAULTHANDLER_void(CEntity,TraceAttack, (const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator), (info, vecDir, ptr, pAccumulator));
 DECLARE_DEFAULTHANDLER_SPECIAL(CEntity,BodyTarget, Vector, (const Vector &posSrc, bool bNoisy),(posSrc, bNoisy), vec3_origin);
+DECLARE_DEFAULTHANDLER_WITHOUT_SOURCEHOOK(CEntity, GetServerVehicle, IServerVehicle*);
 DECLARE_DEFAULTHANDLER(CEntity,IsAlive, bool, (),());
 DECLARE_DEFAULTHANDLER_REFERENCE(CEntity,WorldSpaceCenter, const Vector &, () const,());
 DECLARE_DEFAULTHANDLER_void(CEntity,PhysicsSimulate, (),());
+DECLARE_DEFAULTHANDLER(CEntity, SUB_AllowedToFade, bool, (),());
 DECLARE_DEFAULTHANDLER(CEntity, BloodColor, int, (), ());
 DECLARE_DEFAULTHANDLER_void(CEntity, StopLoopingSounds, (), ());
 DECLARE_DEFAULTHANDLER_void(CEntity, SetOwnerEntity, (CBaseEntity* pOwner), (pOwner));
@@ -241,10 +264,11 @@ DECLARE_DEFAULTHANDLER(CEntity, IsMoving, bool, (), ());
 DECLARE_DEFAULTHANDLER_SPECIAL(CEntity, GetSmoothedVelocity, Vector, (), (), vec3_origin);
 DECLARE_DEFAULTHANDLER(CEntity, FVisible_Entity, bool, (CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker), (pEntity,  traceMask, ppBlocker));
 DECLARE_DEFAULTHANDLER(CEntity, FVisible_Vector, bool, (const Vector &vecTarget, int traceMask, CBaseEntity **ppBlocker), (vecTarget,  traceMask, ppBlocker));
-DECLARE_DEFAULTHANDLER(CEntity, EarPosition, Vector, () const, ());
+DECLARE_DEFAULTHANDLER_REFERENCE(CEntity, EarPosition, Vector, () const, ());
 DECLARE_DEFAULTHANDLER_SPECIAL(CEntity, GetAutoAimCenter, Vector, (), (), vec3_origin);
 DECLARE_DEFAULTHANDLER(CEntity, EyePosition, Vector, (), ());
 DECLARE_DEFAULTHANDLER_void(CEntity, OnRestore, (), ());
+DECLARE_DEFAULTHANDLER_void(CEntity, OnSave, (IEntitySaveUtils *pUtils), (pUtils));
 DECLARE_DEFAULTHANDLER_void(CEntity, ImpactTrace, (trace_t *pTrace, int iDamageType, const char *pCustomImpactName), (pTrace, iDamageType, pCustomImpactName));
 DECLARE_DEFAULTHANDLER(CEntity, TestHitboxes, bool, (const Ray_t &ray, unsigned int fContentsMask, trace_t& tr), (ray, fContentsMask, tr));
 DECLARE_DEFAULTHANDLER_void(CEntity, VPhysicsCollision, (int index, gamevcollisionevent_t *pEvent), (index, pEvent));
@@ -278,8 +302,16 @@ DECLARE_DEFAULTHANDLER_void(CEntity,SetTransmit, (CCheckTransmitInfo *pInfo, boo
 DECLARE_DEFAULTHANDLER(CEntity,CanBeSeenBy, bool, (CBaseEntity *pNPC), (pNPC));
 DECLARE_DEFAULTHANDLER(CEntity,IsViewable, bool, (), ());
 DECLARE_DEFAULTHANDLER(CEntity,GetResponseSystem, IResponseSystem *, (), ());
-
-
+DECLARE_DEFAULTHANDLER_void(CEntity, GetVelocity, (Vector *vVelocity, AngularImpulse *vAngVelocity), (vVelocity, vAngVelocity));
+DECLARE_DEFAULTHANDLER_void(CEntity, DoImpactEffect, (trace_t &tr, int nDamageType ), (tr, nDamageType));
+DECLARE_DEFAULTHANDLER(CEntity, CB_GetEnemy, CBaseEntity *, (), ());
+DECLARE_DEFAULTHANDLER(CEntity, CB_GetEnemy_const, CBaseEntity *, () const, ());
+DECLARE_DEFAULTHANDLER_void(CEntity, MakeTracer, (const Vector &vecTracerSrc, const trace_t &tr, int iTracerType), (vecTracerSrc, tr, iTracerType));
+DECLARE_DEFAULTHANDLER_void(CEntity, DispatchResponse, (const char *conceptName ),  (conceptName));
+DECLARE_DEFAULTHANDLER(CEntity, ShouldAttractAutoAim, bool, (CBaseEntity *pAimingEnt ),(pAimingEnt));
+DECLARE_DEFAULTHANDLER(CEntity, TestCollision, bool, (const Ray_t& ray, unsigned int mask, trace_t& trace), (ray, mask, trace));
+DECLARE_DEFAULTHANDLER(CEntity, VPhysicsIsFlesh, bool, (), ());
+DECLARE_DEFAULTHANDLER_void(CEntity, UpdatePhysicsShadowToCurrentPosition, (float deltaTime), (deltaTime));
 
 //Sendprops
 DEFINE_PROP(m_iTeamNum, CEntity);
@@ -300,6 +332,13 @@ DEFINE_PROP(m_nSurroundType, CEntity);
 DEFINE_PROP(m_vecSpecifiedSurroundingMins, CEntity);
 DEFINE_PROP(m_vecSpecifiedSurroundingMaxs, CEntity);
 DEFINE_PROP(m_iParentAttachment, CEntity);
+DEFINE_PROP(m_flShadowCastDistance, CEntity);
+DEFINE_PROP(m_vecMinsPreScaled, CEntity);
+DEFINE_PROP(m_vecMaxsPreScaled, CEntity);
+DEFINE_PROP(m_vecSpecifiedSurroundingMinsPreScaled, CEntity);
+DEFINE_PROP(m_vecSpecifiedSurroundingMaxsPreScaled, CEntity);
+DEFINE_PROP(m_flSimulationTime, CEntity);
+DEFINE_PROP(m_bAnimatedEveryTick, CEntity);
 
 
 
@@ -356,11 +395,9 @@ DEFINE_PROP(m_pLink, CEntity);
 DEFINE_PROP(m_ResponseContexts, CEntity);
 DEFINE_PROP(m_bSimulatedEveryTick, CEntity);
 
-
 /* MUST BE HERE */
 DEFINE_PROP(m_iClassname, CEntity);
 /* MUST BE HERE */
-
 
 DECLARE_DETOUR(SetLocalOrigin, CEntity);
 DECLARE_DEFAULTHANDLER_DETOUR_void(CEntity, SetLocalOrigin, (const Vector& origin ), (origin));
@@ -389,6 +426,11 @@ DECLARE_DEFAULTHANDLER_DETOUR(CEntity, VPhysicsInitNormal, IPhysicsObject *, (So
 DECLARE_DETOUR(VPhysicsInitStatic, CEntity);
 DECLARE_DEFAULTHANDLER_DETOUR(CEntity, VPhysicsInitStatic, IPhysicsObject *, (), ());
 
+//DECLARE_DETOUR(PhysicsDispatchThink, CEntity);
+//////DECLARE_DEFAULTHANDLER_DETOUR_void(CEntity, PhysicsDispatchThink, (BASEPTR thinkFunc), (thinkFunc));
+
+DECLARE_DETOUR(PhysicsRunThink, CEntity);
+
 DECLARE_DEFAULTHANDLER(CEntity, GetDataDescMap_Real, datamap_t *, (), ());
 
 /* Hacked Datamap declaration to fallback to the corresponding real entities one */
@@ -409,11 +451,6 @@ datamap_t* CEntity::GetDataDescMap()
 }
 
 PhysIsInCallbackFuncType PhysIsInCallback;
-
-IServerVehicle *CEntity::GetServerVehicle()
-{
-	return g_helpfunc.GetServerVehicle(BaseEntity());
-}
 
 bool CEntity::DispatchKeyValue(const char *szKeyName, const char *szValue)
 {
@@ -588,8 +625,6 @@ void CEntity::CE_Init(edict_t *pEdict, CBaseEntity *pBaseEntity)
 {
 	m_pEntity = pBaseEntity;
 	m_pEdict = pEdict;
-
-	int index = entindex_non_network();
 
 	assert(!pEntityData[entindex_non_network()]);
 
@@ -917,11 +952,130 @@ void CEntity::CEntityThink()
 	}
 }
 
+bool CEntity::PhysicsRunThink(thinkmethods_t thinkMethod)
+{
+	// run engine thinks first
+	bool alive = (((CEntity *) BaseEntity())->*PhysicsRunThink_Actual)(thinkMethod);
+	// now run CEntity thinks
+	if (alive)
+	{
+		if (IsEFlagSet(EFL_NO_THINK_FUNCTION))
+			return true;
+
+		if (thinkMethod == THINK_FIRE_BASE_ONLY)
+			return false;
+
+		for (int i = 0; i < ce_m_aThinkFunctions.Count(); i++)
+		{
+			alive = PhysicsRunSpecificThink(i, ce_m_aThinkFunctions[i].m_pfnThink);
+			if (!alive)
+				return false;
+		}
+	}
+	return alive;
+}
+bool CEntity::InternalPhysicsRunThink(thinkmethods_t thinkMethod)
+{
+	CEntity *pEnt = (CEntity *) CEntity::Instance((CBaseEntity *) this);
+	if (!pEnt) {
+		return (this->*PhysicsRunThink_Actual)(thinkMethod);
+	}
+	return pEnt->PhysicsRunThink(thinkMethod);
+}
+bool (CEntity::*CEntity::PhysicsRunThink_Actual)(thinkmethods_t thinkMethod) = nullptr;
+
+bool CEntity::PhysicsRunSpecificThink(int nContextIndex, BASEPTR thinkFunc)
+{
+	int thinktick = ce_m_aThinkFunctions[nContextIndex].m_nNextThinkTick;
+	if ( thinktick <= 0 || thinktick > gpGlobals->tickcount )
+		return true;
+
+	float thinktime = thinktick * TICK_INTERVAL;
+	if ( thinktime < gpGlobals->curtime )
+	{
+		thinktime = gpGlobals->curtime;
+	}
+
+	//SetNextThink( nContextIndex, TICK_NEVER_THINK );
+
+	PhysicsDispatchThink( thinkFunc );
+
+	//SetLastThink( nContextIndex, gpGlobals->curtime );
+	ce_m_aThinkFunctions[nContextIndex].m_nLastThinkTick = gpGlobals->curtime;
+
+	return ( !IsMarkedForDeletion() );
+}
+
+void CEntity::PhysicsDispatchThink(BASEPTR thinkFunc)
+{
+	float thinkLimit = think_limit->GetFloat();
+	float startTime = 0.0;
+
+	if ( thinkLimit )
+	{
+		startTime = engine->Time();
+	}
+
+	if ( thinkFunc )
+	{
+		(this->*thinkFunc)();
+	}
+
+	if ( thinkLimit ) {
+		// calculate running time of the AI in milliseconds
+		float time = (engine->Time() - startTime) * 1000.0f;
+		if (time > thinkLimit) {
+			CAI_NPC *pNPC = MyNPCPointer();
+			if (pNPC)
+			{
+#ifdef PLATFORM_WINDOWS
+				Msg( "[CEntity] %s(%s) thinking for %.02f ms!!!\n", GetClassname(), typeid(this).raw_name(), time );
+#else
+				Msg( "[CEntity] %s(%s) thinking for %.02f ms!!!\n", GetClassname(), typeid(this).name(), time );
+#endif
+			}
+		}
+	}
+}
+
+/*void CEntity::PhysicsDispatchThink(BASEPTR thinkFunc)
+{
+	float thinkLimit = think_limit->GetFloat();
+
+	float startTime = 0.0;
+	if ( thinkLimit )
+	{
+		startTime = engine->Time();
+	}
+	(((CEntity *) BaseEntity())->*PhysicsDispatchThink_Actual)(thinkFunc);
+}
+void CEntity::InternalPhysicsDispatchThink(BASEPTR thinkFunc)
+{
+	CEntity *pEnt = (CEntity *) CEntity::Instance((CBaseEntity *) this);
+	if (!pEnt) {
+		(this->*PhysicsDispatchThink_Actual)(thinkFunc);
+		return;
+	}
+	pEnt->PhysicsDispatchThink(thinkFunc);
+}
+void (CEntity::*CEntity::PhysicsDispatchThink_Actual)(BASEPTR thinkFunc) = nullptr;*/
+
 int	CEntity::GetIndexForThinkContext( const char *pszContext )
 {
 	for ( int i = 0; i < m_aThinkFunctions->Size(); i++ )
 	{
 		if ( !Q_strncmp( STRING( m_aThinkFunctions->Element(i).m_iszContext ), pszContext, MAX_CONTEXT_LENGTH ) )
+			return i;
+	}
+
+	return NO_THINK_CONTEXT;
+}
+
+int	CEntity::GetIndexForCEntityThinkContext( const char *pszContext )
+{
+	for ( int i = 0; i < ce_m_aThinkFunctions.Size(); i++ )
+	{
+		if ( !Q_strncmp( STRING( ce_m_aThinkFunctions.Element(i).m_iszContext ), pszContext, MAX_CONTEXT_LENGTH ) )
 			return i;
 	}
 
@@ -943,22 +1097,22 @@ BASEPTR	CEntity::ThinkSet(BASEPTR func, float thinkTime, const char *szContext)
 		}
 		return ce_m_pfnThink;
 	}
-
-	int iIndex = GetIndexForThinkContext( szContext );
-	if ( iIndex == NO_THINK_CONTEXT )
+	else
 	{
-		iIndex = RegisterThinkContext( szContext );
-	}
+		int iIndex = GetIndexForCEntityThinkContext(szContext);
+		if (iIndex == NO_THINK_CONTEXT) {
+			iIndex = RegisterCEntityThinkContext(szContext);
+		}
 
-	m_aThinkFunctions->Element(iIndex).m_pfnThink = func;
+		ce_m_aThinkFunctions.Element(iIndex).m_pfnThink = func;
 
-	if ( thinkTime != 0 )
-	{
-		int thinkTick = ( thinkTime == TICK_NEVER_THINK ) ? TICK_NEVER_THINK : TIME_TO_TICKS( thinkTime );
-		m_aThinkFunctions->Element(iIndex).m_nNextThinkTick = thinkTick;
-		CheckHasThinkFunction( thinkTick == TICK_NEVER_THINK ? false : true );
+		if (thinkTime != 0) {
+			int thinkTick = (thinkTime == TICK_NEVER_THINK) ? TICK_NEVER_THINK : TIME_TO_TICKS(thinkTime);
+			ce_m_aThinkFunctions.Element(iIndex).m_nNextThinkTick = thinkTick;
+			CheckHasThinkFunction(thinkTick == TICK_NEVER_THINK ? false : true);
+		}
+		return func;
 	}
-	return func;
 }
 
 int CEntity::RegisterThinkContext( const char *szContext )
@@ -1011,6 +1165,23 @@ float CEntity::GetNextThink( const char *szContext)
 	return TICK_INTERVAL * (m_aThinkFunctions->Element(iIndex).m_nNextThinkTick );
 }
 
+int	CEntity::RegisterCEntityThinkContext( const char *szContext )
+{
+	int iIndex = GetIndexForCEntityThinkContext( szContext );
+	if ( iIndex != NO_THINK_CONTEXT )
+		return iIndex;
+
+	// Make a new think func
+	thinkfunc_t sNewFunc;
+	Q_memset( &sNewFunc, 0, sizeof( sNewFunc ) );
+	sNewFunc.m_pfnThink = NULL;
+	sNewFunc.m_nNextThinkTick = 0;
+	sNewFunc.m_iszContext = AllocPooledString(szContext);
+
+	// Insert it into our list
+	return ce_m_aThinkFunctions.AddToTail( sNewFunc );
+}
+
 int	CEntity::GetNextThinkTick( const char *szContext)
 {
 	// Are we currently in a think function with a context?
@@ -1040,7 +1211,6 @@ int	CEntity::GetNextThinkTick( const char *szContext)
 	return m_aThinkFunctions->Element(iIndex).m_nNextThinkTick;
 }
 
-
 VALVE_BASEPTR CEntity::GetCurrentThinkPointer()
 {
 	return m_pfnThink;
@@ -1048,7 +1218,7 @@ VALVE_BASEPTR CEntity::GetCurrentThinkPointer()
 
 void CEntity::SetNextThink(float thinkTime, const char *szContext)
 {
-	g_helpfunc.SetNextThink(m_pEntity, thinkTime, szContext);
+	g_helpfunc.SetNextThink(BaseEntity(), thinkTime, szContext);
 }
 
 void CEntity::AddEFlags(int nEFlagMask)
@@ -1256,7 +1426,7 @@ static int CE_AcceptInput(CEntity *pEntity, const char *szInputName, CBaseEntity
 						}
 					}
 					// call the input handler, or if there is none just set the value
-					inputfunc_t pfnInput = dmap->dataDesc[i].inputFunc;
+					INPUTFUNC pfnInput = (INPUTFUNC)dmap->dataDesc[i].inputFunc;
 					if ( pfnInput )
 					{ 
 						// Package the data into a struct for passing to the input handler.
@@ -1842,7 +2012,7 @@ CEntity *CEntity::GetNextTarget( void )
 }
 
 
-FORCEINLINE bool NamesMatch( const char *pszQuery, string_t nameToMatch )
+static bool NamesMatch( const char *pszQuery, string_t nameToMatch )
 {
 	if ( nameToMatch == NULL_STRING )
 		return (*pszQuery == 0 || *pszQuery == '*');
@@ -1905,6 +2075,39 @@ void CEntity::SUB_DoNothing( void )
 void CEntity::SUB_TouchNothing(CEntity *pOther)
 {
 
+}
+
+void CEntity::SUB_FadeOut()
+{
+	if (!SUB_AllowedToFade())
+	{
+		SetNextThink( gpGlobals->curtime + 1 );
+		SetRenderColorA( 255 );
+		return;
+	}
+
+	SUB_PerformFadeOut();
+
+	if ( m_clrRender->a == 0 )
+	{
+		UTIL_Remove(this);
+	}
+	else
+	{
+		SetNextThink( gpGlobals->curtime );
+	}
+}
+
+void CEntity::SUB_PerformFadeOut( void )
+{
+	float dt = gpGlobals->frametime;
+	if ( dt > 0.1f )
+	{
+		dt = 0.1f;
+	}
+	m_nRenderMode = kRenderTransTexture;
+	int speed = (int)MAX(1,256*dt); // fade out over 1 second
+	SetRenderColorA( (byte)UTIL_Approach( 0, m_clrRender->a, speed ) );
 }
 
 void CEntity::Remove( void )
@@ -2236,8 +2439,8 @@ void CEntity::DispatchTraceAttack( const CTakeDamageInfo &info, const Vector &ve
 			}
 
 			virtual void Start( void ) { m_bActive = true; }
-			//virtual void AccumulateMultiDamage( const CTakeDamageInfo &info, CBaseEntity *pEntity );
-			//virtual void Process( void );
+			virtual void AccumulateMultiDamage( const CTakeDamageInfo &info, CBaseEntity *pEntity ) {};
+			virtual void Process( void ) {};
 
 	private:
 			CTakeDamageInfo                                        m_updatedInfo;
@@ -2298,6 +2501,20 @@ void CEntity::ComputeAbsPosition( const Vector &vecLocalPosition, Vector *pAbsPo
 	}
 }
 
+
+void CEntity::VPhysicsSetObject( IPhysicsObject *pPhysics )
+{
+	if ( VPhysicsGetObject() && pPhysics )
+	{
+		Warning( "Overwriting physics object for %s\n", GetClassname() );
+	}
+	m_pPhysicsObject = pPhysics;
+	if ( pPhysics && !VPhysicsGetObject() )
+	{
+		CollisionRulesChanged();
+	}
+}
+
 void *CEntity::GetDataObject( int type )
 {
 	return g_helpfunc.GetDataObject(BaseEntity(), type);
@@ -2338,6 +2555,20 @@ void CEntity::SetLocalAngularVelocity( const QAngle &vecAngVelocity )
 const QAngle &CEntity::GetLocalAngularVelocity( ) const
 {
 	return *(m_vecAngVelocity);
+}
+
+void CEntity::SetLocalVelocity( const Vector &vecVelocity )
+{
+	if (*(m_vecVelocity) != vecVelocity)
+	{
+		InvalidatePhysicsRecursive( VELOCITY_CHANGED );
+		m_vecVelocity = vecVelocity;
+	}
+}
+
+void CEntity::InvalidatePhysicsRecursive( int nChangeFlags )
+{
+	g_helpfunc.InvalidatePhysicsRecursive(BaseEntity(), nChangeFlags);
 }
 
 void CEntity::SetMoveDoneTime( float flDelay )
@@ -2593,10 +2824,156 @@ void CEntity::FireBullets( int cShots, const Vector &vecSrc,
 	FireBullets( info );
 }
 
+matrix3x4_t& CEntity::GetParentToWorldTransform( matrix3x4_t &tempMatrix )
+{
+	CEntity *pMoveParent = GetMoveParent();
+	if ( !pMoveParent )
+	{
+		Assert( false );
+		SetIdentityMatrix( tempMatrix );
+		return tempMatrix;
+	}
 
+	if ( m_iParentAttachment != 0 )
+	{
+		CAnimating *pAnimating = pMoveParent->GetBaseAnimating();
+		if ( pAnimating && pAnimating->GetAttachment( m_iParentAttachment, tempMatrix ) )
+		{
+			return tempMatrix;
+		}
+	}
 
+	// If we fall through to here, then just use the move parent's abs origin and angles.
+	return pMoveParent->EntityToWorldTransform();
+}
 
+void CEntity::SetParentAttachment( const char *szInputName, const char *szAttachment, bool bMaintainOffset )
+{
+	// Must have a parent
+	if ( !GetParent() )
+	{
+		g_pSM->LogError(myself, "ERROR: Tried to %s for entity %s (%s), but it has no parent.\n", szInputName, GetClassname(), GetDebugName());
+		return;
+	}
 
+	// Valid only on CBaseAnimating
+	CAnimating *pAnimating = m_pParent->GetBaseAnimating();
+	if ( !pAnimating )
+	{
+		g_pSM->LogError(myself, "ERROR: Tried to %s for entity %s (%s), but its parent has no model.\n", szInputName, GetClassname(), GetDebugName() );
+		return;
+	}
+
+	// Lookup the attachment
+	int iAttachment = pAnimating->LookupAttachment( szAttachment );
+	if ( iAttachment <= 0 )
+	{
+		g_pSM->LogError(myself, "ERROR: Tried to %s for entity %s (%s), but it has no attachment named %s.\n", szInputName, GetClassname(), GetDebugName(), szAttachment );
+		return;
+	}
+
+	m_iParentAttachment = iAttachment;
+	SetParent( m_pParent->BaseEntity(), m_iParentAttachment );
+
+	// Now move myself directly onto the attachment point
+	SetMoveType( MOVETYPE_NONE );
+
+	if ( !bMaintainOffset )
+	{
+		SetLocalOrigin( vec3_origin );
+		SetLocalAngles( vec3_angle );
+	}
+}
+
+void CEntity::AppendContextToCriteria( AI_CriteriaSet& set, const char *prefix /*= ""*/ )
+{
+	RemoveExpiredConcepts();
+
+	int c = GetContextCount();
+	int i;
+
+	char sz[ 128 ];
+	for ( i = 0; i < c; i++ )
+	{
+		const char *name = GetContextName( i );
+		const char *value = GetContextValue( i );
+
+		Q_snprintf( sz, sizeof( sz ), "%s%s", prefix, name );
+
+		set.AppendCriteria( sz, value );
+	}
+}
+
+void CEntity::RemoveExpiredConcepts( void )
+{
+	int c = GetContextCount();
+	int i;
+
+	for ( i = 0; i < c; i++ )
+	{
+		if ( ContextExpired( i ) )
+		{
+			m_ResponseContexts->Remove( i );
+			c--;
+			i--;
+			continue;
+		}
+	}
+}
+
+int CEntity::GetContextCount()
+{
+	return m_ResponseContexts->Count();
+}
+
+bool CEntity::ContextExpired( int index )
+{
+	if ( index < 0 || index >= m_ResponseContexts->Count() )
+	{
+		Assert( 0 );
+		return true;
+	}
+
+	if ( !m_ResponseContexts->Element(index).m_fExpirationTime )
+	{
+		return false;
+	}
+
+	return ( m_ResponseContexts->Element(index).m_fExpirationTime <= gpGlobals->curtime );
+}
+
+const char *CEntity::GetContextValue( int index )
+{
+	if ( index < 0 || index >= m_ResponseContexts->Count() )
+	{
+		Assert( 0 );
+		return "";
+	}
+
+	return  m_ResponseContexts->Element(index).m_iszValue.ToCStr();
+}
+
+void CEntity::SendOnKilledGameEvent( const CTakeDamageInfo &info )
+{
+	IGameEvent *event = gameeventmanager->CreateEvent( "entity_killed" );
+	if ( event )
+	{
+		event->SetInt( "entindex_killed", entindex() );
+		CEntity *attacker = CEntity::Instance(info.GetAttacker());
+		CEntity *inflictor = CEntity::Instance(info.GetInflictor());
+
+		if ( attacker)
+		{
+			event->SetInt( "entindex_attacker", attacker->entindex() );
+		}
+		if ( inflictor)
+		{
+			event->SetInt( "entindex_inflictor", inflictor->entindex() );
+		}
+		event->SetInt( "damagebits", info.GetDamageType() );
+		gameeventmanager->FireEvent( event );
+	}
+}
 
 #include "tier0/memdbgoff.h"
 

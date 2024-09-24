@@ -5,7 +5,7 @@
 #endif
 
 #include "CEntity.h"
-#include "CAI_behavior.h"
+#include "CAI_Behavior.h"
 
 class CE_CBeam;
 

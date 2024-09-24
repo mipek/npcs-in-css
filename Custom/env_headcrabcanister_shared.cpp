@@ -2,7 +2,7 @@
 #include "CEntity.h"
 #include "env_headcrabcanister_shared.h"
 #include "mapdata_shared.h"
-#include "sharedInterface.h"
+//#include "sharedInterface.h"
 #include "mathlib/vmatrix.h"
 
 

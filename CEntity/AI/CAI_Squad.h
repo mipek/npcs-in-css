@@ -62,7 +62,8 @@ private:
 
 //-------------------------------------
 
-extern CAI_SquadManager g_AI_SquadManager;
+//extern CAI_SquadManager g_AI_SquadManager;
+extern CAI_SquadManager *g_AI_SquadManager;
 
 //-----------------------------------------------------------------------------
 
@@ -105,7 +106,7 @@ public:
 	bool 					OccupyStrategySlotRange( CEntity *pEnemy, int slotIDStart, int slotIDEnd, int *pSlot );
 	void 					VacateStrategySlot( CEntity *pEnemy, int slot);
 	bool					IsStrategySlotRangeOccupied( CEntity *pEnemy, int slotIDStart, int slotIDEnd );
-	
+
 	CAI_NPC	*				SquadMemberInRange( const Vector &vecLocation, float flDist );
 	CAI_NPC *				NearestSquadMember( CAI_NPC *pMember );
 	int						GetVisibleSquadMembers( CAI_BaseNPC *pMember );
@@ -185,12 +186,12 @@ private:
 	const AISquadEnemyInfo_t *FindEnemyInfo( CEntity *pEnemy ) const	{ return const_cast<CAI_Squad *>(this)->FindEnemyInfo( pEnemy ); }
 
 	AISquadEnemyInfo_t *			m_pLastFoundEnemyInfo; // Occupy/Vacate need to be reworked to not want this
-	
+
 	CUtlVector<AISquadEnemyInfo_t>	m_EnemyInfos;
 	float							m_flEnemyInfoCleanupTime;
 
 #else
-	
+
 	CVarBitVec	m_squadSlotsUsed;							// What squad slots are filled?
 
 #endif
@@ -199,6 +200,8 @@ private:
 public:
 	DECLARE_SIMPLE_DATADESC();
 
+	// LTODO
+#if 0
 	void *operator new( size_t nBytes )
 	{
 		void *pResult = g_pMemAlloc->Alloc( nBytes );
@@ -221,6 +224,7 @@ public:
 	{
 		g_pMemAlloc->Free(pMem);
 	}
+#endif
 };
 
 //-----------------------------------------------------------------------------
@@ -254,10 +258,10 @@ inline CAI_Squad *CAI_SquadManager::GetNextSquad( AISquadsIter_t *pIter )
 inline CAI_Squad *CAI_SquadManager::FindCreateSquad(CAI_NPC *pNPC, string_t squadName)
 {
 	CAI_Squad* pSquad = FindSquad( squadName );
-	
+
 	if ( !pSquad )
 		pSquad = CreateSquad( squadName );
-	
+
 	pSquad->AddToSquad( pNPC );
 
 	return pSquad;
@@ -268,10 +272,10 @@ inline CAI_Squad *CAI_SquadManager::FindCreateSquad(CAI_NPC *pNPC, string_t squa
 inline CAI_Squad *CAI_SquadManager::FindCreateSquad(string_t squadName)
 {
 	CAI_Squad* pSquad = FindSquad( squadName );
-	
+
 	if ( !pSquad )
 		pSquad = CreateSquad( squadName );
-	
+
 	return pSquad;
 }
 

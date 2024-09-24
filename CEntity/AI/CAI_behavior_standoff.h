@@ -70,7 +70,7 @@ class CAI_MappedActivityBehavior_Temporary : public CAI_SimpleBehavior
 {
 	DECLARE_CLASS( CAI_MappedActivityBehavior_Temporary, CAI_SimpleBehavior );
 public:
-	CAI_MappedActivityBehavior_Temporary( CEntity *pOuter = NULL ) 
+	CAI_MappedActivityBehavior_Temporary( CAI_NPC *pOuter = NULL )
 	 :	CAI_SimpleBehavior(pOuter)
 	{
 		SetDefLessFunc( m_ActivityMap );
@@ -91,7 +91,7 @@ class CAI_StandoffBehavior : public CAI_MappedActivityBehavior_Temporary
 public:
 	DECLARE_CLASS( CAI_StandoffBehavior, CAI_MappedActivityBehavior_Temporary );
 public:
-	CAI_StandoffBehavior( CEntity *pOuter = NULL );
+	CAI_StandoffBehavior( CAI_NPC *pOuter = NULL );
 
 	virtual const char *GetName() {	return "Standoff"; }
 

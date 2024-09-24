@@ -71,7 +71,7 @@ public:
 
 	// --------------------------------
 	
-	AI_Waypoint_t *BuildRoute( const Vector &vStart, const Vector &vEnd, CBaseEntity *pTarget, float goalTolerance, Navigation_t curNavType = NAV_NONE, bool bLocalSucceedOnWithinTolerance = false );
+	AI_Waypoint_t *BuildRoute( const Vector &vStart, const Vector &vEnd, CEntity *pTarget, float goalTolerance, Navigation_t curNavType = NAV_NONE, bool bLocalSucceedOnWithinTolerance = false );
 	void UnlockRouteNodes( AI_Waypoint_t * );
 
 	// --------------------------------
@@ -81,7 +81,7 @@ public:
 	// --------------------------------
 	
 	virtual AI_Waypoint_t *BuildNodeRoute( const Vector &vStart, const Vector &vEnd, int buildFlags, float goalTolerance );
-	virtual AI_Waypoint_t *BuildLocalRoute( const Vector &vStart, const Vector &vEnd, CBaseEntity const *pTarget, int endFlags, int nodeID, int buildFlags, float goalTolerance);
+	virtual AI_Waypoint_t *BuildLocalRoute( const Vector &vStart, const Vector &vEnd, CEntity const *pTarget, int endFlags, int nodeID, int buildFlags, float goalTolerance);
 	virtual AI_Waypoint_t *BuildRadialRoute( const Vector &vStartPos, const Vector &vCenterPos, const Vector &vGoalPos, float flRadius, float flArc, float flStepDist, bool bClockwise, float goalTolerance, bool bAirRoute );	
 	
 	virtual AI_Waypoint_t *BuildTriangulationRoute( const Vector &vStart, 
@@ -127,17 +127,17 @@ private:
 	
 	// Builds a simple route (no triangulation, no making way)
 	AI_Waypoint_t	*BuildSimpleRoute( Navigation_t navType, const Vector &vStart, const Vector &vEnd, 
-		const CBaseEntity *pTarget, int endFlags, int nodeID, int nodeTargetType, float flYaw);
+		const CEntity *pTarget, int endFlags, int nodeID, int nodeTargetType, float flYaw);
 
 	// Builds a complex route (triangulation, making way)
 	AI_Waypoint_t	*BuildComplexRoute( Navigation_t navType, const Vector &vStart, 
-		const Vector &vEnd, const CBaseEntity *pTarget, int endFlags, int nodeID, 
+		const Vector &vEnd, const CEntity *pTarget, int endFlags, int nodeID,
 		int buildFlags, float flYaw, float goalTolerance, float maxLocalNavDistance );
 
-	AI_Waypoint_t	*BuildGroundRoute( const Vector &vStart, const Vector &vEnd, CBaseEntity const *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw, float goalTolerance );
-	AI_Waypoint_t	*BuildFlyRoute( const Vector &vStart, const Vector &vEnd, CBaseEntity const *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw, float goalTolerance );
-	AI_Waypoint_t	*BuildJumpRoute( const Vector &vStart, const Vector &vEnd, CBaseEntity const *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw );
-	AI_Waypoint_t	*BuildClimbRoute( const Vector &vStart, const Vector &vEnd, CBaseEntity const *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw );
+	AI_Waypoint_t	*BuildGroundRoute( const Vector &vStart, const Vector &vEnd, CEntity const *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw, float goalTolerance );
+	AI_Waypoint_t	*BuildFlyRoute( const Vector &vStart, const Vector &vEnd, CEntity const *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw, float goalTolerance );
+	AI_Waypoint_t	*BuildJumpRoute( const Vector &vStart, const Vector &vEnd, CEntity const *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw );
+	AI_Waypoint_t	*BuildClimbRoute( const Vector &vStart, const Vector &vEnd, CEntity const *pTarget, int endFlags, int nodeID, int buildFlags, float flYaw );
 
 	// Computes the link type
 	Navigation_t ComputeWaypointType( CAI_Node **ppNodes, int parentID, int destID );

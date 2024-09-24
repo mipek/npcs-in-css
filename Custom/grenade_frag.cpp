@@ -30,10 +30,12 @@ ConVar sk_fraggrenade_radius	( "sk_fraggrenade_radius", "0");
 
 #define GRENADE_MODEL "models/Weapons/w_grenade.mdl"
 
-class CGrenadeFrag : public CE_Grenade
+#define DETONATE_SOUND "weapons/hegrenade/explode3.wav"
+
+class CGrenadeFrag : public CE_HEGrenade_Fix
 {
 public:
-	CE_DECLARE_CLASS( CGrenadeFrag, CE_Grenade );
+	CE_DECLARE_CLASS( CGrenadeFrag, CE_HEGrenade_Fix );
 
 #if !defined( CLIENT_DLL )
 	DECLARE_DATADESC();
@@ -75,7 +77,7 @@ protected:
 	bool	m_punted;
 };
 
-LINK_ENTITY_TO_CUSTOM_CLASS( npc_grenade_frag, hegrenade_projectile, CGrenadeFrag );
+LINK_ENTITY_TO_CUSTOM_CLASS( npc_grenade_frag, grenade, CGrenadeFrag );
 
 BEGIN_DATADESC( CGrenadeFrag )
 
@@ -109,16 +111,6 @@ void CGrenadeFrag::Spawn( void )
 
 	SetModel( GRENADE_MODEL );
 
-	if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() )
-	{
-		m_flDamage		= sk_plr_dmg_fraggrenade.GetFloat();
-		m_DmgRadius		= sk_fraggrenade_radius.GetFloat();
-	}
-	else
-	{
-		m_flDamage		= sk_npc_dmg_fraggrenade.GetFloat();
-		m_DmgRadius		= sk_fraggrenade_radius.GetFloat();
-	}
 
 	m_takedamage	= DAMAGE_YES;
 	m_iHealth		= 1;
@@ -132,10 +124,22 @@ void CGrenadeFrag::Spawn( void )
 
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 
+	BaseClass::Spawn();
+
 	m_combineSpawned	= false;
 	m_punted			= false;
 
-	BaseClass::Spawn();
+	if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() )
+	{
+		m_flDamage		= sk_plr_dmg_fraggrenade.GetFloat();
+		m_DmgRadius		= sk_fraggrenade_radius.GetFloat();
+	}
+	else
+	{
+		m_flDamage		= sk_npc_dmg_fraggrenade.GetFloat();
+		m_DmgRadius		= sk_fraggrenade_radius.GetFloat();
+	}
+
 }
 
 //-----------------------------------------------------------------------------
@@ -280,6 +284,7 @@ void CGrenadeFrag::VPhysicsUpdate( IPhysicsObject *pPhysics )
 void CGrenadeFrag::Precache( void )
 {
 	PrecacheModel( GRENADE_MODEL );
+	enginesound->PrecacheSound(DETONATE_SOUND);
 
 	PrecacheScriptSound( "Grenade.Blip" );
 
@@ -304,6 +309,7 @@ void CGrenadeFrag::DelayThink()
 	if( gpGlobals->curtime > m_flDetonateTime )
 	{
 		Detonate();
+		EmitSound(DETONATE_SOUND); // CE: custom sound
 		return;
 	}
 

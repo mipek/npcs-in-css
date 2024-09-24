@@ -14,7 +14,6 @@ public:
 
 public:
 	virtual void Spawn(void);
-	virtual void Precache(void);
 	virtual void Think(void);
 
 

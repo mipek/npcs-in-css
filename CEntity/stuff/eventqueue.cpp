@@ -10,7 +10,7 @@
 
 
 CEventQueue *g_CEventQueue = NULL;
-CMemoryPool *EventQueuePrioritizedEvent_t::s_Allocator = NULL;
+CUtlMemoryPool *EventQueuePrioritizedEvent_t::s_Allocator = NULL;
 
 void CEventQueue::RemoveEvent( EventQueuePrioritizedEvent_t *pe )
 {

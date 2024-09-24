@@ -320,7 +320,7 @@ protected:
 
 	//---------------------------------
 	
-	CHandle<CE_AI_FollowGoal>			m_hFollowGoalEnt;
+	CEFakeHandle<CE_AI_FollowGoal>	m_hFollowGoalEnt;
 	
 	//---------------------------------
 	

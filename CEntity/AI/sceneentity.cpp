@@ -37,6 +37,11 @@ public:
 
 	CChoreoScene *GetScene() { return m_pScene; }
 
+	bool IsPaused() const	{ return m_bPaused; }
+	bool HasUnplayedSpeech( void );
+
+	void UpdateOnRemove() override;
+
 public:
 	DECLARE_DEFAULTHEADER(CancelPlayback, void, ());
 	DECLARE_DEFAULTHEADER(StartPlayback, void, ());
@@ -46,12 +51,16 @@ public:
 public:
 	DECLARE_SENDPROP(bool, m_bMultiplayer);
 	DECLARE_SENDPROP(bool, m_bIsPlayingBack);
+	DECLARE_SENDPROP(bool, m_bPaused);
 public:
 	DECLARE_DATAMAP(bool, m_bBreakOnNonIdle);
 	DECLARE_DATAMAP_OFFSET(CRecipientFilter *, m_pRecipientFilter);
 	DECLARE_DATAMAP_OFFSET(CChoreoScene *, m_pScene);
 	DECLARE_DATAMAP(string_t, m_iszSceneFile);
 
+private:
+	CRecipientFilter *old_m_pRecipientFilter;
+	CRecipientFilter *my_m_pRecipientFilter;
 };
 
 CE_LINK_ENTITY_TO_CLASS(CSceneEntity, CE_CSceneEntity);
@@ -77,6 +86,7 @@ DECLARE_DEFAULTHANDLER(CE_CSceneEntity, FindNamedActor_I, CBaseEntity *, (int in
 //Sendprops
 DEFINE_PROP(m_bMultiplayer,CE_CSceneEntity);
 DEFINE_PROP(m_bIsPlayingBack,CE_CSceneEntity);
+DEFINE_PROP(m_bPaused,CE_CSceneEntity);
 
 //DataMap
 DEFINE_PROP(m_bBreakOnNonIdle,CE_CSceneEntity);
@@ -210,9 +220,10 @@ void CE_CSceneEntity::SetRecipientFilter( IRecipientFilter *filter )
 	// create a copy of this filter
 	if ( filter )
 	{
-		CRecipientFilter *recp = new CRecipientFilter();
-		recp->CopyFrom( (CRecipientFilter &)( *filter ) );
-		*(m_pRecipientFilter.ptr) = recp;
+		old_m_pRecipientFilter = m_pRecipientFilter;
+		my_m_pRecipientFilter = new CRecipientFilter();
+		my_m_pRecipientFilter->CopyFrom( (CRecipientFilter &)( *filter ) );
+		*(m_pRecipientFilter.ptr) = my_m_pRecipientFilter;
 	}
 }
 
@@ -242,6 +253,26 @@ bool CE_CSceneEntity::InvolvesActor( CEntity *pActor )
 	return false;
 }
 
+bool CE_CSceneEntity::HasUnplayedSpeech( void )
+{
+	CChoreoScene *pointer = GetScene();
+	if ( pointer )
+		return pointer->HasUnplayedSpeech();
+
+	return false;
+}
+
+void CE_CSceneEntity::UpdateOnRemove()
+{
+	if(my_m_pRecipientFilter)
+	{
+		delete my_m_pRecipientFilter;
+		my_m_pRecipientFilter = NULL;
+
+		*(m_pRecipientFilter.ptr) = old_m_pRecipientFilter;
+	}
+	BaseClass::UpdateOnRemove();
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -270,11 +301,15 @@ public:
 public:
 	bool			IsRunningScriptedScene( CFlex *pActor, bool bIgnoreInstancedScenes );
 	void			RemoveActorFromScenes( CFlex *pActor, bool bInstancedOnly, bool bNonIdleOnly, const char *pszThisSceneOnly );
+	bool			IsRunningScriptedSceneAndNotPaused( CFlex *pActor, bool bIgnoreInstancedScenes );
+	bool			IsRunningScriptedSceneWithSpeechAndNotPaused( CFlex *pActor, bool bIgnoreInstancedScenes );
+	bool			IsRunningScriptedSceneWithSpeech( CFlex *pActor, bool bIgnoreInstancedScenes );
+
+	void			ResumeActorsScenes( CFlex *pActor, bool bInstancedOnly  );
+	void			PauseActorsScenes( CFlex *pActor, bool bInstancedOnly  );
 
 private:
 	DECLARE_DATAMAP(CUtlVector< CEFakeHandle< CE_CSceneEntity > >	, m_ActiveScenes);
-
-
 };
 
 CE_LINK_ENTITY_TO_CLASS(CSceneManager, CE_CSceneManager);
@@ -313,7 +348,20 @@ void RemoveActorFromScriptedScenes( CFlex *pActor, bool instancedscenesonly, boo
 	GetSceneManager()->RemoveActorFromScenes( pActor, instancedscenesonly, nonidlescenesonly, pszThisSceneOnly );
 }
 
+bool IsRunningScriptedSceneWithSpeech( CFlex *pActor, bool bIgnoreInstancedScenes )
+{
+	return GetSceneManager()->IsRunningScriptedSceneWithSpeech( pActor, bIgnoreInstancedScenes );
+}
 
+bool IsRunningScriptedSceneAndNotPaused( CFlex *pActor, bool bIgnoreInstancedScenes )
+{
+	return GetSceneManager()->IsRunningScriptedSceneAndNotPaused( pActor, bIgnoreInstancedScenes );
+}
+
+bool IsRunningScriptedSceneWithSpeechAndNotPaused( CFlex *pActor, bool bIgnoreInstancedScenes )
+{
+	return GetSceneManager()->IsRunningScriptedSceneWithSpeechAndNotPaused( pActor, bIgnoreInstancedScenes );
+}
 
 
 bool CE_CSceneManager::IsRunningScriptedScene( CFlex *pActor, bool bIgnoreInstancedScenes )
@@ -373,4 +421,140 @@ void CE_CSceneManager::RemoveActorFromScenes( CFlex *pActor, bool bInstancedOnly
 	}
 }
 
+bool CE_CSceneManager::IsRunningScriptedSceneAndNotPaused( CFlex *pActor, bool bIgnoreInstancedScenes )
+{
+	int c = m_ActiveScenes->Count();
+	for ( int i = 0; i < c; i++ )
+	{
+		CE_CSceneEntity *pScene = m_ActiveScenes->Element(i).Get();
+		if ( !pScene ||
+			 !pScene->IsPlayingBack() ||
+			 pScene->IsPaused() ||
+			 ( bIgnoreInstancedScenes && dynamic_cast<CE_CInstancedSceneEntity *>(pScene) != NULL )
+				)
+		{
+			continue;
+		}
 
+		if ( pScene->InvolvesActor( pActor ) )
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
+bool CE_CSceneManager::IsRunningScriptedSceneWithSpeechAndNotPaused( CFlex *pActor, bool bIgnoreInstancedScenes )
+{
+	int c = m_ActiveScenes->Count();
+	for ( int i = 0; i < c; i++ )
+	{
+		CE_CSceneEntity *pScene = m_ActiveScenes->Element(i).Get();
+		if ( !pScene ||
+			 !pScene->IsPlayingBack() ||
+			 pScene->IsPaused() ||
+			 ( bIgnoreInstancedScenes && dynamic_cast<CE_CInstancedSceneEntity *>(pScene) != NULL )
+				)
+		{
+			continue;
+		}
+
+		if ( pScene->InvolvesActor( pActor ) )
+		{
+			if ( pScene->HasUnplayedSpeech() )
+				return true;
+		}
+	}
+	return false;
+}
+
+bool CE_CSceneManager::IsRunningScriptedSceneWithSpeech( CFlex *pActor, bool bIgnoreInstancedScenes )
+{
+	int c = m_ActiveScenes->Count();
+	for ( int i = 0; i < c; i++ )
+	{
+		CE_CSceneEntity *pScene = m_ActiveScenes->Element(i).Get();
+		if ( !pScene ||
+			 !pScene->IsPlayingBack() ||
+			 ( bIgnoreInstancedScenes && dynamic_cast<CE_CInstancedSceneEntity *>(pScene) != NULL )
+				)
+		{
+			continue;
+		}
+
+		if ( pScene->InvolvesActor( pActor ) )
+		{
+			if ( pScene->HasUnplayedSpeech() )
+				return true;
+		}
+	}
+	return false;
+}
+
+
+void CE_CSceneManager::ResumeActorsScenes( CFlex *pActor, bool bInstancedOnly  )
+{
+	int c = m_ActiveScenes->Count();
+	for ( int i = 0; i < c; i++ )
+	{
+		CE_CSceneEntity *pScene = m_ActiveScenes->Element(i).Get();
+		if ( !pScene )
+		{
+			continue;
+		}
+
+		// If only stopping instanced scenes, then skip it if it can't cast to an instanced scene
+		if ( bInstancedOnly &&
+			 ( dynamic_cast< CE_CInstancedSceneEntity * >( pScene ) == NULL ) )
+		{
+			continue;
+		}
+
+		if ( pScene->InvolvesActor( pActor ) && pScene->IsPlayingBack() )
+		{
+			Msg( "Resuming actor %s scripted scene: %s\n", pActor->GetDebugName(), pScene->m_iszSceneFile );
+
+			variant_t emptyVariant;
+			pScene->CustomAcceptInput( "Resume", pScene->BaseEntity(), pScene->BaseEntity(), emptyVariant, 0 );
+		}
+	}
+}
+
+void CE_CSceneManager::PauseActorsScenes( CFlex *pActor, bool bInstancedOnly  )
+{
+	int c = m_ActiveScenes->Count();
+	for ( int i = 0; i < c; i++ )
+	{
+		CE_CSceneEntity *pScene = m_ActiveScenes->Element(i).Get();
+		if ( !pScene )
+		{
+			continue;
+		}
+
+		// If only stopping instanced scenes, then skip it if it can't cast to an instanced scene
+		if ( bInstancedOnly &&
+			 ( dynamic_cast< CE_CInstancedSceneEntity * >( pScene ) == NULL ) )
+		{
+			continue;
+		}
+
+		if ( pScene->InvolvesActor( pActor ) && pScene->IsPlayingBack() )
+		{
+			Msg( "Pausing actor %s scripted scene: %s\n", pActor->GetDebugName(), pScene->m_iszSceneFile );
+
+			variant_t emptyVariant;
+			pScene->CustomAcceptInput( "Pause", pScene->BaseEntity(), pScene->BaseEntity(), emptyVariant, 0 );
+		}
+	}
+}
+
+void ResumeActorsScriptedScenes( CFlex *pActor, bool instancedscenesonly )
+{
+	GetSceneManager()->ResumeActorsScenes( pActor, instancedscenesonly );
+}
+
+void PauseActorsScriptedScenes( CFlex *pActor, bool instancedscenesonly )
+{
+	GetSceneManager()->PauseActorsScenes( pActor, instancedscenesonly );
+}

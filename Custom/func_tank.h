@@ -191,7 +191,7 @@ private:
 	bool		InRange( float range );
 	bool		InRange2( float flRange2 );
 
-	void		TraceAttack( CBaseEntity *pAttacker, float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType);
+	//void		TraceAttack( CBaseEntity *pAttacker, float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType);
 
 	QAngle		AimBarrelAt( const Vector &parentTarget );
 

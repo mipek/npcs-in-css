@@ -69,3 +69,19 @@ int CChoreoScene::GetNumActors( void )
 	return m_Actors.Size();
 }
 
+
+bool CChoreoScene::HasUnplayedSpeech()
+{
+	for ( int i = 0; i < m_Events.Size(); i++ )
+	{
+		CChoreoEvent *e = m_Events[ i ];
+		if ( e->GetType() == CChoreoEvent::SPEAK )
+		{
+			// Have we played it yet?
+			if ( m_flCurrentTime < e->GetStartTime() )
+				return true;
+		}
+	}
+
+	return false;
+}

@@ -80,8 +80,8 @@ BEGIN_DATADESC( CNPC_Stalker )
 	DEFINE_FIELD( m_fNextDamageTime,		FIELD_FLOAT),
 	DEFINE_FIELD( m_bPlayingHitWall,		FIELD_FLOAT),
 	DEFINE_FIELD( m_bPlayingHitFlesh,		FIELD_FLOAT),
-	DEFINE_FIELD( m_pBeam,				FIELD_CLASSPTR),
-	DEFINE_FIELD( m_pLightGlow,			FIELD_CLASSPTR),
+	//DEFINE_FIELD( m_pBeam,				FIELD_CLASSPTR),
+	//DEFINE_FIELD( m_pLightGlow,			FIELD_CLASSPTR),
 	DEFINE_FIELD( m_flNextNPCThink,		FIELD_FLOAT),
 	DEFINE_FIELD( m_vLaserCurPos,			FIELD_POSITION_VECTOR),
 	DEFINE_FIELD( m_flNextAttackSoundTime, FIELD_TIME ),
@@ -831,7 +831,7 @@ void CNPC_Stalker::CalcBeamPosition(void)
 		// Must be scaled with distance 
 		// -----------------------------------------
 		float fTargetDist = (GetAbsOrigin() - m_vLaserTargetPos).Length();
-		float noiseScale		= atan(0.2/fTargetDist);
+		float noiseScale		= std::atanf(0.2f/fTargetDist);
 		float m_fNoiseModX		= 5;
 		float m_fNoiseModY		= 5;
 		float m_fNoiseModZ		= 5;

@@ -29,6 +29,33 @@ protected:
 
 };
 
+class CTriggerHurt : public CTrigger
+{
+public:
+	CE_DECLARE_CLASS(CTriggerHurt, CTrigger);
 
+	bool HurtEntity( CEntity *pOther, float damage );
+	int HurtAllTouchers( float dt );
+
+	enum
+	{
+		DAMAGEMODEL_NORMAL = 0,
+		DAMAGEMODEL_DOUBLE_FORGIVENESS,
+	};
+
+protected:
+	DECLARE_DATAMAP(float ,m_flLastDmgTime);
+	DECLARE_DATAMAP(CUtlVector<EHANDLE> ,m_hurtEntities);
+	DECLARE_DATAMAP(int ,m_damageModel);
+	DECLARE_DATAMAP(float ,m_flDmgResetTime);
+	DECLARE_DATAMAP(float ,m_flDamage);
+	DECLARE_DATAMAP(float ,m_flOriginalDamage);
+	DECLARE_DATAMAP(float ,m_flDamageCap);
+	DECLARE_DATAMAP(int ,m_bitsDamageInflict);
+	DECLARE_DATAMAP(bool ,m_bNoDmgForce);
+	DECLARE_DATAMAP(COutputEvent ,m_OnHurtPlayer);
+	DECLARE_DATAMAP(COutputEvent ,m_OnHurt);
+
+};
 
 #endif

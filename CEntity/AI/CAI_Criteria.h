@@ -232,7 +232,8 @@ private:
 
 	AI_ResponseParams m_Params;
 
-	char *			m_szContext;
+	//char *			m_szContext;
+	CUtlString      m_szContext;
 	bool			m_bApplyContextToWorld;
 };
 

@@ -179,6 +179,71 @@ private:
 	bool m_bAllowPlayerAvoid;
 };
 
+//-----------------------------------------------------------------------------
+//
+// Purpose: Utility to allow place grace in cover
+//
+//-----------------------------------------------------------------------------
+
+struct AI_FreePassParams_t
+{
+	float timeToTrigger;		// How long after not detected to issue pass
+	float duration;				// How long in the open pass before revoked
+	float moveTolerance;		// How far in open needed to move to revoke pass
+	float refillRate;			// After hiding again during pass, how quickly to reinstitute pass(seconds per second)
+	float coverDist;			// When hiding, how far from an obstructing object needed to be considered in cover
+
+	float peekTime;				// How long allowed to peek
+	float peekTimeAfterDamage;	// How long allowed to peek after damaged by
+	float peekEyeDist;			// how far spaced out the eyes are
+	float peekEyeDistZ;			// how far below eye position to test eyes (handles peek up)
+
+	DECLARE_SIMPLE_DATADESC();
+};
+
+//-------------------------------------
+
+class CAI_FreePass : public CAI_Component
+{
+public:
+	CAI_FreePass()
+			: m_FreePassTimeRemaining(0)
+	{
+		memset(&m_Params, 0, sizeof(m_Params));
+	}
+
+	void			Reset( float passTime = -1, float moveTolerance = -1 );
+
+	void			SetPassTarget( CEntity *pTarget )		{ m_hTarget.Set((pTarget)?pTarget->BaseEntity():NULL); m_FreePassTimeRemaining = 0; }
+	CEntity *		GetPassTarget()								{ return CEntity::Instance(m_hTarget); }
+
+	void			SetParams( const AI_FreePassParams_t &params )	{ m_Params = params; }
+	const AI_FreePassParams_t &GetParams() const					{ return m_Params; }
+
+	//---------------------------------
+	//	Free pass
+	//---------------------------------
+	void			Update();
+
+	bool			HasPass();
+	void 			Revoke( bool bUpdateMemory = false );
+
+	float			GetTimeRemaining()					{ return m_FreePassTimeRemaining; }
+	void			SetTimeRemaining( float passTime )	{ m_FreePassTimeRemaining = passTime; }
+
+	bool			ShouldAllowFVisible( bool bBaseResult );
+
+private:
+	EHANDLE			m_hTarget;
+
+	float			m_FreePassTimeRemaining;
+	CAI_MoveMonitor m_FreePassMoveMonitor;
+
+	AI_FreePassParams_t m_Params;
+
+	DECLARE_SIMPLE_DATADESC();
+};
+
 
 extern string_t g_iszFuncBrushClassname;
 

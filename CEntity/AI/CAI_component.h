@@ -8,13 +8,13 @@
 #ifndef AI_COMPONENT_H
 #define AI_COMPONENT_H
 
+#include <ai_hull.h>
 
 #if defined( _WIN32 )
 #pragma once
 #endif
 
-enum Hull_t;
-class CAI_Enemies;
+class CEAI_Enemies;
 typedef int AI_TaskFailureCode_t;
 struct Task_t;
 
@@ -111,7 +111,7 @@ protected:
 	void				Forget( int iMemory );
 	bool				HasMemory( int iMemory );
 
-	CAI_Enemies *		GetEnemies();
+	CEAI_Enemies *		GetEnemies();
 	
 	const char * 		GetEntClassname();
 	
@@ -150,7 +150,7 @@ template <class NPC_CLASS, class BASE_COMPONENT = CAI_Component>
 class CAI_ComponentWithOuter : public BASE_COMPONENT
 {
 protected:
-	CAI_ComponentWithOuter(CEntity *pOuter = NULL)
+	CAI_ComponentWithOuter(NPC_CLASS *pOuter = NULL)
 	 : BASE_COMPONENT(pOuter)
 	{
 	}

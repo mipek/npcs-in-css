@@ -63,7 +63,7 @@ public:
 	IPhysicsSpring			*m_pSpring;
 
 private:
-	CHandle<CNPC_Barnacle>	m_hBarnacle;
+	CEFakeHandle<CNPC_Barnacle>	m_hBarnacle;
 };
 
 //-----------------------------------------------------------------------------

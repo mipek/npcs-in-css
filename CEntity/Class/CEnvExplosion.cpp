@@ -20,7 +20,7 @@ void ExplosionCreate( const Vector &center, const QAngle &angles,
 	CBaseEntity *pOwner, int magnitude, int radius, int nSpawnFlags, float flExplosionForce, CBaseEntity *pInflictor, int iCustomDamageType,
 	const EHANDLE *ignoredEntity , Class_T ignoredClass )
 {
-	char			buf[128];
+	char			buf[16];
 
 	CE_CEnvExplosion *pExplosion = (CE_CEnvExplosion*)CEntity::Create( "env_explosion", center, angles, pOwner );
 	Q_snprintf( buf,sizeof(buf), "%3d", magnitude );
@@ -45,7 +45,8 @@ void ExplosionCreate( const Vector &center, const QAngle &angles,
 	variant_t emptyVariant;
 	pExplosion->m_nRenderMode = kRenderTransAdd;
 	pExplosion->SetOwnerEntity( pOwner );
-	pExplosion->Spawn();
+	DispatchSpawn(pExplosion->BaseEntity());
+	//pExplosion->Spawn();
 	pExplosion->m_hInflictor.ptr->Set(pInflictor);
 	pExplosion->SetCustomDamageType( iCustomDamageType );
 	if (ignoredEntity)

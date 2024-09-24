@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -37,13 +37,16 @@ class CPropCombineBall : public CSode_Fix, public CDefaultPlayerPickupVPhysics
 	//DECLARE_SERVERCLASS();
 
 public:
+	CPropCombineBall(): m_bBounceDie(false), m_nBounceCount(0), m_flRadius(0.0f)
+	{
+	}
 	virtual void Precache();
 	virtual void Spawn();
 	virtual void UpdateOnRemove();
 	void StopLoopingSounds();
 
-	virtual void OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t reason );
-	virtual void OnPhysGunDrop( CPlayer *pPhysGunUser, PhysGunDrop_t Reason );
+	virtual void OnPhysGunPickup( CBaseEntity *pPhysGunUser, PhysGunPickup_t reason );
+	virtual void OnPhysGunDrop( CBaseEntity *pPhysGunUser, PhysGunDrop_t Reason );
 	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
 
 	virtual bool OverridePropdata();
@@ -97,7 +100,7 @@ public:
 
 	virtual CBaseEntity *HasPhysicsAttacker( float dt );
 
-	void	SetSpawner( CFuncCombineBallSpawner *pSpawner ) { m_hSpawner = pSpawner; }
+	void	SetSpawner( CFuncCombineBallSpawner *pSpawner );
 	void	NotifySpawnerOfRemoval( void );
 
 
@@ -117,12 +120,14 @@ public:
 		m_bEmit = bEmit;
 	}
 
-	void SetOriginalOwner( CEntity *pEntity ) { m_hOriginalOwner = pEntity; }
+	void SetOriginalOwner( CEntity *pEntity ) { m_hOriginalOwner.Set(pEntity->GetIHandle()); }
 	CEntity *GetOriginalOwner() { return m_hOriginalOwner; }
+
+	void AttachTrail();
 
 private:
 
-	void SetPlayerLaunched( CPlayer *pOwner );
+	void SetPlayerLaunched( CBaseEntity *pOwner );
 
 	float GetBallHoldDissolveTime();
 	float GetBallHoldSoundRampTime();
@@ -190,9 +195,9 @@ private:
 	float	m_flNextDamageTime;
 	float	m_flLastCaptureTime;
 
-	CHandle < CFuncCombineBallSpawner > m_hSpawner;
+	CEFakeHandle < CFuncCombineBallSpawner > m_hSpawner;
 
-	CHandle < CEntity > m_hOriginalOwner;
+	CEFakeHandle < CEntity > m_hOriginalOwner;
 
 	bool m_bEmit;
 	bool m_bHeld;

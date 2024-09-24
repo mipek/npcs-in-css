@@ -105,7 +105,7 @@ float CAI_Path::GetGoalSpeed( const Vector &startPos )
 		Vector goalDirection = GetGoalDirection( startPos );
 		Vector targetVelocity = CEntity::Instance(m_goalSpeedTarget)->GetSmoothedVelocity();
 		float dot = DotProduct( goalDirection, targetVelocity );
-		dot = max( 0.0f, dot );
+		dot = std::max( 0.0f, dot );
 		// return a relative impact speed of m_goalSpeed
 		if (m_goalSpeed > 0.0)
 		{
@@ -516,4 +516,33 @@ void CAI_Path::ComputeRouteGoalDistances(AI_Waypoint_t *pGoalWaypoint)
 		
 		pCurWaypoint = pPrev;
 	}
+}
+
+CAI_Path::CAI_Path()
+{
+	m_goalType			= GOALTYPE_NONE;		// Type of goal
+	m_goalPos			= vec3_origin;			// Our ultimate goal position
+	m_goalTolerance		= 0.0;					// How close do we need to get to the goal
+	m_activity			= ACT_INVALID;			// The activity to use during motion
+	m_sequence			= ACT_INVALID;
+	m_target			= NULL;
+	m_goalFlags			= 0;
+	m_routeStartTime	= FLT_MAX;
+	m_arrivalActivity	= ACT_INVALID;
+	m_arrivalSequence	= ACT_INVALID;
+
+	m_iLastNodeReached  = NO_NODE;
+
+	m_waypointTolerance = DEF_WAYPOINT_TOLERANCE;
+
+}
+
+CAI_Path::~CAI_Path()
+{
+	DeleteAll( GetCurWaypoint() );
+}
+
+float CAI_Path::CurWaypointYaw() const
+{
+	return GetCurWaypoint()->flYaw;
 }

@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -68,7 +68,7 @@ extern int	g_interactionVortigauntClaw;
 extern int	g_interactionTurretStillStanding;
 
 // AI Interaction for being hit by a physics object
-extern int  g_interactionHitByPlayerThrownPhysObj;
+extern int  *g_interactionHitByPlayerThrownPhysObj;
 
 // Alerts vital allies when the player punts a large object (car)
 extern int	g_interactionPlayerPuntedHeavyObject;

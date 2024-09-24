@@ -1,4 +1,5 @@
 #include "asm.h"
+#include <stdint.h>
 
 #ifndef WIN32
 #define _GNU_SOURCE
@@ -370,7 +371,7 @@ void* eval_jump(void* src) {
 	else if (addr[0] == OP_JMP_BYTE) {
 		addr = &addr[OP_JMP_BYTE_SIZE] + *(char*)&addr[1];
 		//mangled 32bit jump?
-		if (addr[0] = OP_JMP) {
+		if (addr[0] == OP_JMP) {
 			addr = addr + *(int*)&addr[1];
 		}
 		return addr;

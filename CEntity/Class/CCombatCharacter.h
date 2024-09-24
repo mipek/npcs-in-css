@@ -5,6 +5,7 @@
 #include "CFlex.h"
 #include "ai_hull.h"
 #include "weapon_proficiency.h"
+#include "physics_impact_damage.h"
 
 enum Capability_t 
 {
@@ -49,6 +50,8 @@ enum Capability_t
 #define SF_RAGDOLL_BOOGIE_ELECTRICAL	0x10000
 #define SF_RAGDOLL_BOOGIE_ELECTRICAL_NARROW_BEAM	0x20000
 
+const int DEF_RELATIONSHIP_PRIORITY = INT_MIN;
+
 enum Disposition_t 
 {
 	D_ER,		// Undefined - error
@@ -90,11 +93,8 @@ public:
 
 	IServerVehicle *GetVehicle();
 
-	int GetAmmoCount( int iAmmoIndex ) const;
 	void AddAmmo( int iAmmoIndex , int iAmmount);
-	void RemoveAmmo( int iCount, int iAmmoIndex );
 	void RemoveAmmo( int iCount, const char *szName );
-	virtual bool GiveAmmo(int nCount, int nAmmoIndex);
 
 	bool				IsAllowedToPickupWeapons( void ) { return !m_bPreventWeaponPickup; }
 	void				SetPreventWeaponPickup( bool bPrevent ) { m_bPreventWeaponPickup = bPrevent; }
@@ -110,6 +110,7 @@ public:
 	void				ClearActiveWeapon() { SetActiveWeapon( NULL ); }
 		
 	bool				HaveThisWeaponType(CCombatWeapon *pWeapon);
+	CCombatWeapon		*GetThisWeaponType(CCombatWeapon *pWeapon);
 	
 	int					FAKE_OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	
@@ -143,10 +144,7 @@ public:
 	virtual CBaseEntity	*CheckTraceHullAttack_Vector( const Vector &vStart, const Vector &vEnd, const Vector &mins, const Vector &maxs, int iDamage, int iDmgType, float flForceScale = 1.0f, bool bDamageAnyNPC = false );
 	virtual bool BecomeRagdoll( const CTakeDamageInfo &info, const Vector &forceVector );
 	virtual bool BecomeRagdollOnClient( const Vector &force );
-	virtual bool IsInAVehicle()
-	{
-		return false;
-	}
+	virtual bool IsInAVehicle();
 	virtual CBaseEntity *GetVehicleEntity(); 
 	virtual bool FInViewCone_Entity( CBaseEntity *pEntity );
 	virtual bool FInViewCone_Vector( const Vector &vecSpot );
@@ -178,6 +176,14 @@ public:
 	virtual Vector	HeadDirection3D();
 	virtual Vector	EyeDirection2D();
 	virtual WeaponProficiency_t CalcWeaponProficiency( CBaseEntity *pWeapon );
+	virtual void DoMuzzleFlash();
+	virtual void OnKilledNPC( CBaseEntity *pKilled );
+	virtual void OnPlayerKilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info );
+	virtual	bool Weapon_CanSwitchTo(CBaseEntity *pWeapon);
+	virtual int	 GiveAmmo( int iCount, int iAmmoIndex, bool bSuppressSound = false );
+	virtual const impactdamagetable_t &GetPhysicsImpactDamageTable( void );
+	virtual int GetAmmoCount( int iAmmoIndex ) const;
+	virtual void RemoveAmmo( int iCount, int iAmmoIndex );
 
 public:
 	DECLARE_DEFAULTHEADER(IRelationType, Disposition_t, (CBaseEntity *pTarget));
@@ -193,7 +199,7 @@ public:
 	DECLARE_DEFAULTHEADER(CheckTraceHullAttack_Vector, CBaseEntity *, (const Vector &vStart, const Vector &vEnd, const Vector &mins, const Vector &maxs, int iDamage, int iDmgType, float flForceScale, bool bDamageAnyNPC));
 	DECLARE_DEFAULTHEADER(BecomeRagdoll, bool, (const CTakeDamageInfo &info, const Vector &forceVector));
 	DECLARE_DEFAULTHEADER(BecomeRagdollOnClient, bool, (const Vector &force));
-	//DECLARE_DEFAULTHEADER(IsInAVehicle, bool, ());
+	DECLARE_DEFAULTHEADER(IsInAVehicle, bool, ());
 	DECLARE_DEFAULTHEADER(GetVehicleEntity, CBaseEntity *, ());
 	DECLARE_DEFAULTHEADER(FInViewCone_Entity, bool, (CBaseEntity *));
 	DECLARE_DEFAULTHEADER(FInViewCone_Vector, bool, (const Vector &vecSpot));
@@ -225,6 +231,15 @@ public:
 	DECLARE_DEFAULTHEADER(HeadDirection3D, Vector, ());
 	DECLARE_DEFAULTHEADER(EyeDirection2D, Vector, ());
 	DECLARE_DEFAULTHEADER(CalcWeaponProficiency, WeaponProficiency_t,( CBaseEntity *pWeapon ));
+	DECLARE_DEFAULTHEADER(DoMuzzleFlash, void, ());
+	DECLARE_DEFAULTHEADER(OnKilledNPC, void, (CBaseEntity *pKilled));
+	DECLARE_DEFAULTHEADER(OnPlayerKilledOther, void, ( CBaseEntity *pVictim, const CTakeDamageInfo &info ));
+	DECLARE_DEFAULTHEADER(Weapon_CanSwitchTo, bool, (CBaseEntity *pWeapon));
+	DECLARE_DEFAULTHEADER(GiveAmmo, int, ( int iCount, int iAmmoIndex, bool bSuppressSound ));
+	DECLARE_DEFAULTHEADER(GetPhysicsImpactDamageTable, const impactdamagetable_t &, ());
+	DECLARE_DEFAULTHEADER(GetAmmoCount, int, (int iAmmoIndex) const);
+	DECLARE_DEFAULTHEADER(RemoveAmmo, void, (int iCount, int iAmmoIndex));
+
 
 public:
 	static void Shutdown();

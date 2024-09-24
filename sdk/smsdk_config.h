@@ -40,7 +40,7 @@
 /* Basic information exposed publicly */
 #define SMEXT_CONF_NAME			"Monster Extension"
 #define SMEXT_CONF_DESCRIPTION	"NPCS in CS:S"
-#define SMEXT_CONF_VERSION		"0.0.1.0"
+#define SMEXT_CONF_VERSION		"0.1.0.0"
 #define SMEXT_CONF_AUTHOR		"ZombieX2, PeaceMaker and DonRevan"
 #define SMEXT_CONF_URL			"http://www.ZombieX2.net/"
 #define SMEXT_CONF_LOGTAG		"MONSTER"
@@ -68,7 +68,7 @@
 #define SMEXT_ENABLE_GAMECONF
 #define SMEXT_ENABLE_MEMUTILS
 #define SMEXT_ENABLE_GAMEHELPERS
-//#define SMEXT_ENABLE_TIMERSYS
+#define SMEXT_ENABLE_TIMERSYS
 //#define SMEXT_ENABLE_THREADER
 //#define SMEXT_ENABLE_LIBSYS
 //#define SMEXT_ENABLE_MENUS

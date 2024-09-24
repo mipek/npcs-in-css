@@ -6,6 +6,7 @@
 #include "CSode_Fix.h"
 #include "ItemRespawnSystem.h"
 #include "vphysics/constraints.h"
+#include "player_pickup.h"
 
 
 // Armor given by a battery
@@ -45,7 +46,7 @@ private:
 };
 
 template <class BASE_T>
-class CItem : public BASE_T, public ICItem
+class CItem : public BASE_T, public ICItem, public CDefaultPlayerPickupVPhysics
 {
 public:
 	DECLARE_CLASS_NOFRIEND( CItem, BASE_T );
@@ -65,7 +66,7 @@ public:
 	bool ShouldMaterialize();
 	virtual bool GetObjectsOriginalParameters(Vector &vOriginalOrigin, QAngle &vOriginalAngles);
 
-	virtual bool MyTouch( CPlayer *pPlayer ) { return false; };
+	virtual CEntity* MyTouch( CPlayer *pPlayer ) { return nullptr; };
 
 
 	void ActivateWhenAtRest();
@@ -101,15 +102,6 @@ protected:
 	QAngle m_vOriginalSpawnAngles;
 	IPhysicsConstraint *m_pConstraint;
 
-};
-
-class CPickupItem: public CItem<CSode_Fix>
-{
-public:
-	CE_DECLARE_CLASS( CPickupItem, CItem<CSode_Fix> );
-	DECLARE_DATADESC();
-
-	void Spawn();
 };
 
 extern ConVar sv_css_item_respawn_time;
@@ -148,32 +140,32 @@ void CItem<BASE_T>::Spawn( void )
 
 	BaseClass::Spawn();
 
-	PrecacheScriptSound("AlyxEmp.Charge");
+	this->PrecacheScriptSound("AlyxEmp.Charge");
 
-	SetMoveType( MOVETYPE_FLYGRAVITY );
-	SetSolid( SOLID_BBOX );
-	SetBlocksLOS( false );
-	AddEFlags( EFL_NO_ROTORWASH_PUSH );
+	this->SetMoveType( MOVETYPE_FLYGRAVITY );
+	this->SetSolid( SOLID_BBOX );
+	this->SetBlocksLOS( false );
+	this->AddEFlags( EFL_NO_ROTORWASH_PUSH );
 	
 	// This will make them not collide with the player, but will collide
 	// against other items + weapons
-	SetCollisionGroup( COLLISION_GROUP_WEAPON );
-	CollisionProp()->UseTriggerBounds( true, ITEM_PICKUP_BOX_BLOAT );
+	this->SetCollisionGroup( COLLISION_GROUP_WEAPON );
+	this->CollisionProp()->UseTriggerBounds( true, ITEM_PICKUP_BOX_BLOAT );
 	m_fNextTouchTime = gpGlobals->curtime;
 
 	if ( CreateItemVPhysicsObject() == false )
 		return;
 
-	m_takedamage = DAMAGE_EVENTS_ONLY;
+	this->m_takedamage = DAMAGE_EVENTS_ONLY;
 
 	// Constrained start?
-	if ( HasSpawnFlags( SF_ITEM_START_CONSTRAINED ) )
+	if ( this->HasSpawnFlags( SF_ITEM_START_CONSTRAINED ) )
 	{
 		//Constrain the weapon in place
 		IPhysicsObject *pReferenceObject, *pAttachedObject;
 
 		pReferenceObject = my_g_WorldEntity->VPhysicsGetObject();
-		pAttachedObject = VPhysicsGetObject();
+		pAttachedObject = this->VPhysicsGetObject();
 
 		if ( pReferenceObject && pAttachedObject )
 		{
@@ -184,14 +176,14 @@ void CItem<BASE_T>::Spawn( void )
 			fixed.constraint.forceLimit	= lbs2kg( 10000 );
 			fixed.constraint.torqueLimit = lbs2kg( 10000 );
 
-			m_pConstraint = physenv->CreateFixedConstraint( pReferenceObject, pAttachedObject, NULL, fixed );
+			m_pConstraint = physenv->CreateFixedConstraint( pReferenceObject, pAttachedObject, nullptr, fixed );
 
-			m_pConstraint->SetGameData( (void *) BaseEntity() );
+			m_pConstraint->SetGameData( (void *) this->BaseEntity() );
 		}
 	}
 
-	SetThink( &CItem::FallThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	this->SetThink( &CItem::FallThink );
+	this->SetNextThink( gpGlobals->curtime + 0.1f );
 }
 
 template <class BASE_T>
@@ -203,10 +195,10 @@ void CItem<BASE_T>::Think(void)
 		return;
 	}
 
-	VALVE_BASEPTR original_think = m_pfnThink;
+	VALVE_BASEPTR original_think = this->m_pfnThink;
 	if(original_think != NULL)
 	{
-		(BaseEntity()->*original_think)();
+		(this->BaseEntity()->*original_think)();
 		return;
 	}
 }
@@ -228,20 +220,20 @@ void CItem<BASE_T>::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 		//pPlayer->PickupObject( this );
 
 		// Revan: This is a custom addition so players can pickup guns just like in CS:GO..
-		if(!GetOwnerEntity())
-		{
-			MyTouch(pPlayer);
-		}
+		//if(!this->GetOwnerEntity())
+		//{
+		//	MyTouch(pPlayer);
+		//}
 	}
 }
 
 template <class BASE_T>
 void CItem<BASE_T>::ActivateWhenAtRest()
 {
-	RemoveSolidFlags( FSOLID_TRIGGER );
+	this->RemoveSolidFlags( FSOLID_TRIGGER );
 	m_bActivateWhenAtRest = true;
-	SetThink( &CItem::ComeToRest );
-	SetNextThink( gpGlobals->curtime + 0.5f );
+	this->SetThink( &CItem::ComeToRest );
+	this->SetNextThink( gpGlobals->curtime + 0.5f );
 }
 
 template <class BASE_T>
@@ -250,8 +242,8 @@ void CItem<BASE_T>::ComeToRest( void )
 	if ( m_bActivateWhenAtRest )
 	{
 		m_bActivateWhenAtRest = false;
-		AddSolidFlags( FSOLID_TRIGGER );
-		SetThink( NULL );
+		this->AddSolidFlags( FSOLID_TRIGGER );
+		this->SetThink( NULL );
 	}
 }
 
@@ -269,8 +261,8 @@ void CItem<BASE_T>::OnEntityEvent( EntityEvent_t event, void *pEventData )
 		{
 			// Delay rest for a sec, to avoid changing collision 
 			// properties inside a collision callback.
-			SetThink( &CItem::ComeToRest );
-			SetNextThink( gpGlobals->curtime + 0.1f );
+			this->SetThink( &CItem::ComeToRest );
+			this->SetNextThink( gpGlobals->curtime + 0.1f );
 		}
 		break;
 	default:
@@ -282,25 +274,25 @@ void CItem<BASE_T>::OnEntityEvent( EntityEvent_t event, void *pEventData )
 template <class BASE_T>
 void CItem<BASE_T>::FallThink ( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	this->SetNextThink( gpGlobals->curtime + 0.1f );
 
 	bool shouldMaterialize = false;
-	IPhysicsObject *pPhysics = VPhysicsGetObject();
+	IPhysicsObject *pPhysics = this->VPhysicsGetObject();
 	if ( pPhysics )
 	{
 		shouldMaterialize = pPhysics->IsAsleep();
 	}
 	else
 	{
-		shouldMaterialize = (GetFlags() & FL_ONGROUND) ? true : false;
+		shouldMaterialize = (this->GetFlags() & FL_ONGROUND);
 	}
 
 	if ( shouldMaterialize )
 	{
-		SetThink ( NULL );
+		this->SetThink ( NULL );
 
-		m_vOriginalSpawnOrigin = GetAbsOrigin();
-		m_vOriginalSpawnAngles = GetAbsAngles();
+		m_vOriginalSpawnOrigin = this->GetAbsOrigin();
+		m_vOriginalSpawnAngles = this->GetAbsAngles();
 
 		g_ItemRespawnSystem.AddItem(this);
 	}
@@ -354,7 +346,7 @@ void CItem<BASE_T>::Touch( CEntity *pOther )
 	{
 		m_OnPlayerTouch.FireOutput(pOther, this);
 
-		SetThink( NULL );
+		this->SetThink( NULL );
 
 		Respawn();
 	}
@@ -363,21 +355,21 @@ void CItem<BASE_T>::Touch( CEntity *pOther )
 template <class BASE_T>
 void CItem<BASE_T>::Respawn( void )
 {
-	SetTouch( NULL );
-	AddEffects( EF_NODRAW );
+	this->SetTouch( nullptr );
+	this->AddEffects( EF_NODRAW );
 
-	VPhysicsDestroyObject();
+	this->VPhysicsDestroyObject();
 
-	SetMoveType( MOVETYPE_NONE );
-	SetSolid( SOLID_BBOX );
-	AddSolidFlags( FSOLID_TRIGGER );
+	this->SetMoveType( MOVETYPE_NONE );
+	this->SetSolid( SOLID_BBOX );
+	this->AddSolidFlags( FSOLID_TRIGGER );
 
-	UTIL_SetOrigin( this, GetOriginalSpawnOrigin() );// blip to whereever you should respawn.
-	SetAbsAngles( GetOriginalSpawnAngles() );// set the angles.
+	UTIL_SetOrigin( this, this->GetOriginalSpawnOrigin() );// blip to whereever you should respawn.
+	this->SetAbsAngles( this->GetOriginalSpawnAngles() );// set the angles.
 
 	UTIL_DropToFloor( this, MASK_SOLID );
 
-	RemoveAllDecals(); //remove any decals
+	this->RemoveAllDecals(); //remove any decals
 
 	m_fRespawnTime = gpGlobals->curtime + sv_css_item_respawn_time.GetFloat();
 	m_fNextTouchTime = m_fRespawnTime + 0.1f;
@@ -396,13 +388,13 @@ void CItem<BASE_T>::Materialize( void )
 
 	CreateItemVPhysicsObject();
 
-	if ( IsEffectActive( EF_NODRAW ) )
+	if ( this->IsEffectActive( EF_NODRAW ) )
 	{
 		// changing from invisible state to visible.
-		EmitSound( "AlyxEmp.Charge" );
+		this->EmitSound( "AlyxEmp.Charge" );
 
-		RemoveEffects( EF_NODRAW );
-		DoMuzzleFlash();
+		this->RemoveEffects( EF_NODRAW );
+		this->DoMuzzleFlash_Animating();
 	}
 
 	m_fNextTouchTime = gpGlobals->curtime + 0.5f;
@@ -412,21 +404,22 @@ template <class BASE_T>
 bool CItem<BASE_T>::CreateItemVPhysicsObject( void )
 {
 	// Create the object in the physics system
-	int nSolidFlags = GetSolidFlags() | FSOLID_NOT_STANDABLE;
+	int nSolidFlags = this->GetSolidFlags() | FSOLID_NOT_STANDABLE;
 	if ( !m_bActivateWhenAtRest )
 	{
 		nSolidFlags |= FSOLID_TRIGGER;
 	}
 
-	if ( VPhysicsInitNormal( SOLID_VPHYSICS, nSolidFlags, false ) == NULL )
+	if ( this->VPhysicsInitNormal( SOLID_VPHYSICS, nSolidFlags, false ) == NULL )
 	{
-		SetSolid( SOLID_BBOX );
-		AddSolidFlags( nSolidFlags );
+		this->SetSolid( SOLID_BBOX );
+		this->AddSolidFlags( nSolidFlags );
 
 		// If it's not physical, drop it to the floor
 		if (UTIL_DropToFloor(this, MASK_SOLID) == 0)
 		{
-			Warning( "Item %s fell out of level at %f,%f,%f\n", GetClassname(), GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z);
+			Warning( "Item %s fell out of level at %f,%f,%f\n",
+					 this->GetClassname(), this->GetAbsOrigin().x, this->GetAbsOrigin().y, this->GetAbsOrigin().z);
 			UTIL_Remove( this );
 			return false;
 		}
@@ -461,7 +454,7 @@ void CItem<BASE_T>::Precache()
 {
 	BaseClass::Precache();
 
-	PrecacheScriptSound( "Item.Materialize" );
+	this->PrecacheScriptSound( "Item.Materialize" );
 }
 
 

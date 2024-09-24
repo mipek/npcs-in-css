@@ -8,7 +8,7 @@
 #ifndef AI_BASEHUMANOID_H
 #define AI_BASEHUMANOID_H
 
-#include "CAI_behavior.h"
+#include "CAI_Behavior.h"
 #include "CAI_Blended_Movement.h"
 
 //-----------------------------------------------------------------------------

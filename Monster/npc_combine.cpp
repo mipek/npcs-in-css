@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -267,7 +267,7 @@ void CNPC_Combine::InputThrowGrenadeAtTarget( inputdata_t &inputdata )
 void CNPC_Combine::Precache()
 {
 	PrecacheModel("models/weapons/w_grenade.mdl");
-	g_helpfunc.UTIL_PrecacheOther( "npc_handgrenade" );
+	//g_helpfunc.UTIL_PrecacheOther( "npc_handgrenade" );
 
 	PrecacheScriptSound( "NPC_Combine.GrenadeLaunch" );
 	PrecacheScriptSound( "NPC_Combine.WeaponBash" );
@@ -336,6 +336,8 @@ void CNPC_Combine::Spawn( void )
 	m_flAlertPatrolTime			= 0;
 
 	m_flNextAltFireTime = gpGlobals->curtime;
+
+	m_iNumGrenades = 4; //CE
 
 	NPCInit();
 }
@@ -2886,8 +2888,9 @@ bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 		return false;
 
 	// See Steve Bond if you plan on changing this next piece of code!! (SJB) EP2_OUTLAND_10
-	if (m_iNumGrenades < 1)
-		return false;
+	// CE: uncommented for unlimited ammo
+	//if (m_iNumGrenades < 1)
+	//	return false;
 
 	CEntity *pEnemy = GetEnemy();
 
@@ -3217,8 +3220,8 @@ bool CNPC_Combine::HandleInteraction(int interactionType, void *data, CBaseEntit
 	if ( interactionType == g_interactionTurretStillStanding )
 	{
 		// A turret that I've kicked recently is still standing 5 seconds later. 
-		Assert( GetEnemy() != NULL );
-		if ( sourceEnt == GetEnemy()->BaseEntity() )
+		CEntity *cent = CEntity::Instance(sourceEnt);
+		if ( cent == GetEnemy() )
 		{
 			// It's still my enemy. Time to grenade it.
 			Vector forward, up;

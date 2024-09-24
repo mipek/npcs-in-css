@@ -117,7 +117,6 @@ public:
 
 	// Eliminates roll + pitch potentially in the headcrab at canister jump time
 	void EliminateRollAndPitch();
-	void EliminateRollAndPitch_CBE();
 
 	float InnateRange1MinRange( void );
 	float InnateRange1MaxRange( void );

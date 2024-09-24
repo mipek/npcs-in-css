@@ -30,7 +30,7 @@ class IEntityFactory_CE;
 //extern EntityFactoryDictionaryCall EntityFactoryDictionary_CE;
 
 class CBaseEntityOutput;
-#ifndef WIN32
+#if !defined(PLATFORM_WINDOWS)
 typedef void (* FireOutputFuncType)(CBaseEntityOutput *, variant_t Value, CBaseEntity *pActivator, CBaseEntity *pCaller, float fDelay);
 #else
 typedef void (__thiscall * FireOutputFuncType)(CBaseEntityOutput *, variant_t Value, CBaseEntity *pActivator, CBaseEntity *pCaller, float fDelay);
@@ -53,6 +53,11 @@ public:
 	void RemoveEdict(edict_t *e);
 
 	void PrintDump();
+
+	IEntityFactoryDictionary_CE *GetEntityFactoryDictionary()
+	{
+		return pDict;
+	}
 
 #ifdef _DEBUG
 	static unsigned long long count;

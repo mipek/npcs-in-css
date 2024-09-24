@@ -184,5 +184,66 @@ public:
 	static T *m_pClassList;
 };
 
+enum notify_system_event_t
+{
+	NOTIFY_EVENT_TELEPORT = 0,
+	NOTIFY_EVENT_DESTROY,
+};
+
+struct notify_teleport_params_t
+{
+	Vector prevOrigin;
+	QAngle prevAngles;
+	bool physicsRotate;
+};
+
+struct notify_destroy_params_t
+{
+};
+
+struct notify_system_event_params_t
+{
+	union
+	{
+		const notify_teleport_params_t *pTeleport;
+		const notify_destroy_params_t *pDestroy;
+	};
+	notify_system_event_params_t( const notify_teleport_params_t *pInTeleport ) { pTeleport = pInTeleport; }
+	notify_system_event_params_t( const notify_destroy_params_t *pInDestroy ) { pDestroy = pInDestroy; }
+};
+
+abstract_class INotify
+{
+public:
+	// Add notification for an entity
+	virtual void AddEntity( CBaseEntity *pNotify, CBaseEntity *pWatched ) = 0;
+
+	// Remove notification for an entity
+	virtual void RemoveEntity( CBaseEntity *pNotify, CBaseEntity *pWatched ) = 0;
+
+	// Call the named input in each entity who is watching pEvent's status
+	virtual void ReportNamedEvent( CBaseEntity *pEntity, const char *pEventName ) = 0;
+
+	// System events don't make sense as inputs, so are handled through a generic notify function
+	virtual void ReportSystemEvent( CBaseEntity *pEntity, notify_system_event_t eventType, const notify_system_event_params_t &params ) = 0;
+
+	inline void ReportDestroyEvent( CBaseEntity *pEntity )
+	{
+		notify_destroy_params_t destroy;
+		ReportSystemEvent( pEntity, NOTIFY_EVENT_DESTROY, notify_system_event_params_t(&destroy) );
+	}
+
+	inline void ReportTeleportEvent( CBaseEntity *pEntity, const Vector &prevOrigin, const QAngle &prevAngles, bool physicsRotate )
+	{
+		notify_teleport_params_t teleport;
+		teleport.prevOrigin = prevOrigin;
+		teleport.prevAngles = prevAngles;
+		teleport.physicsRotate = physicsRotate;
+		ReportSystemEvent( pEntity, NOTIFY_EVENT_TELEPORT, notify_system_event_params_t(&teleport) );
+	}
+
+	// Remove this entity from the notify list
+	virtual void ClearEntity( CBaseEntity *pNotify ) = 0;
+};
 
 #endif // _INCLUDE_ENTITYOUTPUT_H_

@@ -165,10 +165,6 @@ SH_DECL_MANUALHOOK0_void(NPCThink, 0, 0, 0);
 DECLARE_HOOK(NPCThink, CAI_NPC);
 DECLARE_DEFAULTHANDLER_void(CAI_NPC, NPCThink,(), ());
 
-SH_DECL_MANUALHOOK0(IsActivityFinished, 0, 0, 0, bool);
-DECLARE_HOOK(IsActivityFinished, CAI_NPC);
-DECLARE_DEFAULTHANDLER(CAI_NPC, IsActivityFinished, bool, (), ());
-
 SH_DECL_MANUALHOOK1(CalcIdealYaw, 0, 0, 0, float, const Vector &);
 DECLARE_HOOK(CalcIdealYaw, CAI_NPC);
 DECLARE_DEFAULTHANDLER(CAI_NPC, CalcIdealYaw, float, (const Vector &vecTarget), (vecTarget));
@@ -864,6 +860,110 @@ SH_DECL_MANUALHOOK2(IsCoverPosition, 0, 0, 0, bool, const Vector &, const Vector
 DECLARE_HOOK(IsCoverPosition, CAI_NPC);
 DECLARE_DEFAULTHANDLER(CAI_NPC, IsCoverPosition, bool, (const Vector &vecThreat, const Vector &vecPosition), (vecThreat, vecPosition));
 
+SH_DECL_MANUALHOOK0(CanHolsterWeapon, 0, 0, 0, bool);
+DECLARE_HOOK(CanHolsterWeapon, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, CanHolsterWeapon, bool, (), ());
+
+SH_DECL_MANUALHOOK0(EyeLookTarget, 0, 0, 0, CBaseEntity *);
+DECLARE_HOOK(EyeLookTarget, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, EyeLookTarget, CBaseEntity *, (), ());
+
+SH_DECL_MANUALHOOK1(CanPlaySentence, 0, 0, 0, bool, bool);
+DECLARE_HOOK(CanPlaySentence, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, CanPlaySentence, bool, (bool fDisregardState), (fDisregardState));
+
+SH_DECL_MANUALHOOK6(PlayScriptedSentence, 0, 0, 0, int, const char *, float , float , soundlevel_t , bool , CBaseEntity *);
+DECLARE_HOOK(PlayScriptedSentence, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, PlayScriptedSentence, int, (const char *pszSentence, float delay, float volume, soundlevel_t soundlevel, bool bConcurrent, CBaseEntity *pListener), (pszSentence, delay, volume, soundlevel, bConcurrent, pListener));
+
+SH_DECL_MANUALHOOK1(CanRespondToEvent, 0, 0, 0, bool, const char *);
+DECLARE_HOOK(CanRespondToEvent, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, CanRespondToEvent, bool, (const char *ResponseConcept), (ResponseConcept));
+
+SH_DECL_MANUALHOOK3(RespondedTo, 0, 0, 0, bool, const char *, bool, bool);
+DECLARE_HOOK(RespondedTo, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, RespondedTo, bool, (const char *ResponseConcept, bool bForce, bool bCancelScene), (ResponseConcept,  bForce, bCancelScene));
+
+SH_DECL_MANUALHOOK0_void(StartNPC, 0, 0, 0);
+DECLARE_HOOK(StartNPC, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, StartNPC, (), ());
+
+SH_DECL_MANUALHOOK1_void(UpdateEfficiency, 0, 0, 0, bool);
+DECLARE_HOOK(UpdateEfficiency, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, UpdateEfficiency, (bool bInPVS), (bInPVS));
+
+SH_DECL_MANUALHOOK0(ShouldChooseNewEnemy, 0, 0, 0, bool);
+DECLARE_HOOK(ShouldChooseNewEnemy, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, ShouldChooseNewEnemy, bool, (), ());
+
+SH_DECL_MANUALHOOK0_void(PostRunStopMoving, 0, 0, 0);
+DECLARE_HOOK(PostRunStopMoving, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, PostRunStopMoving, (), ());
+
+SH_DECL_MANUALHOOK2(IsValidReasonableFacing, 0, 0, 0, bool, const Vector &, float );
+DECLARE_HOOK(IsValidReasonableFacing, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, IsValidReasonableFacing,bool, (const Vector &vecSightDir, float sightDist), (vecSightDir,  sightDist));
+
+SH_DECL_MANUALHOOK1(IsValidMoveAwayDest, 0, 0, 0, bool, const Vector &);
+DECLARE_HOOK(IsValidMoveAwayDest, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, IsValidMoveAwayDest, bool, (const Vector &vecDest), (vecDest));
+
+SH_DECL_MANUALHOOK0(ShouldLookForBetterWeapon, 0, 0, 0, bool);
+DECLARE_HOOK(ShouldLookForBetterWeapon, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, ShouldLookForBetterWeapon, bool, (), ());
+
+SH_DECL_MANUALHOOK1_void(PickupWeapon, 0, 0, 0, CBaseEntity *);
+DECLARE_HOOK(PickupWeapon, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, PickupWeapon, (CBaseEntity *pWeapon), (pWeapon));
+
+SH_DECL_MANUALHOOK2(FindCoverPos_Entity, 0, 0, 0, bool, CBaseEntity *, Vector *);
+DECLARE_HOOK(FindCoverPos_Entity, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, FindCoverPos_Entity, bool, (CBaseEntity *pEntity, Vector *pResult), (pEntity, pResult));
+
+SH_DECL_MANUALHOOK2(FindCoverPos_Sound, 0, 0, 0, bool, CSound *, Vector *);
+DECLARE_HOOK(FindCoverPos_Sound, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, FindCoverPos_Sound, bool, (CSound *pSound, Vector *pResult), (pSound, pResult));
+
+SH_DECL_MANUALHOOK0(GetAlternateMoveShootTarget, 0, 0, 0, CBaseEntity *);
+DECLARE_HOOK(GetAlternateMoveShootTarget, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, GetAlternateMoveShootTarget, CBaseEntity *, (), ());
+
+SH_DECL_MANUALHOOK1_void(InputOutsideTransition, 0, 0, 0, inputdata_t &);
+DECLARE_HOOK(InputOutsideTransition, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, InputOutsideTransition, (inputdata_t &inputdata), (inputdata));
+
+SH_DECL_MANUALHOOK1_void(InputInsideTransition, 0, 0, 0, inputdata_t &);
+DECLARE_HOOK(InputInsideTransition, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, InputInsideTransition, (inputdata_t &inputdata), (inputdata));
+
+SH_DECL_MANUALHOOK1_void(GiveWeapon, 0, 0, 0, string_t);
+DECLARE_HOOK(GiveWeapon, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, GiveWeapon, (string_t iszWeaponName), (iszWeaponName));
+
+SH_DECL_MANUALHOOK0(HearingSensitivity, 0, 0, 0, float);
+DECLARE_HOOK(HearingSensitivity, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, HearingSensitivity, float, (), ());
+
+SH_DECL_MANUALHOOK0_void(BarnacleDeathSound, 0, 0, 0);
+DECLARE_HOOK(BarnacleDeathSound, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, BarnacleDeathSound, (), ());
+
+SH_DECL_MANUALHOOK0_void(CheckFlinches, 0, 0, 0);
+DECLARE_HOOK(CheckFlinches, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, CheckFlinches, (), ());
+
+SH_DECL_MANUALHOOK2(CurrentWeaponLOSCondition, 0, 0, 0, bool, const Vector &, bool);
+DECLARE_HOOK(CurrentWeaponLOSCondition, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, CurrentWeaponLOSCondition, bool,  (const Vector &targetPos, bool bSetConditions), (targetPos, bSetConditions));
+
+SH_DECL_MANUALHOOK0_void(LostEnemySound, 0, 0, 0);
+DECLARE_HOOK(LostEnemySound, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, LostEnemySound, (), ());
+
+SH_DECL_MANUALHOOK1(IsActivityMovementPhased, 0, 0, 0, bool, Activity);
+DECLARE_HOOK(IsActivityMovementPhased, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, IsActivityMovementPhased, bool, (Activity activity), (activity));
+
 SH_DECL_MANUALHOOK1(OnMoveBlocked, 0, 0, 0, bool, AIMoveResult_t *);
 DECLARE_DEFAULTHANDLER_SUBCLASS(CAI_NPC, IAI_MovementSink, OnMoveBlocked, bool, (AIMoveResult_t *pResult), (pResult));
 DECLARE_HOOK_SUBCLASS(OnMoveBlocked, CAI_NPC, IAI_MovementSink);
@@ -899,6 +999,106 @@ DECLARE_DEFAULTHANDLER(CAI_NPC, CreatePathfinder, CAI_Pathfinder *, (), ());
 SH_DECL_MANUALHOOK0(CreateTacticalServices, 0, 0, 0, CAI_TacticalServices *);
 DECLARE_HOOK(CreateTacticalServices, CAI_NPC);
 DECLARE_DEFAULTHANDLER(CAI_NPC, CreateTacticalServices, CAI_TacticalServices *, (), ());
+
+SH_DECL_MANUALHOOK3(OnFailedSteer, 0, 0, 0, bool, AILocalMoveGoal_t *, float , AIMoveResult_t *);
+DECLARE_DEFAULTHANDLER_SUBCLASS(CAI_NPC, IAI_MovementSink, OnFailedSteer, bool, (AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult), (pMoveGoal, distClear, pResult));
+DECLARE_HOOK_SUBCLASS(OnFailedSteer, CAI_NPC, IAI_MovementSink);
+
+SH_DECL_MANUALHOOK3(OnFailedLocalNavigation, 0, 0, 0, bool, AILocalMoveGoal_t *, float, AIMoveResult_t *);
+DECLARE_DEFAULTHANDLER_SUBCLASS(CAI_NPC, IAI_MovementSink, OnFailedLocalNavigation, bool, (AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult), (pMoveGoal, distClear, pResult));
+DECLARE_HOOK_SUBCLASS(OnFailedLocalNavigation, CAI_NPC, IAI_MovementSink);
+
+SH_DECL_MANUALHOOK3(OnInsufficientStopDist, 0, 0, 0, bool, AILocalMoveGoal_t *, float , AIMoveResult_t *);
+DECLARE_DEFAULTHANDLER_SUBCLASS(CAI_NPC, IAI_MovementSink, OnInsufficientStopDist, bool, (AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult), (pMoveGoal, distClear, pResult));
+DECLARE_HOOK_SUBCLASS(OnInsufficientStopDist, CAI_NPC, IAI_MovementSink);
+
+SH_DECL_MANUALHOOK4(OnMoveExecuteFailed, 0, 0, 0, bool, const AILocalMoveGoal_t &, const AIMoveTrace_t &, AIMotorMoveResult_t, AIMoveResult_t *);
+DECLARE_DEFAULTHANDLER_SUBCLASS(CAI_NPC, IAI_MovementSink, OnMoveExecuteFailed, bool, (const AILocalMoveGoal_t &move, const AIMoveTrace_t &trace, AIMotorMoveResult_t fMotorResult, AIMoveResult_t *pResult), (move, trace, fMotorResult, pResult));
+DECLARE_HOOK_SUBCLASS(OnMoveExecuteFailed, CAI_NPC, IAI_MovementSink);
+
+SH_DECL_MANUALHOOK0(CalcYawSpeed, 0, 0, 0, float);
+DECLARE_DEFAULTHANDLER_SUBCLASS(CAI_NPC, IAI_MovementSink, CalcYawSpeed, float, (), ());
+DECLARE_HOOK_SUBCLASS(CalcYawSpeed, CAI_NPC, IAI_MovementSink);
+
+SH_DECL_MANUALHOOK2(CreateCustomTarget, 0, 0, 0, CBaseEntity *, const Vector &, float);
+DECLARE_HOOK(CreateCustomTarget, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, CreateCustomTarget, CBaseEntity *, (const Vector &vecOrigin, float duration), (vecOrigin, duration));
+
+SH_DECL_MANUALHOOK1_void(StartTargetHandling, 0, 0, 0, CBaseEntity *);
+DECLARE_HOOK(StartTargetHandling, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, StartTargetHandling, (CBaseEntity *pTargetEnt), (pTargetEnt));
+
+SH_DECL_MANUALHOOK0_void(ClearSenseConditions, 0, 0, 0);
+DECLARE_HOOK(ClearSenseConditions, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, ClearSenseConditions, (), ());
+
+SH_DECL_MANUALHOOK0_void(PlayFlinchGesture, 0, 0, 0);
+DECLARE_HOOK(PlayFlinchGesture, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, PlayFlinchGesture, (), ());
+
+SH_DECL_MANUALHOOK0_void(FoundEnemySound, 0, 0, 0);
+DECLARE_HOOK(FoundEnemySound, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, FoundEnemySound, (), ());
+
+SH_DECL_MANUALHOOK0(UseAttackSquadSlots, 0, 0, 0, bool);
+DECLARE_HOOK(UseAttackSquadSlots, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, UseAttackSquadSlots, bool, (), ());
+
+SH_DECL_MANUALHOOK1_void(OnGivenWeapon, 0, 0, 0, CBaseEntity *);
+DECLARE_HOOK(OnGivenWeapon, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, OnGivenWeapon, (CBaseEntity *pNewWeapon), (pNewWeapon));
+
+SH_DECL_MANUALHOOK1_void(PickupItem, 0, 0, 0, CBaseEntity *);
+DECLARE_HOOK(PickupItem, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, PickupItem, (CBaseEntity *pItem), (pItem));
+
+SH_DECL_MANUALHOOK3_void(MoveOrder, 0, 0, 0, const Vector &, CBaseEntity **, int  );
+DECLARE_HOOK(MoveOrder, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, MoveOrder, (const Vector &vecDest, CBaseEntity **Allies, int numAllies ), (vecDest, Allies, numAllies ));
+
+SH_DECL_MANUALHOOK0_void(OnMoveOrder, 0, 0, 0);
+DECLARE_HOOK(OnMoveOrder, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, OnMoveOrder, (), ());
+
+SH_DECL_MANUALHOOK0_void(OnMoveToCommandGoalFailed, 0, 0, 0);
+DECLARE_HOOK(OnMoveToCommandGoalFailed, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, OnMoveToCommandGoalFailed, (), ());
+
+SH_DECL_MANUALHOOK0(IsCommandable, 0, 0, 0, bool);
+DECLARE_HOOK(IsCommandable, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, IsCommandable, bool, (), ());
+
+SH_DECL_MANUALHOOK0(IsCommandMoving, 0, 0, 0, bool);
+DECLARE_HOOK(IsCommandMoving, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, IsCommandMoving, bool, (), ());
+
+SH_DECL_MANUALHOOK0(ShouldAutoSummon, 0, 0, 0, bool);
+DECLARE_HOOK(ShouldAutoSummon, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, ShouldAutoSummon, bool, (), ());
+
+SH_DECL_MANUALHOOK1(IsValidCommandTarget, 0, 0, 0, bool, CBaseEntity *);
+DECLARE_HOOK(IsValidCommandTarget, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, IsValidCommandTarget, bool, (CBaseEntity *pTarget), (pTarget));
+
+SH_DECL_MANUALHOOK3(TargetOrder, 0, 0, 0, bool, CBaseEntity *, CBaseEntity **, int );
+DECLARE_HOOK(TargetOrder, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, TargetOrder, bool, (CBaseEntity *pTarget, CBaseEntity **Allies, int numAllies), (pTarget, Allies, numAllies));
+
+SH_DECL_MANUALHOOK0(GetSquadCommandRepresentative, 0, 0, 0, CBaseEntity *);
+DECLARE_HOOK(GetSquadCommandRepresentative, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, GetSquadCommandRepresentative, CBaseEntity *, (), ());
+
+SH_DECL_MANUALHOOK0(IsMedic, 0, 0, 0, bool);
+DECLARE_HOOK(IsMedic, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, IsMedic, bool, (), ());
+
+SH_DECL_MANUALHOOK1_void(SetCommandGoal, 0, 0, 0, const Vector &);
+DECLARE_HOOK(SetCommandGoal, CAI_NPC);
+DECLARE_DEFAULTHANDLER_void(CAI_NPC, SetCommandGoal, (const Vector &vecGoal), (vecGoal));
+
+SH_DECL_MANUALHOOK0(GetBestScent, 0, 0, 0, CSound *);
+DECLARE_HOOK(GetBestScent, CAI_NPC);
+DECLARE_DEFAULTHANDLER(CAI_NPC, GetBestScent, CSound *, (), ());
 
 //Datamaps
 DEFINE_PROP(m_NPCState, CAI_NPC);
@@ -980,13 +1180,18 @@ DEFINE_PROP(m_flLastEnemyTime, CAI_NPC);
 DEFINE_PROP(m_flNextDecisionTime, CAI_NPC);
 DEFINE_PROP(m_bSkippedChooseEnemy, CAI_NPC);
 DEFINE_PROP(m_flTimeEnemyAcquired, CAI_NPC);
+DEFINE_PROP(m_OnDeath, CAI_NPC);
+DEFINE_PROP(m_flAcceptableTimeSeenEnemy, CAI_NPC);
+DEFINE_PROP(m_vecCommandGoal, CAI_NPC);
+DEFINE_PROP(m_iDamageCount, CAI_NPC);
+DEFINE_PROP(m_hEnemyFilter, CAI_NPC);
 
 
 
 
 //-----------------------------------------------------------------------------
 
-CAI_NPC::CAI_NPC()
+CAI_NPC::CAI_NPC(): m_bInChoreo(false)
 {
 	g_AI_Manager.AddAI( this );
 }
@@ -1343,9 +1548,13 @@ void CAI_NPC::ClearHintNode( float reuseDelay )
 }
 
 
-void CAI_NPC::SetHintNode( CBaseEntity *pHintNode )
+void CAI_NPC::SetHintNode( CE_AI_Hint *pHintNode )
 {
-	m_pHintNode.ptr->Set(pHintNode);
+	if(pHintNode)
+		m_pHintNode.ptr->Set(pHintNode->GetIHandle());
+	else
+		m_pHintNode.ptr->Term();
+	//m_pHintNode.ptr->Set(pHintNode);
 	//*(m_pHintNode.ptr) = pHintNode;
 }
 
@@ -1397,6 +1606,13 @@ void CAI_NPC::AddEventToSR(const char *eventName, int eventID)
 
 	m_pEventSR->AddString( eventName, eventID );
 	*(m_iNumEvents) += 1;
+}
+
+const char*	CAI_NPC::GetEventName(int actID)
+{
+	Assert( m_pEventSR );
+
+	return m_pEventSR->GetStringText(actID);
 }
 
 //-----------------------------------------------------------------------------
@@ -1629,6 +1845,33 @@ bool CAI_NPC::ConditionInterruptsCurSchedule( int iCondition )
 		return false;
 	}
 	return ( GetCurSchedule()->HasInterrupt( interrupt ) );
+}
+
+bool CAI_NPC::ConditionInterruptsSchedule( int localScheduleID, int iCondition )
+{
+	CAI_Schedule *pSchedule = GetSchedule( localScheduleID );
+	if ( !pSchedule )
+		return false;
+
+	int interrupt = InterruptFromCondition( iCondition );
+
+	if ( interrupt == -1 )
+	{
+		Assert(0);
+		return false;
+	}
+	return ( pSchedule->HasInterrupt( interrupt ) );
+}
+
+void CAI_NPC::ClearTransientConditions()
+{
+	// if the npc didn't use these conditions during the above call to MaintainSchedule()
+	// we throw them out cause we don't want them sitting around through the lifespan of a schedule
+	// that doesn't use them.
+	ClearCondition( COND_LIGHT_DAMAGE  );
+	ClearCondition( COND_HEAVY_DAMAGE );
+	ClearCondition( COND_PHYSICS_DAMAGE );
+	ClearCondition( COND_PLAYER_PUSHING );
 }
 
 const Vector &CAI_NPC::GetEnemyLKP() const
@@ -2049,6 +2292,11 @@ void CAI_NPC::SetEnemyOccluder(CEntity *pBlocker)
 	m_hEnemyOccluder.ptr->Set((pBlocker) ? pBlocker->BaseEntity() : NULL);
 }
 
+void CAI_NPC::MarkEnemyAsEluded()
+{
+	GetEnemies()->MarkAsEluded( GetEnemy_CBase() );
+}
+
 void CAI_NPC::ClearEnemyMemory()
 {
 	GetEnemies()->ClearMemory( GetEnemy_CBase() );
@@ -2173,7 +2421,16 @@ CSound *CAI_NPC::GetLoudestSoundOfType( int iType )
 	return CE_CSoundEnt::GetLoudestSoundOfType( iType, EarPosition() );;
 }
 
+bool CAI_NPC::IsWeaponHolstered( void )
+{
+	if( !GetActiveWeapon() )
+		return true;
 
+	if( GetActiveWeapon()->IsEffectActive(EF_NODRAW) )
+		return true;
+
+	return false;
+}
 
 bool CAI_NPC::IsWeaponStateChanging( void )
 {
@@ -2672,9 +2929,342 @@ bool CAI_NPC::HasConditionsToInterruptSchedule( int nLocalScheduleID )
 	return !bitsOut.IsAllClear();
 }
 
+void CAI_NPC::SetSequenceByName( const char *szSequence )
+{
+	int iSequence = LookupSequence( szSequence );
+
+	if ( iSequence > ACTIVITY_NOT_AVAILABLE )
+		SetSequenceById( iSequence );
+	else
+	{
+		DevWarning( 2, "%s has no sequence to match request\n", GetClassname(), szSequence );
+		SetSequence( 0 );	// Set to the reset anim (if it's there)
+	}
+}
+
+void CAI_NPC::SetSequenceById( int iSequence )
+{
+	// Set to the desired anim, or default anim if the desired is not present
+	if ( iSequence > ACTIVITY_NOT_AVAILABLE )
+	{
+		if ( GetSequence() != iSequence || !SequenceLoops() )
+		{
+			SetCycle( 0 );
+		}
+
+		ResetSequence( iSequence );	// Set to the reset anim (if it's there)
+		GetMotor()->RecalculateYawSpeed();
+	}
+	else
+	{
+		// Not available try to get default anim
+		DevWarning( 2, "%s invalid sequence requested\n", GetClassname() );
+		SetSequence( 0 );	// Set to the reset anim (if it's there)
+	}
+}
+
+void CAI_NPC::AddToSquad( string_t name )
+{
+	g_AI_SquadManager->FindCreateSquad( this, name );
+}
+
+void CAI_NPC::RemoveFromSquad()
+{
+	CAI_Squad *squad = GetSquad();
+	if ( squad )
+	{
+		squad->RemoveFromSquad( this, false );
+		m_pSquad = NULL;
+	}
+}
+
+bool CAI_NPC::SoundIsVisible( CSound *pSound )
+{
+	CBaseEntity *pBlocker = NULL;
+	if ( !FVisible_Vector( pSound->GetSoundReactOrigin(), MASK_BLOCKLOS, &pBlocker ) )
+	{
+		// Is the blocker the sound owner?
+		if ( pBlocker && pBlocker == pSound->m_hOwner )
+			return true;
+
+		return false;
+	}
+	return true;
+}
+
+int CAI_NPC::NumWeaponsInSquad( const char *pszWeaponClassname )
+{
+	string_t iszWeaponClassname = FindPooledString( pszWeaponClassname );
+
+	CAI_Squad *squad = GetSquad();
+	if( !squad )
+	{
+		if( GetActiveWeapon() && *(GetActiveWeapon()->m_iClassname) == iszWeaponClassname )
+		{
+			// I'm alone in my squad, but I do have this weapon.
+			return 1;
+		}
+
+		return 0;
+	}
+
+	int count = 0;
+	AISquadIter_t iter;
+	CBaseEntity *pSquadmate = squad->GetFirstMember( &iter );
+	while ( pSquadmate )
+	{
+		CAI_NPC *npc = (CAI_NPC *)CEntity::Instance(pSquadmate);
+		if( npc->GetActiveWeapon() && *(npc->GetActiveWeapon()->m_iClassname) == iszWeaponClassname )
+		{
+			count++;
+		}
+		pSquadmate = squad->GetNextMember( &iter );
+	}
+
+	return count;
+}
+
+void CAI_NPC::AddRelationship( const char *pszRelationship, CEntity *pActivator )
+{
+	// Parse the keyvalue data
+	char parseString[1000];
+	Q_strncpy(parseString, pszRelationship, sizeof(parseString));
+
+	// Look for an entity string
+	char *entityString = strtok(parseString," ");
+	while (entityString)
+	{
+		// Get the disposition
+		char *dispositionString = strtok(NULL," ");
+		Disposition_t disposition = D_NU;
+		if ( dispositionString )
+		{
+			if (!stricmp(dispositionString,"D_HT"))
+			{
+				disposition = D_HT;
+			}
+			else if (!stricmp(dispositionString,"D_FR"))
+			{
+				disposition = D_FR;
+			}
+			else if (!stricmp(dispositionString,"D_LI"))
+			{
+				disposition = D_LI;
+			}
+			else if (!stricmp(dispositionString,"D_NU"))
+			{
+				disposition = D_NU;
+			}
+			else
+			{
+				disposition = D_NU;
+				Warning( "***ERROR***\nBad relationship type (%s) to unknown entity (%s)!\n", dispositionString,entityString );
+				Assert( 0 );
+				return;
+			}
+		}
+		else
+		{
+			Warning("Can't parse relationship info (%s) - Expecting 'name [D_HT, D_FR, D_LI, D_NU] [1-99]'\n", pszRelationship );
+			Assert(0);
+			return;
+		}
+
+		// Get the priority
+		char *priorityString	= strtok(NULL," ");
+		int	priority = ( priorityString ) ? atoi(priorityString) : DEF_RELATIONSHIP_PRIORITY;
+
+		bool bFoundEntity = false;
+
+		// Try to get pointer to an entity of this name
+		CEntity *entity = g_helpfunc.FindEntityByName( (CBaseEntity *)NULL, entityString );
+		while( entity )
+		{
+			// make sure you catch all entities of this name.
+			bFoundEntity = true;
+			AddEntityRelationship(entity->BaseEntity(), disposition, priority );
+			entity = g_helpfunc.FindEntityByName( entity, entityString );
+		}
+
+		if( !bFoundEntity )
+		{
+			// Need special condition for player as we can only have one
+			if (!stricmp("player", entityString) || !stricmp("!player", entityString))
+			{
+				AddClassRelationship( CLASS_PLAYER, disposition, priority );
+			}
+				// Otherwise try to create one too see if a valid classname and get class type
+			else
+			{
+				// HACKHACK:
+				CEntity *pEntity = CanCreateEntityClass( entityString ) ? CreateEntityByName( entityString ) : NULL;
+				if (pEntity)
+				{
+					AddClassRelationship( pEntity->Classify(), disposition, priority );
+					g_helpfunc.UTIL_RemoveImmediate(pEntity->BaseEntity());
+				}
+				else
+				{
+					DevWarning( "Couldn't set relationship to unknown entity or class (%s)!\n", entityString );
+				}
+			}
+		}
+		// Check for another entity in the list
+		entityString		= strtok(NULL," ");
+	}
+}
 
 
+bool CAI_NPC::ChooseEnemy( void )
+{
+	//---------------------------------
+	//
+	// Gather initial conditions
+	//
 
+	CEntity *pInitialEnemy = GetEnemy();
+	CEntity *pChosenEnemy  = pInitialEnemy;
+
+	// Use memory bits in case enemy pointer altered outside this function, (e.g., ehandle goes NULL)
+	bool fHadEnemy  	 = ( HasMemory( bits_MEMORY_HAD_ENEMY | bits_MEMORY_HAD_PLAYER ) );
+	bool fEnemyWasPlayer = HasMemory( bits_MEMORY_HAD_PLAYER );
+	bool fEnemyWentNull  = ( fHadEnemy && !pInitialEnemy );
+	bool fEnemyEluded	 = ( fEnemyWentNull || ( pInitialEnemy && GetEnemies()->HasEludedMe( (pInitialEnemy)?pInitialEnemy->BaseEntity():NULL ) ) );
+
+	//---------------------------------
+	//
+	// Establish suitability of choosing a new enemy
+	//
+
+	bool fHaveCondNewEnemy;
+	bool fHaveCondLostEnemy;
+
+	if ( !m_ScheduleState->bScheduleWasInterrupted && GetCurSchedule() && !FScheduleDone() )
+	{
+		Assert( InterruptFromCondition( COND_NEW_ENEMY ) == COND_NEW_ENEMY && InterruptFromCondition( COND_LOST_ENEMY ) == COND_LOST_ENEMY );
+		fHaveCondNewEnemy  = GetCurSchedule()->HasInterrupt( COND_NEW_ENEMY );
+		fHaveCondLostEnemy = GetCurSchedule()->HasInterrupt( COND_LOST_ENEMY );
+
+		// See if they've been added as a custom interrupt
+		if ( !fHaveCondNewEnemy )
+		{
+			fHaveCondNewEnemy = IsCustomInterruptConditionSet( COND_NEW_ENEMY );
+		}
+		if ( !fHaveCondLostEnemy )
+		{
+			fHaveCondLostEnemy = IsCustomInterruptConditionSet( COND_LOST_ENEMY );
+		}
+	}
+	else
+	{
+		fHaveCondNewEnemy  = true; // not having a schedule is the same as being interruptable by any condition
+		fHaveCondLostEnemy = true;
+	}
+
+	if ( !fEnemyWentNull )
+	{
+		if ( !fHaveCondNewEnemy && !( fHaveCondLostEnemy && fEnemyEluded ) )
+		{
+			// DO NOT mess with the npc's enemy pointer unless the schedule the npc is currently
+			// running will be interrupted by COND_NEW_ENEMY or COND_LOST_ENEMY. This will
+			// eliminate the problem of npcs getting a new enemy while they are in a schedule
+			// that doesn't care, and then not realizing it by the time they get to a schedule
+			// that does. I don't feel this is a good permanent fix.
+			m_bSkippedChooseEnemy = true;
+
+			return ( pChosenEnemy != NULL );
+		}
+	}
+
+
+	m_bSkippedChooseEnemy = false;
+
+	//---------------------------------
+	//
+	// Select a target
+	//
+
+	if ( ShouldChooseNewEnemy()	)
+	{
+		pChosenEnemy = CEntity::Instance(BestEnemy());
+	}
+
+	//---------------------------------
+	//
+	// React to result of selection
+	//
+
+	bool fChangingEnemy = ( pChosenEnemy != pInitialEnemy );
+
+	if ( fChangingEnemy || fEnemyWentNull )
+	{
+		Forget( bits_MEMORY_HAD_ENEMY | bits_MEMORY_HAD_PLAYER );
+
+		// Did our old enemy snuff it?
+		if ( pInitialEnemy && !pInitialEnemy->IsAlive() )
+		{
+			SetCondition( COND_ENEMY_DEAD );
+		}
+
+		SetEnemy( (pChosenEnemy)?pChosenEnemy->BaseEntity():NULL );
+
+		if ( fHadEnemy )
+		{
+			// Vacate any strategy slot on old enemy
+			VacateStrategySlot();
+
+			// Force output event for establishing LOS
+			Forget( bits_MEMORY_HAD_LOS );
+			// m_flLastAttackTime	= 0;
+		}
+
+		if ( !pChosenEnemy )
+		{
+			// Don't break on enemies going null if they've been killed
+			if ( !HasCondition(COND_ENEMY_DEAD) )
+			{
+				SetCondition( COND_ENEMY_WENT_NULL );
+			}
+
+			if ( fEnemyEluded )
+			{
+				SetCondition( COND_LOST_ENEMY );
+				LostEnemySound();
+			}
+
+			if ( fEnemyWasPlayer )
+			{
+				m_OnLostPlayer->FireOutput( pInitialEnemy, this );
+			}
+			m_OnLostEnemy->FireOutput( pInitialEnemy, this);
+		}
+		else
+		{
+			Remember( ( pChosenEnemy->IsPlayer() ) ? bits_MEMORY_HAD_PLAYER : bits_MEMORY_HAD_ENEMY );
+		}
+	}
+
+	//---------------------------------
+
+	return ( pChosenEnemy != NULL );
+}
+
+bool CAI_NPC::FScheduleDone ( void )
+{
+	Assert( GetCurSchedule() != NULL );
+
+	if ( GetScheduleCurTaskIndex() == GetCurSchedule()->NumTasks() )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool CAI_NPC::ShouldMoveWait()
+{
+	return (m_flMoveWaitFinished > gpGlobals->curtime);
+}
 
 //-------------------------------------------------------
 

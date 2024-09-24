@@ -196,10 +196,10 @@ struct PhysicsObjectCriteria_t
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-class CNPC_AntlionGuard : public CAI_BlendedNPC
+class CNPC_AntlionGuard : public CAI_BaseAntlionBase
 {
 public:
-	CE_DECLARE_CLASS( CNPC_AntlionGuard, CAI_BlendedNPC );
+	CE_DECLARE_CLASS( CNPC_AntlionGuard, CAI_BaseAntlionBase );
 
 	//DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
@@ -722,6 +722,7 @@ void CNPC_AntlionGuard::Spawn( void )
 	}
 	else
 	{
+		m_nSkin = 0; //CE
 		m_hCaveGlow[0] = NULL;
 		m_hCaveGlow[1] = NULL;
 	}
@@ -833,7 +834,7 @@ bool CNPC_AntlionGuard::CanSummon( bool bIgnoreTime )
 		return false;
 
 	// Hit the max number of them allowed? Only summon when we're 2 down.
-	if ( m_iNumLiveAntlions >= max(1, ANTLIONGUARD_SUMMON_COUNT-1) )
+	if ( m_iNumLiveAntlions >= std::max(1, ANTLIONGUARD_SUMMON_COUNT-1) )
 		return false;
 
 	return true;

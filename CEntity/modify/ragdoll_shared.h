@@ -79,7 +79,17 @@ struct ragdollparams_t
 	bool		allowStretch;
 };
 
-
+/*class CRagdollLRURetirement : public IValveGameSystemPerFrame
+{
+	typedef CHandle<CBaseAnimating> CRagdollHandle;
+public:
+	char padding[8];
+	CUtlLinkedList< CRagdollHandle > m_LRU;
+	CUtlLinkedList< CRagdollHandle > m_LRUImportantRagdolls;
+	int m_iMaxRagdolls;
+	int m_iSimulatedRagdollCount;
+	int m_iRagdollCount;
+};*/
 
 bool RagdollCreate( ragdoll_t &ragdoll, const ragdollparams_t &params, IPhysicsEnvironment *pPhysEnv );
 

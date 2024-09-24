@@ -1,13 +1,18 @@
 
 #include "player_pickup.h"
 #include "CPlayer.h"
+#include "CPhysicsProp.h"
 
+// memdbgon must be the last include file in a .cpp file!!!
+#include "tier0/memdbgon.h"
 
 bool Pickup_GetPreferredCarryAngles( CEntity *pObject, CPlayer *pPlayer, matrix3x4_t &localToWorld, QAngle &outputAnglesWorldSpace )
 {
-	IPlayerPickupVPhysics *pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pObject);
+	if(!pObject)
+		return false;
 
-	if(!pPickup && pObject)
+	IPlayerPickupVPhysics *pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pObject);
+	if(!pPickup)
 	{
 		pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pObject->BaseEntity());
 	}
@@ -30,7 +35,6 @@ void Pickup_ForcePlayerToDropThisObject( CEntity *pTarget )
 		return;
 
 	IPhysicsObject *pPhysics = pTarget->VPhysicsGetObject();
-	
 	if ( pPhysics == NULL )
 		return;
 
@@ -55,8 +59,11 @@ void Pickup_ForcePlayerToDropThisObject( CEntity *pTarget )
 
 void Pickup_OnPhysGunDrop( CEntity *pDroppedObject, CPlayer *pPlayer, PhysGunDrop_t Reason )
 {
+	if(!pDroppedObject)
+		return;
+
 	IPlayerPickupVPhysics *pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pDroppedObject);
-	if(!pPickup && pDroppedObject)
+	if(!pPickup)
 	{
 		pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pDroppedObject->BaseEntity());
 	}
@@ -69,8 +76,11 @@ void Pickup_OnPhysGunDrop( CEntity *pDroppedObject, CPlayer *pPlayer, PhysGunDro
 
 void Pickup_OnPhysGunPickup( CEntity *pPickedUpObject, CPlayer *pPlayer, PhysGunPickup_t reason )
 {
+	if(!pPickedUpObject)
+		return;
+
 	IPlayerPickupVPhysics *pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pPickedUpObject);
-	if(!pPickup && pPickedUpObject)
+	if(!pPickup)
 	{
 		pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pPickedUpObject->BaseEntity());
 	}
@@ -99,5 +109,77 @@ Vector Pickup_DefaultPhysGunLaunchVelocity( const Vector &vecForward, float flMa
 	}
 
 	return ( vecForward * flForce );
+}
+
+
+
+AngularImpulse Pickup_PhysGunLaunchAngularImpulse( CEntity *pObject, PhysGunForce_t reason )
+{
+	if(!pObject)
+		return RandomAngularImpulse( -600, 600 );
+
+	IPlayerPickupVPhysics *pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pObject);
+	if(!pPickup)
+	{
+		pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pObject->BaseEntity());
+	}
+	if ( pPickup != NULL && pPickup->ShouldPuntUseLaunchForces( reason ) )
+	{
+		return pPickup->PhysGunLaunchAngularImpulse();
+	}
+	return RandomAngularImpulse( -600, 600 );
+}
+
+bool Pickup_ShouldPuntUseLaunchForces( CEntity *pObject, PhysGunForce_t reason )
+{
+	if(!pObject)
+		return false;
+
+	IPlayerPickupVPhysics *pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pObject);
+	if(!pPickup)
+	{
+		pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pObject->BaseEntity());
+	}
+	if ( pPickup )
+	{
+		return pPickup->ShouldPuntUseLaunchForces( reason );
+	}
+	return false;
+}
+
+
+bool Pickup_OnAttemptPhysGunPickup( CEntity *pPickedUpObject, CPlayer *pPlayer, PhysGunPickup_t reason )
+{
+	if(!pPickedUpObject)
+		return true;
+
+	IPlayerPickupVPhysics *pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pPickedUpObject);
+	if(!pPickup && pPickedUpObject)
+	{
+		pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pPickedUpObject->BaseEntity());
+	}
+	if ( pPickup )
+	{
+		return pPickup->OnAttemptPhysGunPickup( (pPlayer)?pPlayer->BaseEntity():NULL, reason );
+	}
+	return true;
+}
+
+
+bool Pickup_ForcePhysGunOpen( CEntity *pObject, CPlayer *pPlayer )
+{
+	if(!pObject)
+		return false;
+
+	IPlayerPickupVPhysics *pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pObject);
+	if(!pPickup)
+	{
+		pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pObject->BaseEntity());
+	}
+	if ( pPickup )
+	{
+		return pPickup->ForcePhysgunOpen( (pPlayer)?pPlayer->BaseEntity():NULL );
+	}
+	return false;
 }
 

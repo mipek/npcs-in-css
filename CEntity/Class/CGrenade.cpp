@@ -7,7 +7,6 @@
 #include "tier0/memdbgon.h"
 
 
-
 CE_LINK_ENTITY_TO_CLASS(CBaseGrenade, CE_Grenade);
 
 SH_DECL_MANUALHOOK2_void(Explode, 0, 0, 0, trace_t*, int);
@@ -87,70 +86,12 @@ void CE_Grenade::SetThrower( CBaseEntity *pThrower )
 	}
 }
 
-// from basegrenade_shared
-class CE_GrenadeTimed : public CE_Grenade
+void CE_HEGrenade_Fix::Explode( trace_t *pTrace, int bitsDamageType )
 {
-public:
-	CE_DECLARE_CLASS( CE_GrenadeTimed, CE_Grenade );
+	BaseClass::Explode(pTrace, bitsDamageType);
 
-	void	Spawn( void );
-	void	Precache( void );
-
-private:
-	void BounceTouchCENT(CEntity *pOther)
-	{
-		BounceTouch(pOther->BaseEntity());
-	}
-};
-
-LINK_ENTITY_TO_CUSTOM_CLASS(npc_handgrenade, hegrenade_projectile, CE_GrenadeTimed);
-
-void CE_GrenadeTimed::Spawn()
-{
-	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
-	SetSolid( SOLID_BBOX );
-	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
-	SetModel( "models/Weapons/w_grenade.mdl" ); 
-
-	UTIL_SetSize(BaseEntity(), Vector( -4, -4, -4), Vector(4, 4, 4));
-
-	QAngle angles;
-	Vector vel = GetAbsVelocity();
-
-	VectorAngles( vel, angles );
-	SetLocalAngles( angles );
-	
-	SetTouch( &CE_GrenadeTimed::BounceTouchCENT );	// Bounce if touched
-	
-	// Take one second off of the desired detonation time and set the think to PreDetonate. PreDetonate
-	// will insert a DANGER sound into the world sound list and delay detonation for one second so that 
-	// the grenade explodes after the exact amount of time specified in the call to ShootTimed(). 
-	
-	SetThink( &CE_Grenade::ThumbleThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
-
-	// if the delay is < 0.1 seconds, don't fly anywhere
-	if ((m_flDetonateTime - gpGlobals->curtime) < 0.1)
-	{
-		SetNextThink( gpGlobals->curtime );
-		SetAbsVelocity( vec3_origin );
-	}
-
-	// Tumble through the air
-	// pGrenade->m_vecAngVelocity.x = -400;
-	SetGravity(1.0);  // Don't change or throw calculations will be off!
-	SetFriction(0.8);
-
-	m_flDamage = 100;	// ????
-
-	m_takedamage = DAMAGE_NO;
-}
-
-void CE_GrenadeTimed::Precache( void )
-{
-	BaseClass::Precache( );
- 
-	PrecacheModel("models/weapons/w_grenade.mdl");
+	SetNextThink(gpGlobals->curtime + 0.1f);
+	SetThink(&CEntity::SUB_Remove);
 }
 
 // from basegrenade_contact.cpp

@@ -2,8 +2,9 @@
 #include "npc_basezombie.h"
 #include "CAI_utils.h"
 #include "CPlayer.h"
-#include "CPropVehicleDriveable.h"
+#include "CPropVehicle.h"
 #include "CE_recipientfilter.h"
+#include "CPropVehicle.h"
 
 
 extern CSoundEnvelopeController *g_SoundController;
@@ -224,8 +225,8 @@ bool CNPC_BaseZombie::FindNearestPhysicsObject( int iMaxMass )
 		return false;
 	}
 
-	float flNearestDist = min( dist, ZOMBIE_FARTHEST_PHYSICS_OBJECT * 0.5 );
-	Vector vecDelta( flNearestDist, flNearestDist, GetHullHeight() * 2.0 );
+	float flNearestDist = MIN( dist, ZOMBIE_FARTHEST_PHYSICS_OBJECT * 0.5 );
+	Vector vecDelta( flNearestDist, flNearestDist, GetHullHeight() * 2.0f );
 
 	class CZombieSwatEntitiesEnum : public CFlaggedEntitiesEnum
 	{
@@ -713,7 +714,7 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 
 	// flDamageThreshold is what percentage of the creature's max health
 	// this amount of damage represents. (clips at 1.0)
-	float flDamageThreshold = min( 1, info.GetDamage() / m_iMaxHealth );
+	float flDamageThreshold = MIN( 1, info.GetDamage() / m_iMaxHealth );
 	
 	// Being chopped up by a sharp physics object is a pretty special case
 	// so we handle it with some special code. Mainly for 
@@ -870,7 +871,7 @@ void CNPC_BaseZombie::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 //-----------------------------------------------------------------------------
 bool CNPC_BaseZombie::IsChopped( const CTakeDamageInfo &info )
 {
-	float flDamageThreshold = min( 1, info.GetDamage() / m_iMaxHealth );
+	float flDamageThreshold = std::min( 1.0f, info.GetDamage() / m_iMaxHealth );
 
 	if ( m_iHealth > 0 || flDamageThreshold <= 0.5 )
 		return false;
@@ -1047,7 +1048,7 @@ void CNPC_BaseZombie::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize
 	BaseClass::Ignite( flFlameLifetime, bNPCOnly, flSize, bCalledByLevelDesigner );
 
 	// Set the zombie up to burn to death in about ten seconds.
-	SetHealth( (int)min( m_iHealth, FLAME_DIRECT_DAMAGE_PER_SEC * (ZOMBIE_BURN_TIME + enginerandom->RandomFloat( -ZOMBIE_BURN_TIME_NOISE, ZOMBIE_BURN_TIME_NOISE)) ) );
+	SetHealth( (int)MIN( m_iHealth, FLAME_DIRECT_DAMAGE_PER_SEC * (ZOMBIE_BURN_TIME + enginerandom->RandomFloat( -ZOMBIE_BURN_TIME_NOISE, ZOMBIE_BURN_TIME_NOISE)) ) );
 
 	// FIXME: use overlays when they come online
 	//AddOverlay( ACT_ZOM_WALK_ON_FIRE, false );
@@ -1123,7 +1124,7 @@ CEntity *CNPC_BaseZombie::ClawAttack( float flDist, int iDamage, QAngle &qaViewP
 			{
 				if ( ce_pVehicleEntity->GetServerVehicle() && dynamic_cast<CE_CPropVehicleDriveable *>(ce_pVehicleEntity) )
 				{
-					pDriver = static_cast<CE_CPropVehicleDriveable *>(ce_pVehicleEntity)->GetDriver();
+					pDriver = CEntity::Instance(static_cast<CE_CPropVehicleDriveable *>(ce_pVehicleEntity)->GetDriver());
 					if ( pDriver && pDriver->IsPlayer() )
 					{
 						iDriverInitialHealth = pDriver->GetHealth();
@@ -1201,20 +1202,20 @@ CEntity *CNPC_BaseZombie::ClawAttack( float flDist, int iDamage, QAngle &qaViewP
 			{
 			case ZOMBIE_BLOOD_LEFT_HAND:
 				if( GetAttachment( "blood_left", vecBloodPos ) )
-					SpawnBlood( vecBloodPos, *g_vecAttackDir, pHurt->BloodColor(), min( iDamage, 30 ) );
+					SpawnBlood( vecBloodPos, *g_vecAttackDir, pHurt->BloodColor(), MIN( iDamage, 30 ) );
 				break;
 
 			case ZOMBIE_BLOOD_RIGHT_HAND:
 				if( GetAttachment( "blood_right", vecBloodPos ) )
-					SpawnBlood( vecBloodPos, *g_vecAttackDir, pHurt->BloodColor(), min( iDamage, 30 ) );
+					SpawnBlood( vecBloodPos, *g_vecAttackDir, pHurt->BloodColor(), MIN( iDamage, 30 ) );
 				break;
 
 			case ZOMBIE_BLOOD_BOTH_HANDS:
 				if( GetAttachment( "blood_left", vecBloodPos ) )
-					SpawnBlood( vecBloodPos, *g_vecAttackDir, pHurt->BloodColor(), min( iDamage, 30 ) );
+					SpawnBlood( vecBloodPos, *g_vecAttackDir, pHurt->BloodColor(), MIN( iDamage, 30 ) );
 
 				if( GetAttachment( "blood_right", vecBloodPos ) )
-					SpawnBlood( vecBloodPos, *g_vecAttackDir, pHurt->BloodColor(), min( iDamage, 30 ) );
+					SpawnBlood( vecBloodPos, *g_vecAttackDir, pHurt->BloodColor(), MIN( iDamage, 30 ) );
 				break;
 
 			case ZOMBIE_BLOOD_BITE:
@@ -1470,7 +1471,7 @@ void CNPC_BaseZombie::HandleAnimEvent( animevent_t *pEvent )
 
 		pString = nexttoken( token, pString, ' ' );
 
-		if ( token == '\0' )
+		if ( token[0] == '\0' )
 		{
 			Warning( "AE_ZOMBIE_POPHEADCRAB event format missing velocity parameter! Usage: event AE_ZOMBIE_POPHEADCRAB \"<BoneName> <Speed>\" \n" );
 			return;

@@ -471,9 +471,11 @@ void CNPC_FloorTurret::Deploy( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CNPC_FloorTurret::OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t reason )
+void CNPC_FloorTurret::OnPhysGunPickup( CBaseEntity *pPhysGunUser, PhysGunPickup_t reason )
 {
-	m_hPhysicsAttacker.Set(pPhysGunUser->BaseEntity());
+	CEntity *ce_pPhysGunUser = CEntity::Instance(pPhysGunUser);
+
+	m_hPhysicsAttacker.Set(pPhysGunUser);
 	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
 
 	// Drop our mass a lot so that we can be moved easily with +USE
@@ -485,7 +487,7 @@ void CNPC_FloorTurret::OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t r
 		m_OnPhysGunPickup.FireOutput( this, this );
 
 		// We want to use preferred carry angles if we're not nicely upright
-		Vector vecToTurret = pPhysGunUser->GetAbsOrigin() - GetAbsOrigin();
+		Vector vecToTurret = ce_pPhysGunUser->GetAbsOrigin() - GetAbsOrigin();
 		vecToTurret.z = 0;
 		VectorNormalize( vecToTurret );
 
@@ -514,9 +516,9 @@ void CNPC_FloorTurret::OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t r
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CNPC_FloorTurret::OnPhysGunDrop( CPlayer *pPhysGunUser, PhysGunDrop_t Reason )
+void CNPC_FloorTurret::OnPhysGunDrop( CBaseEntity *pPhysGunUser, PhysGunDrop_t Reason )
 {
-	m_hPhysicsAttacker.Set(pPhysGunUser->BaseEntity());
+	m_hPhysicsAttacker.Set(pPhysGunUser);
 	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
 	
 	m_bCarriedByPlayer = false;
@@ -524,7 +526,7 @@ void CNPC_FloorTurret::OnPhysGunDrop( CPlayer *pPhysGunUser, PhysGunDrop_t Reaso
 	m_OnPhysGunDrop.FireOutput( this, this );
 
 	// If this is a friendly turret, remember that it was just dropped
-	if ( IRelationType( pPhysGunUser->BaseEntity() ) != D_HT )
+	if ( IRelationType( pPhysGunUser ) != D_HT )
 	{
 		m_flPlayerDropTime = gpGlobals->curtime + 2.0;
 	}

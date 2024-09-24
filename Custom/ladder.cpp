@@ -31,8 +31,8 @@ public:
 	DECLARE_CLASS_NOBASE( CLadderTraceFilterSimple );
 	CLadderTraceFilterSimple(CPlayer *pPlayer)
 	{
-		pTarget = pPlayer;
-		didhit = false;
+		pTarget.Set(pPlayer ? pPlayer->BaseEntity() : nullptr);
+		didHit = false;
 	}
 
 	virtual bool ShouldHitEntity( IHandleEntity *pHandleEntity, int contentsMask )
@@ -40,14 +40,14 @@ public:
 		CEntity *pEntity = CE_EntityFromEntityHandle( pHandleEntity );
 		if(pEntity == pTarget)
 		{
-			didhit = true;
+			didHit = true;
 			return true;
 		}
 		return false;
 	}
 public:
-	CEntity *pTarget;
-	bool didhit;
+	CFakeHandle pTarget;
+	bool didHit;
 
 };
 
@@ -67,5 +67,5 @@ bool CFuncLadder::IsPlayerOnLadder(CPlayer *pPlayer)
 
 	enginetrace->TraceRay( ray, 0, &traceFilter, &result );
 
-	return traceFilter.didhit;
+	return traceFilter.didHit;
 }

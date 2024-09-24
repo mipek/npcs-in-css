@@ -2,7 +2,6 @@
 #include <CCombatWeapon.h>
 #include <CPlayer.h>
 #include <CSprite.h>
-#include <CGameWeaponManager.h>
 #include "npc_combines.h"
 #include "bitstring.h"
 #include "engine/IEngineSound.h"
@@ -16,6 +15,9 @@ extern ConVar *hl2_episodic;
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+static const char *CombineModelElite = "models/combine_super_soldier.mdl";
+static const char *CombineModelSoldier = "models/combine_soldier.mdl";
 
 ConVar	sk_combine_s_health( "sk_combine_s_health","0");
 ConVar	sk_combine_s_kick( "sk_combine_s_kick","0");
@@ -83,7 +85,7 @@ void CNPC_CombineS::Precache()
 {
 	const char *pModelName = STRING( GetModelName() );
 
-	if( !Q_stricmp( pModelName, "models/combine_super_soldier.mdl" ) )
+	if( !Q_stricmp( pModelName, CombineModelElite ) )
 	{
 		m_fIsElite = true;
 	}
@@ -94,14 +96,14 @@ void CNPC_CombineS::Precache()
 
 	if( !GetModelName() )
 	{
-		SetModelName( MAKE_STRING( "models/combine_soldier.mdl" ) );
+		SetModelName( MAKE_STRING( CombineModelSoldier ) );
 	}
 
 	PrecacheModel( STRING( GetModelName() ) );
 
 	g_helpfunc.UTIL_PrecacheOther( "item_healthvial" );
-	g_helpfunc.UTIL_PrecacheOther( "weapon_frag" );
-	g_helpfunc.UTIL_PrecacheOther( "item_ammo_ar2_altfire" );
+	/////g_helpfunc.UTIL_PrecacheOther( "weapon_frag" );
+	//g_helpfunc.UTIL_PrecacheOther( "item_ammo_ar2_altfire" );
 
 	BaseClass::Precache();
 }
@@ -264,6 +266,7 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 
 	if ( pPlayer != NULL )
 	{
+#if 0
 		// Elites drop alt-fire ammo, so long as they weren't killed by dissolving.
 		if( IsElite() )
 		{
@@ -300,6 +303,7 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 				}
 			}
 		}
+#endif
 
 		// Attempt to drop health
 		if ( combine_spawn_health.GetBool() )
@@ -393,3 +397,19 @@ BEGIN_DATADESC( CNPC_CombineS )
 	DEFINE_KEYFIELD( m_iUseMarch, FIELD_INTEGER, "usemarch" ),
 
 END_DATADESC()
+
+// CE - custom entity so its easier to spawn elite soldiers.
+class CNPC_CombineElite: public CNPC_CombineS
+{
+public:
+	CE_DECLARE_CLASS(CNPC_CombineElite, CNPC_CombineS);
+
+	void Spawn() override
+	{
+		SetModelName( MAKE_STRING( CombineModelElite ) );
+
+		BaseClass::Spawn();
+	}
+};
+
+LINK_ENTITY_TO_CUSTOM_CLASS( npc_combine_elite, cycler, CNPC_CombineElite );

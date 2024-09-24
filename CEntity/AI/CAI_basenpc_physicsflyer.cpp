@@ -3,7 +3,7 @@
 #include "CAI_basenpc_physicsflyer.h"
 #include "CAI_Route.h"
 #include "CAI_Navigator.h"
-#include "CAI_Motor.h"
+#include "CAI_motor.h"
 #include "physics_saverestore.h"
 
 

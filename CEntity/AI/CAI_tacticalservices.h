@@ -15,7 +15,7 @@ class CAI_Network;
 class CAI_Pathfinder;
 
 
-enum FlankType_t
+enum FlankType_t : int
 {
 	FLANKTYPE_NONE = 0,
 	FLANKTYPE_ARC,			// Stay flFlankParam degrees of arc away from vecFlankRefPos

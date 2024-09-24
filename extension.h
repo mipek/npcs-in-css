@@ -10,10 +10,12 @@ class CBasePlayer;
 #include <eiface.h>
 #include <igameevents.h>
 #include <server_class.h>
+#include <shareddefs.h>
 #include <isoundemittersystembase.h>
 #include <IEngineTrace.h>
 #include <IEngineSound.h>
 #include <IStaticPropMgr.h>
+#include <shake.h>
 #include <IEffects.h>
 #include <filesystem.h>
 #include <inetchannelinfo.h>
@@ -24,18 +26,15 @@ class CBasePlayer;
 #include <worldsize.h>
 #include <iplayerinfo.h>
 #include <itempents.h>
-#include <shareddefs.h>
 #include <mathlib.h>
 #include <itoolentity.h>
+#include <ISDKTools.h>
 
 #include "ehandle.h"
 class CBaseEntity;
 typedef CHandle<CBaseEntity> EHANDLE;
 
-class CBasePlayer;
-
 #include "sign_func.h"
-
 
 class Monster :
 	public SDKExtension,
@@ -53,6 +52,7 @@ public:
 	virtual bool SDK_OnMetamodUnload(char *error, size_t maxlength);
 
 public:
+	bool LateInit(char *error, size_t maxlength);
 	bool RegisterConCommandBase(ConCommandBase *pCommand);
 	void Precache();
 	edict_t *CreateEdict(int index);
@@ -60,10 +60,6 @@ public:
 	void SetCommandClient( int cmd );	
 	int GetCommandClient();
 	int GetMaxClients();
-	bool HACK_IsInvisiblePlugin()
-	{
-		return true;
-	}
 };
 
 class CEntity;
@@ -93,13 +89,15 @@ extern ITempEntsSystem *te;
 extern IPhysicsObjectPairHash *my_g_EntityCollisionHash;
 extern IGameMovement *g_pGameMovement;
 extern IServerTools *servertools;
+extern IGameEventManager2 *gameeventmanager;
 extern ISceneFileCache *scenefilecache;
+extern ISDKTools *sdktools;
 
 extern IGameConfig *g_pGameConf;
 extern CBaseEntityList *g_pEntityList;
-extern unsigned long serverdll_addr;
 extern CEntity *my_g_WorldEntity;
-extern CBaseEntity *my_g_WorldEntity_cbase;
+
+extern int g_sModelIndexBubbles;
 
 #endif
 

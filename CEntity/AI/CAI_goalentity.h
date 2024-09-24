@@ -22,6 +22,9 @@ public:
 
 public:
 	CEntity		*	GetGoalEntity();
+	int			NumActors();
+	CAI_NPC		*GetActor( int iActor = 0 );
+	bool 		IsActive();
 
 protected:
 	void			UpdateActors();
@@ -42,6 +45,20 @@ private:
 
 	void PruneActors();
 	void ResolveNames();
+
+public:
+	virtual void InputActivate( inputdata_t &inputdata );
+	virtual void InputUpdateActors( inputdata_t &inputdata );
+	virtual void InputDeactivate( inputdata_t &inputdata );
+	virtual void EnableGoal( CBaseEntity *pAI );
+	virtual void DisableGoal( CBaseEntity *pAI );
+
+public:
+	DECLARE_DEFAULTHEADER(InputActivate, void, (inputdata_t &inputdata));
+	DECLARE_DEFAULTHEADER(InputUpdateActors, void, (inputdata_t &inputdata));
+	DECLARE_DEFAULTHEADER(InputDeactivate, void, (inputdata_t &inputdata));
+	DECLARE_DEFAULTHEADER(EnableGoal, void, (CBaseEntity *pAI));
+	DECLARE_DEFAULTHEADER(DisableGoal, void, (CBaseEntity *pAI));
 
 protected:
 	DECLARE_DATAMAP(CFakeHandle, m_hGoalEntity);
@@ -71,6 +88,29 @@ inline CEntity *CE_AI_GoalEntity::GetGoalEntity()
 	return m_hGoalEntity;
 }
 
+inline int CE_AI_GoalEntity::NumActors()
+{
+	UpdateActors();
+	return m_actors->Count();
+}
+
+inline CAI_NPC *CE_AI_GoalEntity::GetActor( int iActor )
+{
+	UpdateActors();
+	if (  m_actors->Count() > iActor )
+		return (CAI_NPC *)CEntity::Instance(m_actors->Element(iActor));
+	return nullptr;
+}
+
+inline bool CE_AI_GoalEntity::IsActive()
+{
+	if ( m_flags & ACTIVE )
+	{
+		UpdateActors();
+		return ( m_actors->Count() != 0 );
+	}
+	return false;
+}
 
 #endif
 

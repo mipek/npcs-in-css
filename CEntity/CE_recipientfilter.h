@@ -205,5 +205,16 @@ public:
 	}
 };
 
+//-----------------------------------------------------------------------------
+// Purpose: Simple class to create a filter for all players ( reliable )
+//-----------------------------------------------------------------------------
+class CReliableBroadcastRecipientFilter : public CBroadcastRecipientFilter
+{
+public:
+	CReliableBroadcastRecipientFilter( void )
+	{
+		MakeReliable();
+	}
+};
 
 #endif // RECIPIENTFILTER_H

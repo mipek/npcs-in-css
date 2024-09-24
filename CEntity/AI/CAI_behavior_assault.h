@@ -13,7 +13,7 @@
 #include "simtimer.h"
 #include "CAI_Behavior.h"
 #include "CAI_goalentity.h"
-#include "CAI_Moveshoot.h"
+#include "CAI_moveshoot.h"
 #include "CAI_utils.h"
 
 #define CUE_POINT_TOLERANCE (3.0*12.0)

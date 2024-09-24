@@ -1,7 +1,7 @@
 
 #include "CEntity.h"
 #include "ai_navtype.h"
-#include "CAI_node.h"
+#include "CAI_Node.h"
 #include "ai_waypoint.h"
 
 
@@ -13,12 +13,12 @@
 #define	WAYPOINT_POOL_SIZE 512
 
 
-CMemoryPool *AI_Waypoint_t::s_Allocator = NULL;
+CUtlMemoryPool *AI_Waypoint_t::s_Allocator = NULL;
 
 
-AI_Waypoint_t::AI_Waypoint_t()
+AI_Waypoint_t::AI_Waypoint_t(): flYaw(0.0f),  m_fWaypointFlags(0), m_iWPType(NAV_NONE), pNext(nullptr), pPrev(nullptr)
 {
-	memset( this, 0, sizeof(*this) );
+	//memset( this, 0, sizeof(AI_Waypoint_t) );
 	vecLocation	= vec3_invalid;
 	iNodeID		= NO_NODE;
 	flPathDistGoal = -1;
@@ -26,9 +26,10 @@ AI_Waypoint_t::AI_Waypoint_t()
 
 //-------------------------------------
 
-AI_Waypoint_t::AI_Waypoint_t( const Vector &initPosition, float initYaw, Navigation_t initNavType, int initWaypointFlags, int initNodeID )
+AI_Waypoint_t::AI_Waypoint_t( const Vector &initPosition, float initYaw, Navigation_t initNavType, int initWaypointFlags, int initNodeID ):
+		pNext(nullptr), pPrev(nullptr)
 {
-	memset( this, 0, sizeof(*this) );
+	//memset( this, 0, sizeof(AI_Waypoint_t) );
 
 	// A Route of length one to the endpoint
 	vecLocation	= initPosition;

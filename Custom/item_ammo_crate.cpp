@@ -36,7 +36,7 @@ public:
 	bool	CreateVPhysics( void );
 
 	virtual void HandleAnimEvent( animevent_t *pEvent );
-	virtual bool MyTouch( CPlayer *pPlayer );
+	//virtual bool MyTouch( CPlayer *pPlayer );
 
 	void	SetupCrate( void );
 	void	OnRestore( void );
@@ -96,6 +96,7 @@ END_DATADESC()
 CItem_AmmoCrate::CItem_AmmoCrate()
 {
 	m_nAmmoType = 3;
+	m_nAmmoIndex = 0;
 }
 
 
@@ -138,30 +139,30 @@ const char *CItem_AmmoCrate::m_lpzModelNames[NUM_AMMO_CRATE_TYPES] =
 
 const char *CItem_AmmoCrate::m_lpzAmmoNames[NUM_AMMO_CRATE_TYPES] =
 {
-	"BULLET_PLAYER_45ACP",		
-	"BULLET_PLAYER_9MM",			
-	"BULLET_PLAYER_762MM",			
-	"BULLET_PLAYER_338MAG",	
-	"BULLET_PLAYER_BUCKSHOT",		
-	"AMMO_TYPE_HEGRENADE",
-	"BULLET_PLAYER_50AE",
-	"BULLET_PLAYER_556MM_BOX",
-	"AMMO_TYPE_HEGRENADE",
-	"AMMO_TYPE_HEGRENADE",
+		"BULLET_PLAYER_45ACP",
+		"BULLET_PLAYER_9MM",
+		"BULLET_PLAYER_762MM",
+		"AMMO_TYPE_FLASHBANG",
+		"BULLET_PLAYER_BUCKSHOT",
+		"AMMO_TYPE_HEGRENADE",
+		"BULLET_PLAYER_50AE",
+		"BULLET_PLAYER_556MM_BOX",
+		"AMMO_TYPE_HEGRENADE",
+		"AMMO_TYPE_HEGRENADE",
 };
 // Ammo amount given per +use
 int CItem_AmmoCrate::m_nAmmoAmounts[NUM_AMMO_CRATE_TYPES] =
 {
-	300,	// Pistol
-	300,	// SMG1
-	300,	// AR2
-	3,		// RPG rounds
-	120,	// Buckshot
-	5,		// Grenades
-	50,		// 357
-	50,		// Crossbow
-	5,		// AR2 alt-fire
-	5,
+		300,	// Pistol
+		300,	// SMG1
+		300,	// AR2
+		3,		// RPG rounds
+		120,	// Buckshot
+		5,		// Grenades
+		50,		// 357
+		50,		// Crossbow
+		5,		// AR2 alt-fire
+		5,		// SMG alt-fire
 };
 
 const char *CItem_AmmoCrate::m_pGiveWeapon[NUM_AMMO_CRATE_TYPES] =
@@ -169,7 +170,7 @@ const char *CItem_AmmoCrate::m_pGiveWeapon[NUM_AMMO_CRATE_TYPES] =
 	NULL,	// Pistol
 	NULL,	// SMG1
 	NULL,	// AR2
-	NULL,		// RPG rounds
+	"weapon_rpg",		// RPG rounds
 	NULL,	// Buckshot
 	"weapon_hegrenade",		// Grenades
 	NULL,		// 357
@@ -322,7 +323,14 @@ void CItem_AmmoCrate::HandleAnimEvent( animevent_t *pEvent )
 		{
 			if ( m_pGiveWeapon[m_nAmmoType] && !m_hActivator->Weapon_OwnsThisType( m_pGiveWeapon[m_nAmmoType] ) )
 			{
-				CEntity *pEntity = CreateEntityByName( m_pGiveWeapon[m_nAmmoType] );
+				PreWeaponReplace(m_pGiveWeapon[m_nAmmoType]);
+				CEntity *pEntity = CreateEntityByName( GetWeaponReplaceName(m_pGiveWeapon[m_nAmmoType]) );
+				if (!pEntity)
+				{
+					Msg("%s: failed to create weapon entity '%s'\n", __PRETTY_FUNCTION__, m_pGiveWeapon[m_nAmmoType]);
+					return;
+				}
+
 				CCombatWeapon *pWeapon = dynamic_cast<CCombatWeapon*>(pEntity);
 				if ( pWeapon )
 				{
@@ -339,6 +347,7 @@ void CItem_AmmoCrate::HandleAnimEvent( animevent_t *pEvent )
 						SetBodygroup( 1, false );
 					}
 				}
+				PostWeaponReplace();
 			}
 
 			if ( m_hActivator->GiveAmmo( m_nAmmoAmounts[m_nAmmoType], m_nAmmoIndex ) != 0 )
@@ -356,9 +365,9 @@ void CItem_AmmoCrate::HandleAnimEvent( animevent_t *pEvent )
 //-----------------------------------------------------------------------------
 // Purpose: Gives ammo to the player
 //-----------------------------------------------------------------------------
-bool CItem_AmmoCrate::MyTouch( CPlayer *pPlayer )
-{
-	return ITEM_GiveAmmo(pPlayer, m_nAmmoAmounts[m_nAmmoType], m_lpzAmmoNames[m_nAmmoType]);
+//bool CItem_AmmoCrate::MyTouch( CPlayer *pPlayer )
+//{
+//	return ITEM_GiveAmmo(pPlayer, m_nAmmoAmounts[m_nAmmoType], m_lpzAmmoNames[m_nAmmoType]);
 #if 0
 	const char *pszGiveWeapon = m_pGiveWeapon[m_nAmmoType];
 	if(pszGiveWeapon)
@@ -369,7 +378,7 @@ bool CItem_AmmoCrate::MyTouch( CPlayer *pPlayer )
 		return ITEM_GiveAmmo(pPlayer, m_nAmmoAmounts[m_nAmmoType], m_lpzAmmoNames[m_nAmmoType]);
 	}
 #endif
-}
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: 

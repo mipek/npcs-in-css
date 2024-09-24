@@ -96,8 +96,8 @@ public:
 	virtual void	VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
 
 	// 	CDefaultPlayerPickupVPhysics
-	void			OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t reason );
-	void			OnPhysGunDrop( CPlayer *pPhysGunUser, PhysGunDrop_t Reason );
+	void			OnPhysGunPickup( CBaseEntity *pPhysGunUser, PhysGunPickup_t reason );
+	void			OnPhysGunDrop( CBaseEntity *pPhysGunUser, PhysGunDrop_t Reason );
 
 	bool			ShouldPlayIdleSound( void );
 	void			IdleSound( void );

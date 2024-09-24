@@ -70,9 +70,9 @@ SH_DECL_MANUALHOOK1(BecomeRagdollOnClient, 0, 0, 0, bool, const Vector &);
 DECLARE_HOOK(BecomeRagdollOnClient, CCombatCharacter);
 DECLARE_DEFAULTHANDLER(CCombatCharacter, BecomeRagdollOnClient, bool, (const Vector &force), (force));
 
-//SH_DECL_MANUALHOOK0(IsInAVehicle, 0, 0, 0, bool);
-//DECLARE_HOOK(IsInAVehicle, CCombatCharacter);
-//DECLARE_DEFAULTHANDLER(CCombatCharacter, IsInAVehicle, bool, (), ());
+SH_DECL_MANUALHOOK0(IsInAVehicle, 0, 0, 0, bool);
+DECLARE_HOOK(IsInAVehicle, CCombatCharacter);
+DECLARE_DEFAULTHANDLER(CCombatCharacter, IsInAVehicle, bool, (), ());
 
 SH_DECL_MANUALHOOK0(GetVehicleEntity, 0, 0, 0, CBaseEntity *);
 DECLARE_HOOK(GetVehicleEntity, CCombatCharacter);
@@ -198,7 +198,37 @@ SH_DECL_MANUALHOOK1(CalcWeaponProficiency, 0, 0, 0, WeaponProficiency_t, CBaseEn
 DECLARE_HOOK(CalcWeaponProficiency, CCombatCharacter);
 DECLARE_DEFAULTHANDLER(CCombatCharacter, CalcWeaponProficiency, WeaponProficiency_t, (CBaseEntity *pWeapon) , (pWeapon));
 
+SH_DECL_MANUALHOOK0_void(DoMuzzleFlash, 0, 0, 0);
+DECLARE_HOOK(DoMuzzleFlash, CCombatCharacter);
+DECLARE_DEFAULTHANDLER_void(CCombatCharacter, DoMuzzleFlash, (), ());
 
+SH_DECL_MANUALHOOK1_void(OnKilledNPC, 0, 0, 0, CBaseEntity *);
+DECLARE_HOOK(OnKilledNPC, CCombatCharacter);
+DECLARE_DEFAULTHANDLER_void(CCombatCharacter, OnKilledNPC, (CBaseEntity *pKilled), (pKilled));
+
+SH_DECL_MANUALHOOK2_void(OnPlayerKilledOther, 0, 0, 0, CBaseEntity *, const CTakeDamageInfo &);
+DECLARE_HOOK(OnPlayerKilledOther, CCombatCharacter);
+DECLARE_DEFAULTHANDLER_void(CCombatCharacter, OnPlayerKilledOther, ( CBaseEntity *pVictim, const CTakeDamageInfo &info ), (pVictim, info)) ;
+
+SH_DECL_MANUALHOOK1(Weapon_CanSwitchTo, 0, 0, 0, bool, CBaseEntity *);
+DECLARE_HOOK(Weapon_CanSwitchTo, CCombatCharacter);
+DECLARE_DEFAULTHANDLER(CCombatCharacter, Weapon_CanSwitchTo, bool, (CBaseEntity *pWeapon), (pWeapon));
+
+SH_DECL_MANUALHOOK3(GiveAmmo, 0, 0, 0, int, int, int, bool);
+DECLARE_HOOK(GiveAmmo, CCombatCharacter);
+DECLARE_DEFAULTHANDLER(CCombatCharacter, GiveAmmo, int, (int iCount, int iAmmoIndex, bool bSuppressSound), (iCount, iAmmoIndex, bSuppressSound));
+
+SH_DECL_MANUALHOOK0(GetPhysicsImpactDamageTable, 0, 0, 0, const impactdamagetable_t	&);
+DECLARE_HOOK(GetPhysicsImpactDamageTable, CCombatCharacter);
+DECLARE_DEFAULTHANDLER_REFERENCE(CCombatCharacter, GetPhysicsImpactDamageTable, const impactdamagetable_t	&, (), ());
+
+SH_DECL_MANUALHOOK1(GetAmmoCount, 0, 0, 0, int, int);
+DECLARE_HOOK(GetAmmoCount, CCombatCharacter);
+DECLARE_DEFAULTHANDLER(CCombatCharacter, GetAmmoCount, int, (int iAmmoIndex) const, (iAmmoIndex));
+
+SH_DECL_MANUALHOOK2_void(RemoveAmmo, 0, 0, 0, int, int);
+DECLARE_HOOK(RemoveAmmo, CCombatCharacter);
+DECLARE_DEFAULTHANDLER_void(CCombatCharacter, RemoveAmmo, (int iCount, int iAmmoIndex), (iCount, iAmmoIndex));
 
 
 
@@ -426,56 +456,14 @@ Vector CCombatCharacter::CalcDamageForceVector( const CTakeDamageInfo &info )
 	return vec3_origin;
 }
 
-int CCombatCharacter::GetAmmoCount( int iAmmoIndex ) const
-{
-	if ( iAmmoIndex == -1 )
-		return 0;
-
-	// Infinite ammo?
-	if ( GetAmmoDef()->MaxCarry( iAmmoIndex ) == INFINITE_AMMO )
-		return 999;
-
-	return *(int *)(((uint8_t *)(BaseEntity())) + m_iAmmo.offset + (iAmmoIndex*4));
-}
-
 void CCombatCharacter::AddAmmo( int iAmmoIndex , int iAmmount)
 {
 	*(int *)(((uint8_t *)(BaseEntity())) + m_iAmmo.offset + (iAmmoIndex*4)) += iAmmount;
 }
 
-void CCombatCharacter::RemoveAmmo( int iCount, int iAmmoIndex )
-{
-	if (iCount <= 0)
-		return;
-
-	// Infinite ammo?
-	if ( GetAmmoDef()->MaxCarry( iAmmoIndex ) == INFINITE_AMMO )
-		return;
-
-	// Ammo pickup sound
-	int iCurAmmo = *(int *)(((uint8_t *)(BaseEntity())) + m_iAmmo.offset + (iAmmoIndex*4));
-	*(int *)(((uint8_t *)(BaseEntity())) + m_iAmmo.offset + (iAmmoIndex*4)) = max( iCurAmmo - iCount, 0 );
-}
-
 void CCombatCharacter::RemoveAmmo( int iCount, const char *szName )
 {
 	RemoveAmmo( iCount, GetAmmoDef()->Index(szName) );
-}
-
-bool CCombatCharacter::GiveAmmo(int nCount, int nAmmoIndex)
-{
-	int max_ammo = GetAmmoDef()->MaxCarry(nAmmoIndex); 
-	int current = GetAmmoCount(nAmmoIndex);
-	int diff = max_ammo-current;
-	if(diff > 0)
-	{
-		if(diff >= nCount)
-			diff = nCount;
-
-		AddAmmo(nAmmoIndex, diff);
-		return true;
-	}
-	return false;
 }
 
 CCombatWeapon *CCombatCharacter::GetWeapon( int i ) const
@@ -662,6 +650,20 @@ bool CCombatCharacter::HaveThisWeaponType(CCombatWeapon *pWeapon)
 	return false;
 }
 
+CCombatWeapon *CCombatCharacter::GetThisWeaponType(CCombatWeapon *pWeapon)
+{
+	for ( int i = 0; i < MAX_WEAPONS; i++ )
+	{
+		CCombatWeapon *weapon = GetWeapon(i);
+		if ( weapon )
+		{
+			if(weapon->ClassMatches(pWeapon->GetClassname()))
+				return weapon;
+		}
+	}
+	return NULL;
+}
+
 int CCombatCharacter::FAKE_OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	// grab the vector of the incoming attack. ( pretend that the inflictor is a little lower than it really is, so the body will tend to fly upward a bit).
@@ -759,7 +761,7 @@ void CCombatCharacter::AllocateDefaultRelationships()
 
 void CCombatCharacter::Shutdown()
 {
-	if ( !*m_DefaultRelationship )
+	if ( !m_DefaultRelationship || !*m_DefaultRelationship )
 		return;
 
 	for ( int i=0; i<NUM_AI_CLASSES; ++i )

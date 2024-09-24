@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Contains entities for implementing/changing game rules dynamically within each BSP.
 //
@@ -88,7 +88,7 @@ void CERulePointEntity::Spawn( void )
 
 class CEGameEnd : public CERulePointEntity
 {
-	CE_DECLARE_CLASS( CGameEnd, CERulePointEntity );
+	CE_DECLARE_CLASS( CEGameEnd, CERulePointEntity );
 
 public:
 	DECLARE_DATADESC();
@@ -105,12 +105,15 @@ BEGIN_DATADESC( CEGameEnd )
 
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( game_end, CGameEnd );
+CE_LINK_ENTITY_TO_CLASS( game_end, CEGameEnd );
 
 
 void CEGameEnd::InputGameEnd( inputdata_t &inputdata )
 {
-	g_pGameRules->EndMultiplayerGame();
+	engine->ServerCommand("monster_game_end\n");
+
+	g_helpfunc.GameRules_EndMultiplayerGame();
+	//g_pGameRules->EndMultiplayerGame();
 }
 
 void CEGameEnd::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -118,6 +121,7 @@ void CEGameEnd::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	if ( !CanFireForActivator( pActivator ) )
 		return;
 
-	g_pGameRules->EndMultiplayerGame();
+	g_helpfunc.GameRules_EndMultiplayerGame();
+	//g_pGameRules->EndMultiplayerGame();
 }
 

@@ -45,9 +45,16 @@ CEntity *CE_CBeam::Get_m_hAttachEntity(int index)
 
 void CE_CBeam::Set_m_hAttachEntity(int index, CBaseEntity *pEntity)
 {
-	edict_t *pEdict = servergameents->BaseEntityToEdict(pEntity);
-	CBaseHandle &hndl = *(CBaseHandle *)(((uint8_t *)(BaseEntity())) + m_hAttachEntity.offset + (index*4));
-	hndl.Set((pEdict) ? pEdict->GetIServerEntity() : NULL);
+	CBaseHandle &hndl = *(CBaseHandle *) (((uint8_t *) (BaseEntity())) + m_hAttachEntity.offset + (index * 4));
+	if (pEntity) {
+		IServerNetworkable *pNetworkable = pEntity->GetNetworkable();
+		Assert(pNetworkable);
+
+		edict_t *pEdict = pNetworkable->GetEdict();
+		hndl.Set((pEdict) ? pEdict->GetIServerEntity() : nullptr);
+	} else {
+		hndl.Term();
+	}
 }
 
 int CE_CBeam::Get_m_nAttachIndex(int index)

@@ -16,7 +16,6 @@ static CE_CSoundEnt *g_pSoundEnt = NULL;
 DEFINE_PROP(m_iActiveSound,CE_CSoundEnt);
 DEFINE_PROP(m_SoundPool,CE_CSoundEnt);
 
-
 void CE_CSoundEnt::InitSoundEnt()
 {
 	g_pSoundEnt = dynamic_cast<CE_CSoundEnt *>(g_helpfunc.FindEntityByClassname((CBaseEntity *)NULL, "soundent"));
@@ -26,7 +25,7 @@ int CE_CSoundEnt::ActiveList ( void )
 {
 	if ( !g_pSoundEnt )
 	{
-		return SOUNDLIST_EMPTY;
+		return (int) SOUNDLIST_EMPTY;
 	}
 
 	return g_pSoundEnt->m_iActiveSound;
@@ -44,7 +43,7 @@ CSound*	CE_CSoundEnt::GetLoudestSoundOfType( int iType, const Vector &vecEarPosi
 
 	iThisSound = ActiveList();
 
-	while ( iThisSound != SOUNDLIST_EMPTY )
+	while ( iThisSound >= 0 && iThisSound < MAX_WORLD_SOUNDS_MP )
 	{
 		pSound = SoundPointerForIndex( iThisSound );
 
@@ -92,9 +91,9 @@ CSound*	CE_CSoundEnt::SoundPointerForIndex( int iIndex )
 		Msg( "SoundPointerForIndex() - Index < 0!\n" );
 		return NULL;
 	}
-	
-	CSound &sound = *(CSound *)(((uint8_t *)(g_pSoundEnt->BaseEntity())) + g_pSoundEnt->m_SoundPool.offset + (sizeof(CSound) + iIndex));
-	return &sound;
+
+	uintptr_t sound_ptr = (uintptr_t)g_pSoundEnt->BaseEntity() + g_pSoundEnt->m_SoundPool.offset + (sizeof(CSound) * iIndex);
+	return (CSound*)sound_ptr;
 }
 
 

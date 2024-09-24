@@ -399,7 +399,7 @@ END_DATADESC()
 
 
 
-static bool NPC_Rollermine_IsRollermine( CEntity *pEntity )
+bool NPC_Rollermine_IsRollermine( CEntity *pEntity )
 {
 	CNPC_RollerMine *pRoller = dynamic_cast<CNPC_RollerMine *>(pEntity);
 	return pRoller ? true : false;
@@ -2519,7 +2519,7 @@ float CNPC_RollerMine::RollingSpeed()
 		AngularImpulse angVel;
 		pPhysics->GetVelocity( NULL, &angVel );
 		float rollingSpeed = angVel.Length() - 90;
-		rollingSpeed = clamp( rollingSpeed, 1, MAX_ROLLING_SPEED );
+		rollingSpeed = clamp( rollingSpeed, 1.0f, MAX_ROLLING_SPEED );
 		rollingSpeed *= (1/MAX_ROLLING_SPEED);
 		return rollingSpeed;
 	}
@@ -2647,7 +2647,7 @@ void CNPC_RollerMine::UpdatePingSound()
 		if ( pEnemy )
 		{
 			pingSpeed = EnemyDistance( pEnemy );
-			pingSpeed = clamp( pingSpeed, 1, ROLLERMINE_OPEN_THRESHOLD );
+			pingSpeed = clamp( pingSpeed, 1.0f, (float)ROLLERMINE_OPEN_THRESHOLD );
 			pingSpeed *= (1.0f/ROLLERMINE_OPEN_THRESHOLD);
 		}
 	}

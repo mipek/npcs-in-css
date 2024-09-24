@@ -215,13 +215,14 @@ const studiohdr_t *CStudioHdr::GroupStudioHdr( int i ) const
 
 	if ( m_nFrameUnlockCounter != *m_pFrameUnlockCounter )
 	{
-		m_FrameUnlockCounterMutex.Lock();
+		// CE_TODO: fix synchronization(mutex is wrong type/size)
+		//m_FrameUnlockCounterMutex.Lock();
 		if ( *m_pFrameUnlockCounter != m_nFrameUnlockCounter ) // i.e., this thread got the mutex
 		{
 			memset( m_pStudioHdrCache.Base(), 0, m_pStudioHdrCache.Count() * sizeof(studiohdr_t *) );
 			m_nFrameUnlockCounter = *m_pFrameUnlockCounter;
 		}
-		m_FrameUnlockCounterMutex.Unlock();
+		//m_FrameUnlockCounterMutex.Unlock();
 	}
 
 	if ( !m_pStudioHdrCache.IsValidIndex( i ) )
@@ -315,3 +316,17 @@ const mstudioattachment_t &CStudioHdr::pAttachment( int i ) const
 	return *pStudioHdr->pLocalAttachment( m_pVModel->m_attachment[i].index );
 }
 
+int	CStudioHdr::GetAttachmentBone( int i ) const
+{
+	if (m_pVModel == 0)
+	{
+		return m_pStudioHdr->pLocalAttachment( i )->localbone;
+	}
+
+	virtualgroup_t *pGroup = &m_pVModel->m_group[ m_pVModel->m_attachment[i].group ];
+	const mstudioattachment_t &attachment = pAttachment( i );
+	int iBone = pGroup->masterBone[attachment.localbone];
+	if (iBone == -1)
+		return 0;
+	return iBone;
+}

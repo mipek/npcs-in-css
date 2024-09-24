@@ -29,6 +29,13 @@
 
 class VMatrix;
 
+struct BoxTraceInfo_t
+{
+	float t1;
+	float t2;
+	int	hitside;
+	bool startsolid;
+};
 
 //-----------------------------------------------------------------------------
 // These are inlined for backwards compatibility
@@ -103,6 +110,13 @@ private:
 
 
 void UTIL_ClearTrace( trace_t &trace );
+
+byte *UTIL_LoadFileForMe( const char *filename, int *pLength );
+
+void UTIL_FreeFile( byte *buffer );
+
+void UTIL_ParentToWorldSpace( CEntity *pEntity, Vector &vecPosition, QAngle &vecAngles );
+void UTIL_ParentToWorldSpace( CEntity *pEntity, Vector &vecPosition, Quaternion &quat );
 
 // Pass in an array of pointers and an array size, it fills the array and returns the number inserted
 int			UTIL_EntitiesInBox( const Vector &mins, const Vector &maxs, CFlaggedEntitiesEnum *pEnum  );
@@ -213,6 +227,12 @@ private:
 	const char *m_pchClassname;
 };
 
+inline void UTIL_TraceRay( const Ray_t &ray, unsigned int mask,
+						   const IHandleEntity *ignore, int collisionGroup, trace_t *ptr )
+{
+	CE_CTraceFilterSimple traceFilter( ignore, collisionGroup );
+	enginetrace->TraceRay( ray, mask, &traceFilter, ptr );
+}
 
 class CPlayer;
 
@@ -330,7 +350,7 @@ bool UTIL_IsLowViolence( void );
 
 Vector UTIL_YawToVector( float yaw );
 
-CEntity *CreateRagGib( const char *szModel, const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecForce, float flFadeTime, bool bShouldIgnite = false );
+CEntity *CreateRagGib( const char *szModel, const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecForce, float flFadeTime = 0.0f, bool bShouldIgnite = false );
 
 void UTIL_SetSize( CBaseEntity *pEnt, const Vector &vecMin, const Vector &vecMax );
 
@@ -369,6 +389,8 @@ float UTIL_WaterLevel( const Vector &position, float minz, float maxz );
 float UTIL_FindWaterSurface( const Vector &position, float minz, float maxz );
 
 int	UTIL_DropToFloor( CEntity *pEntity, unsigned int mask, CEntity *pIgnore = NULL );
+
+Vector UTIL_PointOnLineNearestPoint(const Vector& vStartPos, const Vector& vEndPos, const Vector& vPoint, bool clampEnds = false );
 
 int ENTINDEX( CBaseEntity *pEnt );
 
@@ -474,6 +496,29 @@ int SENTENCEG_Lookup(const char *sample);
 int SENTENCEG_PlayRndSz(edict_t *entity, const char *szrootname, float volume, soundlevel_t soundlevel, int flags, int pitch);
 void SENTENCEG_PlaySentenceIndex( edict_t *entity, int iSentenceIndex, float volume, soundlevel_t soundlevel, int flags, int pitch );
 
+void ShakeRopes( const Vector &vCenter, float flRadius, float flMagnitude );
+
+bool IntersectRayWithSphere( const Vector &vecRayOrigin, const Vector &vecRayDelta, const Vector &vecSphereCenter, float flRadius, float *pT1, float *pT2 );
+
+bool IntersectInfiniteRayWithSphere( const Vector &vecRayOrigin, const Vector &vecRayDelta,
+									 const Vector &vecSphereCenter, float flRadius, float *pT1, float *pT2 );
+
+//-----------------------------------------------------------------------------
+// IntersectRayWithBox
+//
+// Purpose: Computes the intersection of a ray with a box (AABB)
+// Output : Returns true if there is an intersection + trace information
+//-----------------------------------------------------------------------------
+bool IntersectRayWithBox( const Vector &rayStart, const Vector &rayDelta, const Vector &boxMins, const Vector &boxMaxs, float epsilon, CBaseTrace *pTrace, float *pFractionLeftSolid=nullptr );
+bool IntersectRayWithBox( const Vector &vecRayStart, const Vector &vecRayDelta,
+						  const Vector &boxMins, const Vector &boxMaxs, float flTolerance, BoxTraceInfo_t *pTrace );
+bool IntersectRayWithBox( const Ray_t &ray, const Vector &boxMins, const Vector &boxMaxs, float epsilon, CBaseTrace *pTrace, float *pFractionLeftSolid = NULL );
+
+bool IntersectRayWithOBB( const Vector &vecRayStart, const Vector &vecRayDelta,
+						  const matrix3x4_t &matOBBToWorld, const Vector &vecOBBMins, const Vector &vecOBBMaxs,
+						  float flTolerance, BoxTraceInfo_t *pTrace );
+
+
 void *UTIL_FunctionFromName( datamap_t *pMap, const char *pName );
 
 bool UTIL_HudHintText( CBaseEntity *pEntity, const char *pMessage );
@@ -488,12 +533,18 @@ bool FASTCALL IsBoxIntersectingRay( const Vector& boxMin, const Vector& boxMax,
 bool IsBoxIntersectingBox( const Vector& boxMin1, const Vector& boxMax1, 
 	const Vector& boxMin2, const Vector& boxMax2 );
 
+bool IsPointInBox( const Vector& pt, const Vector& boxMin, const Vector& boxMax );
+
 void UTIL_ClipPunchAngleOffset( QAngle &in, const QAngle &punch, const QAngle &clip );
 
 // Particle effect tracer
-void		UTIL_ParticleTracer( const char *pszTracerEffectName, const Vector &vecStart, const Vector &vecEnd, int iEntIndex = 0, int iAttachment = 0, bool bWhiz = false );
+void UTIL_ParticleTracer( const char *pszTracerEffectName, const Vector &vecStart, const Vector &vecEnd, int iEntIndex = 0, int iAttachment = 0, bool bWhiz = false );
 
 // Old style, non-particle system, tracers
-void		UTIL_Tracer( const Vector &vecStart, const Vector &vecEnd, int iEntIndex = 0, int iAttachment = TRACER_DONT_USE_ATTACHMENT, float flVelocity = 0, bool bWhiz = false, const char *pCustomTracerName = NULL, int iParticleID = 0 );
+void UTIL_Tracer( const Vector &vecStart, const Vector &vecEnd, int iEntIndex = 0, int iAttachment = TRACER_DONT_USE_ATTACHMENT, float flVelocity = 0, bool bWhiz = false, const char *pCustomTracerName = NULL, int iParticleID = 0 );
+
+bool CanCreateEntityClass( const char *pszClassname );
+
+void UTIL_SetModel( CEntity *pEntity, const char *pModelName );
 
 #endif // _INCLUDE_UTIL_H_

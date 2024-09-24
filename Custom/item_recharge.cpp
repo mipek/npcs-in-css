@@ -116,7 +116,6 @@ CNewRecharge::CNewRecharge()
 
 bool CNewRecharge::DispatchKeyValue( const char *szKeyName, const char *szValue )
 {
-	return BaseClass::DispatchKeyValue( szKeyName, szValue );
 	if (	FStrEq(szKeyName, "style") ||
 				FStrEq(szKeyName, "height") ||
 				FStrEq(szKeyName, "value1") ||
@@ -217,7 +216,7 @@ void CNewRecharge::StudioFrameAdvance( void )
 	}
 
 	// Latch prev
-	m_flPrevAnimTime = m_flAnimTime;
+	*(m_flPrevAnimTime) = *(m_flAnimTime);
 	// Set current
 	m_flAnimTime = gpGlobals->curtime;
 }
@@ -229,7 +228,7 @@ void CNewRecharge::StudioFrameAdvance( void )
 //-----------------------------------------------------------------------------
 float CNewRecharge::MaxJuice()	const
 {
-	return m_iMaxJuice;
+	return (float) m_iMaxJuice;
 }
 
 
@@ -378,7 +377,7 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	{
 		m_iOn++;
 		EmitSound( "SuitRecharge.Start" );
-		m_flSoundTime = 0.56 + gpGlobals->curtime;
+		m_flSoundTime = 0.56f + gpGlobals->curtime;
 
 		m_OnPlayerUse.FireOutput( pActivator, this );
 	}
@@ -403,7 +402,7 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	m_OutRemainingCharge.Set(flRemaining, pActivator, BaseEntity());
 
 	// govern the rate of charge
-	m_flNextCharge = gpGlobals->curtime + 0.1;
+	m_flNextCharge = gpGlobals->curtime + 0.1f;
 }
 
 void CNewRecharge::Recharge(void)

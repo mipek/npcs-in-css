@@ -1,17 +1,13 @@
 #ifndef _INCLUDE_SOURCEMOD_EXTENSION_SIGN_FUNC_H_
 #define _INCLUDE_SOURCEMOD_EXTENSION_SIGN_FUNC_H_
 
-#ifdef _WIN32
-#pragma once
-#endif
-
 #include "extension.h"
 //#include "entityinput.h"
 //#include "entitydata.h"
 #include "ai_activity.h"
+#include "ai_navtype.h"
 #include "eventlist.h"
 #include "CSoundent.h"
-
 
 class VEmptyClass {};
 
@@ -19,7 +15,6 @@ class CEntity;
 class CTakeDamageInfo;
 struct AIMoveTrace_t;
 class IServerVehicle;
-enum Navigation_t;
 class CAI_Hint;
 class CAI_NPC;
 class CBoneCache;
@@ -29,7 +24,7 @@ class IEntityFindFilter;
 class CAmmoDef;
 struct gamevcollisionevent_t;
 struct breakablepropparams_t;
-enum FlankType_t;
+enum FlankType_t : int;
 class IMapEntityFilter;
 class CEventQueue;
 class IEntityListener;
@@ -39,6 +34,7 @@ class CSimThinkManager;
 class IPhysicsObject;
 struct ragdoll_t;
 struct matrix3x4_t;
+struct AI_NavGoal_t;
 
 // Autoaiming modes
 enum
@@ -63,6 +59,7 @@ public:
 	void LevelShutdownPostEntity();
 
 public:
+	void** FindGameRules();
 	void HookGameRules();
 	void UnHookGameRules();
 	int SelectWeightedSequence(void *pstudiohdr, int activity, int curSequence = -1);
@@ -90,6 +87,8 @@ public:
 	void UTIL_PrecacheOther( const char *szClassname, const char *modelName = NULL);
 	void UTIL_RemoveImmediate( CBaseEntity *oldObj );
 	void SetEventIndexForSequence( mstudioseqdesc_t &seqdesc );
+	void SetActivityForSequence( CStudioHdr *pstudiohdr, int seq );
+	int ActivityList_IndexForName( const char *pszActivityName );
 	string_t AllocPooledString( const char * pszValue );
 	string_t FindPooledString( const char * pszValue );
 	void PrecacheInstancedScene( char const *pszScene );
@@ -98,8 +97,8 @@ public:
 	static CBaseEntity *UTIL_FindClientInPVS_VecVec( const Vector &vecBoxMins, const Vector &vecBoxMaxs );
 	static CBaseEntity *CreateServerRagdollAttached( CBaseAnimating *pAnimating, const Vector &vecForce, int forceBone, int collisionGroup, IPhysicsObject *pAttached, CBaseAnimating *pParentEntity, int boneAttach, const Vector &originAttached, int parentBoneAttach, const Vector &boneOrigin );
 	static ragdoll_t *Ragdoll_GetRagdoll( CBaseEntity *pent );
-	static void PhysDisableEntityCollisions( IPhysicsObject *pObject0, IPhysicsObject *pObject1 );
-	static void PhysEnableEntityCollisions( CBaseEntity *pObject0, CBaseEntity *pObject1 );
+	//static void PhysDisableEntityCollisions( IPhysicsObject *pObject0, IPhysicsObject *pObject1 );
+	//static void PhysEnableEntityCollisions( CBaseEntity *pObject0, CBaseEntity *pObject1 );
 	static void DetachAttachedRagdollsForEntity( CBaseEntity *pent );
 
 public: //CAI_HintManager
@@ -126,9 +125,12 @@ public: // entity
 	void *GetDataObject( CBaseEntity *pEntity, int type );
 	void SetMoveType( CBaseEntity *pEntity, MoveType_t val, MoveCollide_t moveCollide );
 	void CheckHasGamePhysicsSimulation(CBaseEntity *pEntity);
+	void InvalidatePhysicsRecursive( CBaseEntity *pEntity, int nChangeFlags );
+	void PhysicsPushEntity( CBaseEntity *pEntity, const Vector& push, trace_t *pTrace );
 	model_t *GetModel(void *pEntity);
 	void VPhysicsSetObject(CBaseEntity *pEnt, IPhysicsObject *pPhysObj);
 	void ResetClientsideFrame(CBaseEntity *pEnt);
+	void SUB_StartFadeOut(CBaseEntity *pEnt, float delay, bool notSolid);
 
 public: // collision
 	void SetSolid(void *collision_ptr, SolidType_t val);
@@ -140,6 +142,7 @@ public: // gamerules
 	bool GameRules_ShouldCollide_Hook(int collisionGroup0, int collisionGroup1);
 	bool CHalfLife2_ShouldCollide( int collisionGroup0, int collisionGroup1);
 	bool CGameRules_ShouldCollide( int collisionGroup0, int collisionGroup1);
+	bool GameRules_IsSpawnPointValid_Hook(CBaseEntity *point, CBaseEntity *player);
 	bool GameRules_Damage_NoPhysicsForce(int iDmgType);
 	bool GameRules_IsSkillLevel(int iLevel);
 	bool GameRules_IsTeamplay();
@@ -148,6 +151,7 @@ public: // gamerules
 	bool GameRules_FPlayerCanTakeDamage(CBaseEntity *pPlayer, CBaseEntity *pAttacker, const CTakeDamageInfo &info);
 	void GameRules_EndMultiplayerGame();
 	int GameRules_GetAutoAimMode();
+	CViewVectors *GameRules_GetViewVectors();
 
 public: // entlist
 	void ReportEntityFlagsChanged(CBaseEntity *pEntity, unsigned int flagsOld, unsigned int flagsNow);
@@ -166,6 +170,9 @@ public: // entlist
 
 	CEntity *FindEntityGeneric( CBaseEntity *pStartEntity, const char *szName, CBaseEntity *pSearchingEntity = NULL, CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL );
 	CEntity *FindEntityGenericNearest( const char *szName, const Vector &vecSrc, float flRadius, CBaseEntity *pSearchingEntity = NULL, CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL );
+
+	CBaseEntity *NextEnt(CBaseEntity *pCurrentEnt);
+	CBaseEntity *FirstEnt();
 
 	void AddListenerEntity( IEntityListener *pListener );
 	void RemoveListenerEntity( IEntityListener *pListener );
@@ -190,7 +197,6 @@ public: // animate
 	CBoneCache *GetBoneCache(void *ptr);
 	void LockStudioHdr(void *ptr);
 	CStudioHdr *GetModelPtr(void *ptr);
-	static void InitBoneControllers(void *ptr);
 	static void SetupBones( void *ptr, matrix3x4_t *pBoneToWorld, int boneMask ) ;
 
 public: // CAI_MoveProbe
@@ -204,10 +210,11 @@ public:
 
 public:
 	static bool CAI_Navigator_UpdateGoalPos(void *ptr, const Vector &goalPos);
+	static bool CAI_Navigator_SetGoal(void *ptr, const AI_NavGoal_t &goal, unsigned flags);
 
 public: // PhysCallbackX
-	static void PhysCallbackSetVelocity( IPhysicsObject *pPhysicsObject, const Vector &vecVelocity );
-	static void PhysCallbackRemove(IServerNetworkable *pRemove);
+	//static void PhysCallbackSetVelocity( IPhysicsObject *pPhysicsObject, const Vector &vecVelocity );
+	//static void PhysCallbackRemove(IServerNetworkable *pRemove);
 
 private:
 	CSimThinkManager *GetSimThinkMngr();
@@ -217,6 +224,7 @@ private:
 
 private:
 	bool OnLadder( trace_t &trace );
+	void OnRagdollFrameUpdate();
 
 private:
 	void **my_g_pGameRules;

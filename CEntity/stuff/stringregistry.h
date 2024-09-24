@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose:		A registry of strings and associated ints
 //
@@ -48,7 +48,7 @@ public:
 	// Iterate all the keys.
 	unsigned short First() const;
 	unsigned short Next( unsigned short key ) const;
-	unsigned short InvalidIndex() const;
+	static unsigned short InvalidIndex();
 
 	~CStringRegistry(void);			// Need to free allocated memory
 	CStringRegistry(void);

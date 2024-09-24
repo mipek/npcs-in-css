@@ -136,6 +136,53 @@ bool CAI_SentenceBase::MatchesCriteria( SentenceCriteria_t nCriteria )
 	return true;
 }
 
+static int SENTENCEG_PickRndSz(const char *szgroupname)
+{
+	char name[64];
+	int ipick;
+	int isentenceg;
+
+	name[0] = 0;
+
+	isentenceg = engine->SentenceGroupIndexFromName(szgroupname);
+	if (isentenceg < 0)
+	{
+		Warning( "No such sentence group %s\n", szgroupname );
+		return -1;
+	}
+
+	ipick = engine->SentenceGroupPick(isentenceg, name, sizeof( name ));
+	if (ipick >= 0 && name[0])
+	{
+		return SENTENCEG_Lookup( name );
+	}
+	return -1;
+}
 
 
+//-----------------------------------------------------------------------------
+// Speech w/ queue
+//-----------------------------------------------------------------------------
+int CAI_SentenceBase::SpeakQueued( const char *pSentence, SentencePriority_t nSoundPriority, SentenceCriteria_t nCriteria )
+{
+	if ( !MatchesCriteria(nCriteria) )
+		return -1;
 
+	// Speaking clears the queue
+	ClearQueue();
+
+	int nSentenceIndex = Speak( pSentence, nSoundPriority, nCriteria );
+	if ( nSentenceIndex >= 0 )
+		return nSentenceIndex;
+
+	// Queue up the sentence for later playing
+	int nQueuedSentenceIndex = SENTENCEG_PickRndSz( pSentence );
+	if ( nQueuedSentenceIndex == -1 )
+		return -1;
+
+	int nSquadCount = GetOuter()->GetSquad() ? GetOuter()->GetSquad()->NumMembers() : 1;
+	m_flQueueTimeout = gpGlobals->curtime + nSquadCount * 2.0f;
+	m_nQueueSoundPriority = nSoundPriority;
+	m_nQueuedSentenceIndex = nQueuedSentenceIndex;
+	return -1;
+}

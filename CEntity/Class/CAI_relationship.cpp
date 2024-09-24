@@ -117,12 +117,12 @@ void CAI_Relationship::Spawn()
 
 	if (m_iszSubject == NULL_STRING)
 	{
-		//DevWarning("ai_relationship '%s' with no subject specified, removing.\n", GetDebugName());
+		META_CONPRINTF("[Monster] ai_relationship '%s' with no subject specified, removing.\n", GetDebugName());
 		UTIL_Remove(this);
 	}
 	else if (*(m_target) == NULL_STRING)
 	{
-		//DevWarning("ai_relationship '%s' with no target specified, removing.\n", GetDebugName());
+		META_CONPRINTF("[Monster] ai_relationship '%s' with no target specified, removing.\n", GetDebugName());
 		UTIL_Remove(this);
 	}
 }
@@ -354,7 +354,7 @@ void CAI_Relationship::ChangeRelationships( int disposition, int iReverting, CEn
  	if( iReverting != NOT_REVERTING && m_iPreviousDisposition == -1 )
 	{
 		// Trying to revert without having ever set the relationships!
-		DevMsg( 2, "ai_relationship cannot revert changes before they are applied!\n");
+		META_CONPRINTF("[Monster] ai_relationship cannot revert changes before they are applied!\n");
 		return;
 	}
 

@@ -23,7 +23,7 @@ bool ITEM_GiveAmmo( CPlayer *pPlayer, float flCount, const char *pszAmmoName)
 	if (iAmmoType == -1)
 		return false;
 
-	bool ret = pPlayer->GiveAmmo(flCount, iAmmoType);
+	bool ret = pPlayer->GiveAmmo((int) flCount, iAmmoType) > 0;
 	if(ret)
 	{
 		CPASAttenuationFilter filter( pPlayer, "BaseCombatCharacter.AmmoPickup" );
@@ -68,9 +68,11 @@ public:
 		BaseClass::Precache();
 		PrecacheModel ("models/items/BoxSniperRounds.mdl");
 	}
-	bool MyTouch( CPlayer *pPlayer )
+	CEntity* MyTouch( CPlayer *pPlayer )
 	{
-		return ITEM_GiveAmmo(pPlayer, 10, "BULLET_PLAYER_338MAG");
+		if (ITEM_GiveAmmo(pPlayer, 10, "BULLET_PLAYER_338MAG"))
+			return this;
+		return nullptr;
 	}
 };
 
@@ -91,9 +93,11 @@ public:
 		BaseClass::Precache();
 		PrecacheModel ("models/items/BoxSRounds.mdl");
 	}
-	bool MyTouch( CPlayer *pPlayer )
+	CEntity* MyTouch( CPlayer *pPlayer )
 	{
-		return ITEM_GiveAmmo(pPlayer, 13, "BULLET_PLAYER_357SIG");
+		if (ITEM_GiveAmmo(pPlayer, 13, "BULLET_PLAYER_357SIG"))
+			return this;
+		return nullptr;
 	}
 };
 
@@ -114,9 +118,11 @@ public:
 		BaseClass::Precache();
 		PrecacheModel ("models/items/BoxSRounds.mdl");
 	}
-	bool MyTouch( CPlayer *pPlayer )
+	CEntity* MyTouch( CPlayer *pPlayer )
 	{
-		return ITEM_GiveAmmo(pPlayer, 30, "BULLET_PLAYER_45ACP");
+		if (ITEM_GiveAmmo(pPlayer, 30, "BULLET_PLAYER_45ACP"))
+			return this;
+		return nullptr;
 	}
 };
 
@@ -137,9 +143,11 @@ public:
 		BaseClass::Precache();
 		PrecacheModel ("models/items/357ammo.mdl");
 	}
-	bool MyTouch( CPlayer *pPlayer )
+	CEntity* MyTouch( CPlayer *pPlayer )
 	{
-		return ITEM_GiveAmmo(pPlayer, 7, "BULLET_PLAYER_50AE");
+		if (ITEM_GiveAmmo(pPlayer, 7, "BULLET_PLAYER_50AE"))
+			return this;
+		return nullptr;
 	}
 };
 
@@ -160,9 +168,11 @@ public:
 		BaseClass::Precache();
 		PrecacheModel ("models/items/BoxMRounds.mdl");
 	}
-	bool MyTouch( CPlayer *pPlayer )
+	CEntity* MyTouch( CPlayer *pPlayer )
 	{
-		return ITEM_GiveAmmo(pPlayer, 30, "BULLET_PLAYER_556MM");
+		if (ITEM_GiveAmmo(pPlayer, 30, "BULLET_PLAYER_556MM"))
+			return this;
+		return nullptr;
 	}
 };
 
@@ -183,9 +193,11 @@ public:
 		BaseClass::Precache();
 		PrecacheModel ("models/items/BoxMRounds.mdl");
 	}
-	bool MyTouch( CPlayer *pPlayer )
+	CEntity* MyTouch( CPlayer *pPlayer )
 	{
-		return ITEM_GiveAmmo(pPlayer, 50, "BULLET_PLAYER_556MM_BOX");
+		if (ITEM_GiveAmmo(pPlayer, 50, "BULLET_PLAYER_556MM_BOX"))
+			return this;
+		return nullptr;
 	}
 };
 
@@ -195,9 +207,11 @@ class CAmmo_57mm : public CAmmo
 public:
 	CE_DECLARE_CLASS(CAmmo_57mm, CAmmo);
 public:
-	 bool MyTouch( CPlayer *pPlayer )
+	 CEntity* MyTouch( CPlayer *pPlayer )
 	 {
-		return ITEM_GiveAmmo(pPlayer, 50, "BULLET_PLAYER_57MM");
+		if (ITEM_GiveAmmo(pPlayer, 50, "BULLET_PLAYER_57MM"))
+			return this;
+		return nullptr;
 	 }
 };
 
@@ -218,9 +232,11 @@ public:
 		BaseClass::Precache();
 		PrecacheModel ("models/items/BoxMRounds.mdl");
 	}
-	bool MyTouch( CPlayer *pPlayer )
+	CEntity* MyTouch( CPlayer *pPlayer )
 	{
-		return ITEM_GiveAmmo(pPlayer, 30, "BULLET_PLAYER_762MM");
+		if (ITEM_GiveAmmo(pPlayer, 30, "BULLET_PLAYER_762MM"))
+			return this;
+		return nullptr;
 	}
 };
 
@@ -241,9 +257,11 @@ public:
 		BaseClass::Precache();
 		PrecacheModel ("models/items/BoxMRounds.mdl");
 	}
-	bool MyTouch( CPlayer *pPlayer )
+	CEntity* MyTouch( CPlayer *pPlayer )
 	{
-		return ITEM_GiveAmmo(pPlayer, 30, "BULLET_PLAYER_9MM");
+		if (ITEM_GiveAmmo(pPlayer, 30, "BULLET_PLAYER_9MM"))
+			return this;
+		return nullptr;
 	}
 };
 
@@ -264,9 +282,58 @@ public:
 		BaseClass::Precache();
 		PrecacheModel ("models/items/BoxBuckshot.mdl");
 	}
-	bool MyTouch( CPlayer *pPlayer )
+	CEntity* MyTouch( CPlayer *pPlayer )
 	{
-		return ITEM_GiveAmmo(pPlayer, 8, "BULLET_PLAYER_BUCKSHOT");
+		if (ITEM_GiveAmmo(pPlayer, 8, "BULLET_PLAYER_BUCKSHOT"))
+			return this;
+		return nullptr;
+	}
+};
+
+class CItem_RPG_Round : public CItem<CSode_Fix>
+{
+public:
+	CE_DECLARE_CLASS( CItem_RPG_Round, CItem<CSode_Fix> );
+
+	void Spawn( void )
+	{
+		m_bRespawn = true;
+		Precache();
+		SetModel( "models/weapons/w_missile_closed.mdl" );
+		BaseClass::Spawn();
+	}
+	void Precache( void )
+	{
+		BaseClass::Precache();
+		PrecacheModel ("models/weapons/w_missile_closed.mdl");
+
+	}
+	CEntity *MyTouch( CPlayer *pPlayer )
+	{
+		if(pPlayer->m_bHaveRPG)
+		{
+			int iAmmoType = GetAmmoDef()->Index("AMMO_TYPE_FLASHBANG");
+			if (iAmmoType != -1)
+			{
+				bool ret = false;
+				int current = pPlayer->GetAmmoCount(iAmmoType);
+				if(current == 0)
+				{
+					pPlayer->GiveNamedItem("weapon_rpg");
+					ret = true;
+				} else {
+					ret = (pPlayer->BaseClass::GiveAmmo(1, iAmmoType) == 0) ? false : true;
+				}
+
+				if(ret)
+				{
+					CPASAttenuationFilter filter( pPlayer, "BaseCombatCharacter.AmmoPickup" );
+					CEntity::EmitSound( filter, pPlayer->entindex(), "BaseCombatCharacter.AmmoPickup" );
+					return this;
+				}
+			}
+		}
+		return NULL;
 	}
 };
 
@@ -293,9 +360,11 @@ public:
 		BaseClass::Spawn();
 	}
 
-	bool MyTouch(CPlayer *pPlayer)
+	CEntity* MyTouch(CPlayer *pPlayer)
 	{
-		return ITEM_GiveAmmo(pPlayer, SIZE_AMMO_AR2_ALTFIRE, "AR2AltFire" );;
+		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_AR2_ALTFIRE, "AR2AltFire" ))
+			return this;
+		return nullptr;
 	}
 };
 
@@ -311,6 +380,7 @@ CE_LINK_ENTITY_TO_CLASS( ammo_9mm, CAmmo_9mm ); // elite glock mp5navy tmp
 CE_LINK_ENTITY_TO_CLASS( ammo_buckshot, CAmmo_buckshot ); // m3 xm1014
 
 // HL2 Ammo
+LINK_ENTITY_TO_CUSTOM_CLASS( item_rpg_round, item_sodacan, CItem_RPG_Round );
 LINK_ENTITY_TO_CUSTOM_CLASS( item_ammo_ar2_altfire, item_sodacan, CItem_AR2AltFireRound );
 
 
@@ -429,12 +499,25 @@ ConVar	sk_max_gauss_round		( "sk_max_gauss_round", "0" );
 ConVar	sk_npc_dmg_gunship			( "sk_npc_dmg_gunship", "0" );
 ConVar	sk_npc_dmg_gunship_to_plr	( "sk_npc_dmg_gunship_to_plr", "0" );
 
+extern ConVar *ammo_hegrenade_max;
+
 void RegisterHL2AmmoTypes()
 {
 	CAmmoDef *pAmmoDef = GetAmmoDef();
 	if(pAmmoDef)
 	{
+#ifdef HL2_EPISODIC
+		pAmmoDef->AddAmmoType("StriderMinigun",	DMG_BULLET,					TRACER_LINE,			5, 5, 15, 1.0 * 750 * 12, AMMO_FORCE_DROP_IF_CARRIED ); // hit like a 1.0kg weight at 750 ft/s
+#else
+		pAmmoDef->AddAmmoType("StriderMinigun",	DMG_BULLET,					TRACER_LINE,			5, 15,15, 1.0 * 750 * 12, AMMO_FORCE_DROP_IF_CARRIED ); // hit like a 1.0kg weight at 750 ft/s
+#endif//HL2_EPISODIC
+		pAmmoDef->AddAmmoType("StriderMinigunDirect",	DMG_BULLET,				TRACER_LINE,			2, 2, 15, 1.0 * 750 * 12, AMMO_FORCE_DROP_IF_CARRIED ); // hit like a 1.0kg weight at 750 ft/s
+
 		pAmmoDef->AddAmmoType("AR2",				DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_ar2",			"sk_npc_dmg_ar2",			"sk_max_ar2",			BULLET_IMPULSE(200, 1225), 0 );
 		pAmmoDef->AddAmmoType("AR2AltFire", DMG_DISSOLVE, TRACER_NONE, 0, 0, 3, 0, 0);
+
+		pAmmoDef->AddAmmoType("HelicopterGun",	DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_npc_dmg_helicopter_to_plr", "sk_npc_dmg_helicopter",	"sk_max_smg1",	BULLET_IMPULSE(400, 1225), AMMO_FORCE_DROP_IF_CARRIED | AMMO_INTERPRET_PLRDAMAGE_AS_DAMAGE_TO_PLAYER );
+		pAmmoDef->AddAmmoType("CombineCannon",	DMG_BULLET,					TRACER_LINE,			"sk_npc_dmg_gunship_to_plr", "sk_npc_dmg_gunship", NULL, 1.5 * 750 * 12, 0 ); // hit like a 1.5kg weight at 750 ft/s
+		pAmmoDef->AddAmmoType("GaussEnergy",		DMG_SHOCK,					TRACER_NONE,			"sk_jeep_gauss_damage",		"sk_jeep_gauss_damage", "sk_max_gauss_round", BULLET_IMPULSE(650, 8000), 0 ); // hit like a 10kg weight at 400 in/s
 	}
 }

@@ -188,7 +188,7 @@ protected:
 
 	CE_AI_Hint *			GetHintNode()								{ return GetOuter()->GetHintNode(); }
 	const CE_AI_Hint		*GetHintNode() const						{ return GetOuter()->GetHintNode(); }
-	void				SetHintNode( CBaseEntity *pHintNode )		{ /*GetOuter()->SetHintNode( pHintNode );*/ }
+	void				SetHintNode( CE_AI_Hint *pHintNode )		{ GetOuter()->SetHintNode( pHintNode ); }
 	void				ClearHintNode( float reuseDelay = 0.0 )		{ GetOuter()->ClearHintNode( reuseDelay ); }
 
 protected:
@@ -314,8 +314,8 @@ public:
 	}
 
 protected:
-	CAI_Behavior(CEntity *pOuter = NULL)
-	 : CAI_ComponentWithOuter<NPC_CLASS, CAI_BehaviorBase>(pOuter)
+	CAI_Behavior(NPC_CLASS *pOuter = NULL)
+			: CAI_ComponentWithOuter<NPC_CLASS, CAI_BehaviorBase>(pOuter)
 	{
 	}
 
@@ -1509,7 +1509,7 @@ inline void CAI_BehaviorHost<BASE_NPC>::OnChangeActiveWeapon( CCombatWeapon *pOl
 {
 	for( int i = 0; i < m_Behaviors.Count(); i++ )
 	{
-		m_Behaviors[i]->BridgeOnChangeActiveWeapon( pOldWeapon, pNewWeapon );
+		m_Behaviors[i]->BridgeOnChangeActiveWeapon( (CBaseEntity*)pOldWeapon, (CBaseEntity*)pNewWeapon ); // LTODO
 	}
 
 	BaseClass::OnChangeActiveWeapon( pOldWeapon, pNewWeapon );
@@ -1895,7 +1895,7 @@ template <class BASE_NPC>
 inline void CAI_BehaviorHost<BASE_NPC>::AddBehavior( CAI_BehaviorBase *pBehavior )
 {
 	m_Behaviors.AddToTail( pBehavior );
-	pBehavior->SetOuter( BaseEntity() );
+	pBehavior->SetOuter( this->BaseEntity() );
 	pBehavior->SetBackBridge( this );
 }
 

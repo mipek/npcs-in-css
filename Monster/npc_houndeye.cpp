@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Houndeye - a spooky sonic dog.
 //
@@ -768,11 +768,11 @@ void CNPC_Houndeye::StartTask( const Task_t *pTask )
 			Vector vTargetPos = GetEnemyLKP();
 			vTargetPos.z	= GetFloorZ(vTargetPos);
 
-			if (GetNavigator()->SetRadialGoal(vTargetPos, GetEnemy()->WorldSpaceCenter(), enginerandom->RandomFloat(50.0f,500.0f), 90.0f, 175.0f, m_bLoopClockwise))
+			/*if (GetNavigator()->SetRadialGoal(vTargetPos, GetEnemy()->WorldSpaceCenter(), enginerandom->RandomFloat(50.0f,500.0f), 90.0f, 175.0f, m_bLoopClockwise))
 			{
 				TaskComplete();
 				return;
-			}
+			}*/
 			TaskFail(FAIL_NO_ROUTE);
 		}
 		break;

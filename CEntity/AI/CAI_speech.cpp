@@ -143,7 +143,7 @@ int CAI_Expresser::GetVoicePitch() const
 CAI_TimedSemaphore *CAI_Expresser::GetMySpeechSemaphore( CEntity *pNpc ) 
 {
 	if ( !pNpc->MyNPCPointer() )
-		return false;
+		return nullptr;
 
 	return (pNpc->MyNPCPointer()->IsPlayerAlly() ? g_AIFriendliesTalkSemaphore : g_AIFoesTalkSemaphore );
 }
@@ -445,6 +445,88 @@ AI_Response *CAI_Expresser::SpeakFindResponse( AIConcept_t concept, const char *
 	return result;
 }
 
+bool CAI_Expresser::CanSpeakConcept( AIConcept_t concept )
+{
+	// Not in history?
+	int iter = m_ConceptHistories.Find( concept );
+	if ( iter == m_ConceptHistories.InvalidIndex() )
+	{
+		return true;
+	}
+
+	ConceptHistory_t *history = &m_ConceptHistories[iter];
+	Assert( history );
+
+	AI_Response *response = history->response;
+	if ( !response )
+		return true;
+
+	if ( response->GetSpeakOnce() )
+		return false;
+
+	float respeakDelay = response->GetRespeakDelay();
+
+	if ( respeakDelay != 0.0f )
+	{
+		if ( history->timeSpoken != -1 && ( gpGlobals->curtime < history->timeSpoken + respeakDelay ) )
+			return false;
+	}
+
+	return true;
+}
+
+bool CAI_Expresser::SpokeConcept( AIConcept_t concept )
+{
+	return GetTimeSpokeConcept( concept ) != -1.f;
+}
+
+float CAI_Expresser::GetTimeSpokeConcept( AIConcept_t concept )
+{
+	int iter = m_ConceptHistories.Find( concept );
+	if ( iter == m_ConceptHistories.InvalidIndex() )
+		return -1;
+
+	ConceptHistory_t *h = &m_ConceptHistories[iter];
+	return h->timeSpoken;
+}
+
+bool CAI_Expresser::CanSpeak()
+{
+	if ( m_flLastTimeAcceptedSpeak == gpGlobals->curtime ) // only one speak accepted per think
+		return false;
+
+	float timeOk = MAX( m_flStopTalkTime, m_flBlockedTalkTime );
+	return ( timeOk <= gpGlobals->curtime );
+}
+
+bool CAI_Expresser::CanSpeakAfterMyself()
+{
+	if ( m_flLastTimeAcceptedSpeak == gpGlobals->curtime ) // only one speak accepted per think
+		return false;
+
+	float timeOk = MAX( m_flStopTalkTimeWithoutDelay, m_flBlockedTalkTime );
+	return ( timeOk <= gpGlobals->curtime );
+}
+
+bool CAI_Expresser::SemaphoreIsAvailable( CBaseEntity *pTalker )
+{
+	if ( !GetSink()->UseSemaphore() )
+		return true;
+
+	CAI_TimedSemaphore *pSemaphore = GetMySpeechSemaphore( CEntity::Instance(pTalker)->MyNPCPointer() );
+	return (pSemaphore ? pSemaphore->IsAvailable( pTalker ) : true);
+}
+
+float CAI_Expresser::GetSemaphoreAvailableTime( CBaseEntity *pTalker )
+{
+	CAI_TimedSemaphore *pSemaphore = GetMySpeechSemaphore( CEntity::Instance(pTalker)->MyNPCPointer() );
+	return (pSemaphore ? pSemaphore->GetReleaseTime() : 0);
+}
+
+void CAI_Expresser::ClearSpokeConcept( AIConcept_t concept )
+{
+	m_ConceptHistories.Remove( concept );
+}
 
 void CAI_ExpresserHost_NPC_DoModifyOrAppendCriteria( CAI_NPC *pSpeaker, AI_CriteriaSet& set )
 {

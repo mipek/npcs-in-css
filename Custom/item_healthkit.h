@@ -6,30 +6,28 @@
 #include "CItem.h"
 #include "CSode_Fix.h"
 
-typedef CPickupItem CHealthItem;
-
-class CHealthKit : public CHealthItem
+class CHealthKit : public CItem<CSode_Fix>
 {
 public:
-	CE_DECLARE_CLASS( CHealthKit, CHealthItem );
+	CE_DECLARE_CLASS( CHealthKit, CItem<CSode_Fix> );
 
 	void Spawn( void );
 	void Precache( void );
-	bool MyTouch( CPlayer *pPlayer );
+	CEntity* MyTouch( CPlayer *pPlayer );
 
 	int	ObjectCaps() { return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE; };
 
 };
 
 
-class CHealthVial : public CHealthItem
+class CHealthVial : public CItem<CSode_Fix>
 {
 public:
-	CE_DECLARE_CLASS( CHealthVial, CHealthItem );
+	CE_DECLARE_CLASS( CHealthVial, CItem<CSode_Fix> );
 
 	void Spawn( void );
 	void Precache( void );
-	bool MyTouch( CPlayer *pPlayer );
+	CEntity* MyTouch( CPlayer *pPlayer );
 
 	int	ObjectCaps() { return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE; };
 

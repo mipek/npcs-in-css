@@ -145,8 +145,8 @@ public:
 	void			InputUnpack( inputdata_t &inputdata );
 
 
-	virtual void	OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t reason );
-	virtual void	OnPhysGunDrop( CPlayer *pPhysGunUser, PhysGunDrop_t Reason );
+	virtual void	OnPhysGunPickup( CBaseEntity *pPhysGunUser, PhysGunPickup_t reason );
+	virtual void	OnPhysGunDrop( CBaseEntity *pPhysGunUser, PhysGunDrop_t Reason );
 
 
 	CBaseEntity *HasPhysicsAttacker( float dt );

@@ -153,7 +153,7 @@ public:
 	inline void  operator delete( void* p, int nBlockUse, const char *pFileName, int nLine ) { s_Allocator->Free(p); }
 
 public:
-	static   CMemoryPool   *s_Allocator;
+	static   CUtlMemoryPool   *s_Allocator;
 
 public:
 	DECLARE_SIMPLE_DATADESC();

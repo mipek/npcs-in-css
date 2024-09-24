@@ -77,6 +77,14 @@ public: //Datamaps
 
 };
 
+// fixes hegrenade_projectile not removing after it exploded
+class CE_HEGrenade_Fix: public CE_Grenade
+{
+public:
+	DECLARE_CLASS(CE_HEGrenade_Fix, CE_Grenade);
+
+	void Explode( trace_t *pTrace, int bitsDamageType ) override;
+};
 
 #endif
 

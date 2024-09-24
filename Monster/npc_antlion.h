@@ -93,7 +93,6 @@ public:
 	void		GatherConditions( void );
 	void		PrescheduleThink( void );
 	void		ZapThink( void );
-	void		ZapThink_CBE( void );
 	void		BurrowUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	bool		CreateVPhysics();
 				

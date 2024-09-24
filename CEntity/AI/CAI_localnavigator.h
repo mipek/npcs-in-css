@@ -36,12 +36,12 @@ public:
 	void Init( IAI_MovementSink *pMovementServices );
 
 	//---------------------------------
-	
+
 	AIMoveResult_t		MoveCalc( AILocalMoveGoal_t *pResult, bool bPreviouslyValidated = false );
 	void				ResetMoveCalculations();
 
 	//---------------------------------
-	
+
 	void 				AddObstacle( const Vector &pos, float radius, AI_MoveSuggType_t type = AIMST_AVOID_OBJECT );
 	bool				HaveObstacles();
 
@@ -62,7 +62,7 @@ private:
 	bool				m_fLastWasClear;
 	AILocalMoveGoal_t	m_LastMoveGoal;
 	CSimpleSimTimer		m_FullDirectTimer;
-	
+
 	CAI_PlaneSolver *	m_pPlaneSolver;
 	CAI_MoveProbe *		m_pMoveProbe;
 

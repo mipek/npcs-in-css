@@ -173,7 +173,7 @@ void CFlex::SetFlexWeight( LocalFlexController_t index, float value )
 		if (pflexcontroller->max != pflexcontroller->min)
 		{
 			value = (value - pflexcontroller->min) / (pflexcontroller->max - pflexcontroller->min);
-			value = clamp( value, 0.0, 1.0 );
+			value = clamp( value, 0.0f, 1.0f );
 		}
 
 		Set_m_flexWeight( index, value );
@@ -418,9 +418,9 @@ void CFlex::DoBodyLean( void )
 		}
 
 		vecDelta = vecOrigin - m_vecPrevOrigin;
-		vecDelta.x = clamp( vecDelta.x, -50, 50 );
-		vecDelta.y = clamp( vecDelta.y, -50, 50 );
-		vecDelta.z = clamp( vecDelta.z, -50, 50 );
+		vecDelta.x = clamp( vecDelta.x, -50.f, 50.f );
+		vecDelta.y = clamp( vecDelta.y, -50.f, 50.f );
+		vecDelta.z = clamp( vecDelta.z, -50.f, 50.f );
 
 		float dt = gpGlobals->curtime - GetLastThink();
 		bool bSkip = ((GetFlags() & (FL_FLY | FL_SWIM)) != 0) || (GetMoveParent() != NULL) || (GetGroundEntity() == NULL) || (GetGroundEntity()->IsMoving());

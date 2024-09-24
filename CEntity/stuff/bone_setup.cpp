@@ -651,6 +651,15 @@ void CalcBoneDerivatives( Vector &velocity, AngularImpulse &angVel, const matrix
 	VectorScale( deltaAxis, (deltaAngle * scale), angVel );
 }
 
+void Studio_CalcBoneToBoneTransform( const CStudioHdr *pStudioHdr, int inputBoneIndex, int outputBoneIndex, matrix3x4_t& matrixOut )
+{
+	mstudiobone_t *pbone = pStudioHdr->pBone( inputBoneIndex );
+
+	matrix3x4_t inputToPose;
+	MatrixInvert( pbone->poseToBone, inputToPose );
+	ConcatTransforms( pStudioHdr->pBone( outputBoneIndex )->poseToBone, inputToPose, matrixOut );
+}
+
 //ragdoll_shared.cpp
 #include "ragdoll_shared.h"
 void RagdollApplyAnimationAsVelocity( ragdoll_t &ragdoll, const matrix3x4_t *pPrevBones, const matrix3x4_t *pCurrentBones, float dt )
@@ -668,4 +677,126 @@ void RagdollApplyAnimationAsVelocity( ragdoll_t &ragdoll, const matrix3x4_t *pPr
 		ragdoll.list[i].pObject->WorldToLocalVector( &localAngVelocity, angVel );
 		ragdoll.list[i].pObject->AddVelocity( &velocity, &localAngVelocity );
 	}
+}
+
+static mstudiobonecontroller_t* FindController( const CStudioHdr *pStudioHdr, int iController)
+{
+	// find first controller that matches the index
+	for (int i = 0; i < pStudioHdr->numbonecontrollers(); i++)
+	{
+		if (pStudioHdr->pBonecontroller( i )->inputfield == iController)
+			return pStudioHdr->pBonecontroller( i );
+	}
+
+	return nullptr;
+}
+
+float Studio_GetController( const CStudioHdr *pStudioHdr, int iController, float ctlValue )
+{
+	if (!pStudioHdr)
+		return 0.0;
+
+	mstudiobonecontroller_t *pbonecontroller = FindController(pStudioHdr, iController);
+	if(!pbonecontroller)
+		return 0;
+
+	return ctlValue * (pbonecontroller->end - pbonecontroller->start) + pbonecontroller->start;
+}
+
+
+float Studio_SetController( const CStudioHdr *pStudioHdr, int iController, float flValue, float &ctlValue )
+{
+	if (! pStudioHdr)
+		return flValue;
+
+	mstudiobonecontroller_t *pbonecontroller = FindController(pStudioHdr, iController);
+	if(!pbonecontroller)
+	{
+		ctlValue = 0;
+		return flValue;
+	}
+
+	// wrap 0..360 if it's a rotational controller
+	if (pbonecontroller->type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
+	{
+		// ugly hack, invert value if end < start
+		if (pbonecontroller->end < pbonecontroller->start)
+			flValue = -flValue;
+
+		// does the controller not wrap?
+		if (pbonecontroller->start + 359.0 >= pbonecontroller->end)
+		{
+			if (flValue > ((pbonecontroller->start + pbonecontroller->end) / 2.0) + 180)
+				flValue = flValue - 360;
+			if (flValue < ((pbonecontroller->start + pbonecontroller->end) / 2.0) - 180)
+				flValue = flValue + 360;
+		}
+		else
+		{
+			if (flValue > 360)
+				flValue = flValue - (int)(flValue / 360.0) * 360.0;
+			else if (flValue < 0)
+				flValue = flValue + (int)((flValue / -360.0) + 1) * 360.0;
+		}
+	}
+
+	ctlValue = (flValue - pbonecontroller->start) / (pbonecontroller->end - pbonecontroller->start);
+	if (ctlValue < 0) ctlValue = 0;
+	if (ctlValue > 1) ctlValue = 1;
+
+	float flReturnVal = ((1.0f - ctlValue)*pbonecontroller->start + ctlValue *pbonecontroller->end);
+
+	// ugly hack, invert value if a rotational controller and end < start
+	if (pbonecontroller->type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR) &&
+		pbonecontroller->end < pbonecontroller->start				)
+	{
+		flReturnVal *= -1;
+	}
+
+	return flReturnVal;
+}
+
+int Studio_FindRandomAttachment( const CStudioHdr *pStudioHdr, const char *pAttachmentName )
+{
+	if ( pStudioHdr )
+	{
+		// First move them all matching attachments into a list
+		CUtlVector<int> matchingAttachments;
+
+		// Extract the bone index from the name
+		for (int i = 0; i < pStudioHdr->GetNumAttachments(); i++)
+		{
+			if ( strstr( ((CStudioHdr *)pStudioHdr)->pAttachment(i).pszName(), pAttachmentName ) )
+			{
+				matchingAttachments.AddToTail(i);
+			}
+		}
+
+		// Then randomly return one of the attachments
+		if ( matchingAttachments.Size() > 0 )
+			return matchingAttachments[ RandomInt( 0, matchingAttachments.Size()-1 ) ];
+	}
+
+	return -1;
+}
+
+// CIKContext
+CIKContext::CIKContext()
+{
+	m_target.EnsureCapacity( 12 ); // FIXME: this sucks, shouldn't it be grown?
+	m_iFramecounter = -1;
+	m_pStudioHdr = NULL;
+	m_flTime = -1.0f;
+	m_target.SetSize( 0 );
+}
+
+
+void CIKTarget::SetPos( const Vector &pos )
+{
+	est.pos = pos;
+}
+
+bool CIKTarget::IsActive()
+{
+	return (est.flWeight > 0.0f);
 }

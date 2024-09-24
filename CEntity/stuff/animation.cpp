@@ -8,7 +8,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-
+#define iabs(i) (( (i) >= 0 ) ? (i) : -(i) )
 
 void VerifySequenceIndex( CStudioHdr *pstudiohdr )
 {
@@ -275,4 +275,88 @@ void SetEventIndexForSequence( mstudioseqdesc_t &seqdesc )
 	g_helpfunc.SetEventIndexForSequence(seqdesc);
 }
 
+void SetActivityForSequence( CStudioHdr *pstudiohdr, int i )
+{
+	g_helpfunc.SetActivityForSequence(pstudiohdr, i);
+}
 
+int GetSequenceActivity( CStudioHdr *pstudiohdr, int sequence, int *pweight )
+{
+	if (!pstudiohdr || !pstudiohdr->SequencesAvailable() )
+	{
+		if (pweight)
+			*pweight = 0;
+		return 0;
+	}
+
+	mstudioseqdesc_t &seqdesc = pstudiohdr->pSeqdesc( sequence );
+
+	if (!(seqdesc.flags & STUDIO_ACTIVITY))
+	{
+		SetActivityForSequence( pstudiohdr, sequence );
+	}
+	if (pweight)
+		*pweight = seqdesc.actweight;
+	return seqdesc.activity;
+}
+
+int SelectHeaviestSequence( CStudioHdr *pstudiohdr, int activity )
+{
+	if ( !pstudiohdr )
+		return 0;
+
+	VerifySequenceIndex( pstudiohdr );
+
+	int maxweight = 0;
+	int seq = ACTIVITY_NOT_AVAILABLE;
+	int weight = 0;
+	for (int i = 0; i < pstudiohdr->GetNumSeq(); i++)
+	{
+		int curActivity = GetSequenceActivity( pstudiohdr, i, &weight );
+		if (curActivity == activity)
+		{
+			if ( iabs(weight) > maxweight )
+			{
+				maxweight = iabs(weight);
+				seq = i;
+			}
+		}
+	}
+
+	return seq;
+}
+
+int ExtractBbox( CStudioHdr *pstudiohdr, int sequence, Vector& mins, Vector& maxs )
+{
+	if (! pstudiohdr)
+		return 0;
+
+	if (!pstudiohdr->SequencesAvailable())
+		return 0;
+
+	mstudioseqdesc_t	&seqdesc = pstudiohdr->pSeqdesc( sequence );
+
+	mins = seqdesc.bbmin;
+
+	maxs = seqdesc.bbmax;
+
+	return 1;
+}
+
+int FindHitboxSetByName( CStudioHdr *pstudiohdr, const char *name )
+{
+	if ( !pstudiohdr )
+		return -1;
+
+	for ( int i = 0; i < pstudiohdr->numhitboxsets(); i++ )
+	{
+		mstudiohitboxset_t *set = pstudiohdr->pHitboxSet( i );
+		if ( !set )
+			continue;
+
+		if ( !stricmp( set->pszName(), name ) )
+			return i;
+	}
+
+	return -1;
+}

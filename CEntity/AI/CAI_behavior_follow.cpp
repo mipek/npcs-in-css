@@ -356,7 +356,7 @@ void CAI_FollowBehavior::SetFollowTarget( CEntity *pLeader, bool fFinishCurSched
 //-------------------------------------
 void CAI_FollowBehavior::SetFollowGoalDirect( CE_AI_FollowGoal *pGoal )
 {
-	m_hFollowGoalEnt = pGoal;
+	m_hFollowGoalEnt.Set(pGoal->GetIHandle());
 	m_flTimeUpdatedFollowPosition = 0;
 }
 
@@ -378,7 +378,7 @@ bool CAI_FollowBehavior::SetFollowGoal( CE_AI_FollowGoal *pGoal, bool fFinishCur
 		SetFollowTarget( pGoal->GetGoalEntity() );
 		Assert( pGoal->m_iFormation == AIF_SIMPLE || pGoal->m_iFormation == AIF_WIDE || pGoal->m_iFormation == AIF_MEDIUM || pGoal->m_iFormation == AIF_SIDEKICK || pGoal->m_iFormation == AIF_VORTIGAUNT );
 		SetParameters( AI_FollowParams_t( (AI_Formations_t)*(pGoal->m_iFormation) ) );
-		m_hFollowGoalEnt = pGoal;
+		m_hFollowGoalEnt.Set(pGoal->GetIHandle());
 		m_flTimeUpdatedFollowPosition = 0;
 		return true;
 	}
@@ -393,7 +393,7 @@ void CAI_FollowBehavior::ClearFollowGoal( CE_AI_FollowGoal *pGoal )
 	if ( pGoal == m_hFollowGoalEnt )
 	{
 		SetFollowTarget( NULL );
-		m_hFollowGoalEnt = NULL;
+		m_hFollowGoalEnt.Term();
 		m_flTimeUpdatedFollowPosition = 0;
 	}
 }
@@ -514,7 +514,7 @@ bool CAI_FollowBehavior::IsFollowGoalInRange( float tolerance, float zTolerance,
 	// Increase Z tolerance slightly as XY distance decreases
 	float flToleranceSq = (tolerance*tolerance);
 	float flIncreaseRange = flToleranceSq * 0.25;
-	zTolerance += zTolerance * clamp((distanceSq / flIncreaseRange), 0, 1 );
+	zTolerance += zTolerance * clamp((distanceSq / flIncreaseRange), 0.0f, 1.0f );
 	if ( fabs( origin.z - goal.z ) > zTolerance )
 		return false;
 
@@ -954,7 +954,7 @@ void CAI_FollowBehavior::SetFollowPoint( CE_AI_Hint *pHintNode )
 		m_TimeBlockUseWaitPoint.Reset();
 	}
 	else
-		SetHintNode( pHintNode->BaseEntity() );
+		SetHintNode( pHintNode );
 }
 
 
@@ -2466,7 +2466,7 @@ bool CAI_FollowManager::AddFollower( CEntity *pTarget, CAI_NPC *pFollower, AI_Fo
 
 	if ( slot != -1 )
 	{
-		MEM_ALLOC_CREDIT();
+		//MEM_ALLOC_CREDIT();
 
 		AI_FollowSlot_t *pSlot 		= &pGroup->pFormation->pSlots[slot];
 

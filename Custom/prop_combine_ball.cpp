@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: combine ball -	can be held by the super physcannon and launched
 //							by the AR2's alt-fire
@@ -10,7 +10,6 @@
 #include "CAnimating.h"
 #include "CAI_NPC.h"
 #include "CCombatWeapon.h"
-#include "CECollisionProperty.h"
 #include "physics_shared.h"
 #include "CE_recipientfilter.h"
 #include "soundenvelope.h"
@@ -18,10 +17,10 @@
 #include "effect_dispatch_data.h"
 #include "beam_flags.h"
 #include "cutil.h"
-#include "eventqueue.h"
 
 #define PROP_COMBINE_BALL_MODEL	"models/effects/combineball.mdl"
-#define PROP_COMBINE_BALL_SPRITE_TRAIL "sprites/combineball_trail_black_1.vmt" 
+#define PROP_COMBINE_BALL_SPRITE_TRAIL_RED "sprites/combineball_trail_red_1.vmt"
+#define PROP_COMBINE_BALL_SPRITE_TRAIL_BLUE "sprites/combineball_trail_blue_1.vmt"
 
 #define PROP_COMBINE_BALL_LIFETIME	4.0f	// Seconds
 
@@ -39,6 +38,9 @@ ConVar	sk_combineball_seek_kill( "sk_combineball_seek_kill","0", FCVAR_REPLICATE
 
 // For our ring explosion
 int s_nExplosionTexture = -1;
+
+int s_nBeamTrailRedTexture = -1;
+int s_nBeamTrailBlueTexture = -1;
 
 //-----------------------------------------------------------------------------
 // Context think
@@ -82,6 +84,8 @@ CPropCombineBall *CreateCombineBall( const Vector &origin, const Vector &velocit
 	pBall->SetMass( mass );
 	pBall->StartLifetime( lifetime );
 	pBall->SetWeaponLaunched( true );
+
+	pBall->AttachTrail();
 
 	return pBall;
 }
@@ -178,7 +182,7 @@ BEGIN_DATADESC( CPropCombineBall )
 	DEFINE_FIELD( m_flLastBounceTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flRadius, FIELD_FLOAT ),
 	DEFINE_FIELD( m_nState, FIELD_CHARACTER ),
-	DEFINE_FIELD( m_pGlowTrail, FIELD_CLASSPTR ),
+	//DEFINE_FIELD( m_pGlowTrail, FIELD_CLASSPTR ),
 	DEFINE_FIELD( m_bFiredGrabbedOutput, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bEmit, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bHeld, FIELD_BOOLEAN ),
@@ -237,7 +241,8 @@ void CPropCombineBall::Precache( void )
 	//			precaches we don't need to incur
 
 	PrecacheModel( PROP_COMBINE_BALL_MODEL );
-	PrecacheModel( PROP_COMBINE_BALL_SPRITE_TRAIL );
+	s_nBeamTrailRedTexture = PrecacheModel( PROP_COMBINE_BALL_SPRITE_TRAIL_RED );
+	s_nBeamTrailBlueTexture = PrecacheModel( PROP_COMBINE_BALL_SPRITE_TRAIL_BLUE );
 
 	s_nExplosionTexture = PrecacheModel( "sprites/lgtning.vmt" );
 
@@ -288,27 +293,12 @@ bool CPropCombineBall::IsInField() const
 //-----------------------------------------------------------------------------
 void CPropCombineBall::SetRadius( float flRadius )
 {
-	m_flRadius = clamp( flRadius, 1, MAX_COMBINEBALL_RADIUS );
+	m_flRadius = clamp( flRadius, 1.0f, (float) MAX_COMBINEBALL_RADIUS );
 }
 
 //-----------------------------------------------------------------------------
 // Create vphysics
 //-----------------------------------------------------------------------------
-const objectparams_t g_PhysDefaultObjectParams =
-{
-	NULL,
-	1.0, //mass
-	1.0, // inertia
-	0.1f, // damping
-	0.1f, // rotdamping
-	0.05f, // rotIntertiaLimit
-	"DEFAULT",
-	NULL,// game data
-	0.f, // volume (leave 0 if you don't have one or call physcollision->CollideVolume() to compute it)
-	1.0f, // drag coefficient
-	true,// enable collisions?
-};
-
 bool CPropCombineBall::CreateVPhysics()
 {
 	SetSolid( SOLID_BBOX );
@@ -317,13 +307,14 @@ bool CPropCombineBall::CreateVPhysics()
 
 	SetCollisionBounds( Vector(-flSize, -flSize, -flSize), Vector(flSize, flSize, flSize) );
 	objectparams_t params = g_PhysDefaultObjectParams;
-	params.pGameData = static_cast<void *>(this);
+	params.pGameData = static_cast<void *>(BaseEntity());
 	int nMaterialIndex = physprops->GetSurfaceIndex("metal_bouncy");
 	IPhysicsObject *pPhysicsObject = physenv->CreateSphereObject( flSize, nMaterialIndex, GetAbsOrigin(), GetAbsAngles(), &params, false );
 	if ( !pPhysicsObject )
 		return false;
 
-	g_helpfunc.VPhysicsSetObject( this->BaseEntity(), pPhysicsObject );
+	//g_helpfunc.VPhysicsSetObject( this->BaseEntity(), pPhysicsObject );
+	VPhysicsSetObject( pPhysicsObject );
 	SetMoveType( MOVETYPE_VPHYSICS );
 	pPhysicsObject->Wake();
 
@@ -384,7 +375,7 @@ void CPropCombineBall::Spawn( void )
 	AddEffects( EF_NOSHADOW );
 
 	// Start up the eye trail
-	m_pGlowTrail = CE_CSpriteTrail::SpriteTrailCreate( PROP_COMBINE_BALL_SPRITE_TRAIL, GetAbsOrigin(), false );
+	/*m_pGlowTrail = CE_CSpriteTrail::SpriteTrailCreate( PROP_COMBINE_BALL_SPRITE_TRAIL, GetAbsOrigin(), false );
 	
 	if ( m_pGlowTrail != NULL )
 	{
@@ -394,7 +385,8 @@ void CPropCombineBall::Spawn( void )
 		m_pGlowTrail->SetEndWidth( 0 );
 		m_pGlowTrail->SetLifeTime( 0.1f );
 		m_pGlowTrail->TurnOff();
-	}
+	}*/
+
 
 	m_bEmit = true;
 	m_bHeld = false;
@@ -590,11 +582,11 @@ void CPropCombineBall::InputSocketed( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CPropCombineBall::UpdateOnRemove()
 {
-	if ( m_pGlowTrail != NULL )
+	/*if ( m_pGlowTrail != NULL )
 	{
 		UTIL_Remove( m_pGlowTrail );
 		m_pGlowTrail = NULL;
-	}
+	}*/
 
 	BaseClass::UpdateOnRemove();
 }
@@ -605,6 +597,18 @@ void CPropCombineBall::UpdateOnRemove()
 void CPropCombineBall::ExplodeThink( void )
 {
 	DoExplosion();	
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CPropCombineBall::SetSpawner( CFuncCombineBallSpawner *pSpawner )
+{
+	if (pSpawner) {
+		m_hSpawner.Set(pSpawner->GetIHandle());
+	} else {
+		m_hSpawner.Term();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -640,10 +644,10 @@ void CPropCombineBall::FadeOut( float flDuration )
 	AddSolidFlags( FSOLID_NOT_SOLID );
 
 	// Start up the eye trail
-	if ( m_pGlowTrail != NULL )
+	/*if ( m_pGlowTrail != NULL )
 	{
 		m_pGlowTrail->SetBrightness( 0, flDuration );
-	}
+	}*/
 
 	SetThink( &CPropCombineBall::DieThink );
 	SetNextThink( gpGlobals->curtime + flDuration );
@@ -707,6 +711,8 @@ void CPropCombineBall::SetBallAsLaunched( void )
 
 	StopLoopingSounds();
 	EmitSound( "NPC_CombineBall.Launch" );
+
+	AttachTrail();
 	
 	WhizSoundThink();
 }
@@ -714,9 +720,9 @@ void CPropCombineBall::SetBallAsLaunched( void )
 //-----------------------------------------------------------------------------
 // Lighten the mass so it's zippy toget to the gun
 //-----------------------------------------------------------------------------
-void CPropCombineBall::OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t reason )
+void CPropCombineBall::OnPhysGunPickup( CBaseEntity *pPhysGunUser, PhysGunPickup_t reason )
 {
-	CDefaultPlayerPickupVPhysics::OnPhysGunPickup( pPhysGunUser->BaseEntity(), reason );
+	CDefaultPlayerPickupVPhysics::OnPhysGunPickup( pPhysGunUser, reason );
 
 	if ( m_nMaxBounces == -1 )
 	{
@@ -733,11 +739,11 @@ void CPropCombineBall::OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t r
 		m_bFiredGrabbedOutput = true;
 	}
 
-	if ( m_pGlowTrail )
+	/*if ( m_pGlowTrail )
 	{
 		m_pGlowTrail->TurnOff();
 		m_pGlowTrail->SetRenderColor( 0, 0, 0, 0 );
-	}
+	}*/
 
 	if ( reason != PUNTED_BY_CANNON )
 	{
@@ -797,10 +803,10 @@ void CPropCombineBall::OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t r
 //-----------------------------------------------------------------------------
 // Purpose: Reset the ball to be deadly to NPCs after we've picked it up
 //-----------------------------------------------------------------------------
-void CPropCombineBall::SetPlayerLaunched( CPlayer *pOwner )
+void CPropCombineBall::SetPlayerLaunched( CBaseEntity *pOwner )
 {
 	// Now we own this ball
-	SetOwnerEntity( pOwner->BaseEntity() );
+	SetOwnerEntity( pOwner );
 	SetWeaponLaunched( false );
 	
 	if( VPhysicsGetObject() )
@@ -813,15 +819,16 @@ void CPropCombineBall::SetPlayerLaunched( CPlayer *pOwner )
 //-----------------------------------------------------------------------------
 // Activate death-spin!
 //-----------------------------------------------------------------------------
-void CPropCombineBall::OnPhysGunDrop( CPlayer *pPhysGunUser, PhysGunDrop_t Reason )
+void CPropCombineBall::OnPhysGunDrop( CBaseEntity *pPhysGunUserBase, PhysGunDrop_t Reason )
 {
-	CDefaultPlayerPickupVPhysics::OnPhysGunDrop( pPhysGunUser->BaseEntity(), Reason );
-
-	SetState( STATE_THROWN );
-	WhizSoundThink();
+	CEntity *pPhysGunUser = CEntity::Instance(pPhysGunUserBase);
+	CDefaultPlayerPickupVPhysics::OnPhysGunDrop( pPhysGunUserBase, Reason );
 
 	m_bHeld = false;
 	m_bLaunched = true;
+
+	SetState( STATE_THROWN );
+	WhizSoundThink();
 
 	// Stop with the dissolving
 	SetContextThink( NULL, gpGlobals->curtime, s_pHoldDissolveContext );
@@ -829,15 +836,15 @@ void CPropCombineBall::OnPhysGunDrop( CPlayer *pPhysGunUser, PhysGunDrop_t Reaso
 	// We're ready to start colliding again.
 	SetCollisionGroup( HL2COLLISION_GROUP_COMBINE_BALL );
 
-	if ( m_pGlowTrail )
+	/*if ( m_pGlowTrail )
 	{
 		m_pGlowTrail->TurnOn();
 		m_pGlowTrail->SetRenderColor( 255, 255, 255, 255 );
-	}
+	}*/
 
 	// Set our desired speed to be launched at
 	SetSpeed( 1500.0f );
-	SetPlayerLaunched( pPhysGunUser );
+	SetPlayerLaunched( pPhysGunUserBase );
 
 	if ( Reason != LAUNCHED_BY_CANNON )
 	{
@@ -1113,7 +1120,7 @@ void CPropCombineBall::OnHitEntity( CEntity *pHitEntity, float flSpeed, int inde
 		return;
 	}
 
-	CTakeDamageInfo info( BaseEntity(), GetOwnerEntity()->BaseEntity(), GetAbsVelocity(), GetAbsOrigin(), sk_npc_dmg_combineball.GetFloat(), DMG_DISSOLVE );
+	CTakeDamageInfo info( BaseEntity(), GetOwnerEntity()?GetOwnerEntity()->BaseEntity():NULL, GetAbsVelocity(), GetAbsOrigin(), sk_npc_dmg_combineball.GetFloat(), DMG_DISSOLVE );
 
 	bool bIsDissolving = (pHitEntity->GetFlags() & FL_DISSOLVING) != 0;
 	bool bShouldHit = pHitEntity->PassesDamageFilter( info );
@@ -1199,7 +1206,7 @@ void CPropCombineBall::OnHitEntity( CEntity *pHitEntity, float flSpeed, int inde
 		vecFinalVelocity *= GetSpeed();
 	}
 	
-	g_helpfunc.PhysCallbackSetVelocity( pEvent->pObjects[index], vecFinalVelocity ); 
+	PhysCallbackSetVelocity( pEvent->pObjects[index], vecFinalVelocity );
 }
 
 
@@ -1387,7 +1394,7 @@ void CPropCombineBall::DeflectTowardEnemy( float flSpeed, int index, gamevcollis
 		VectorSubtract( pBestTarget->WorldSpaceCenter(), vecStartPoint, vecDelta );
 		VectorNormalize( vecDelta );
 		vecDelta *= GetSpeed();
-		g_helpfunc.PhysCallbackSetVelocity( pEvent->pObjects[index], vecDelta ); 
+		PhysCallbackSetVelocity( pEvent->pObjects[index], vecDelta );
 	}
 }
 
@@ -1409,7 +1416,7 @@ void CPropCombineBall::BounceInSpawner( float flSpeed, int index, gamevcollision
 	VectorNormalize( vecVelocity );
 	vecVelocity *= flSpeed;
 
-	g_helpfunc.PhysCallbackSetVelocity( pEvent->pObjects[index], vecVelocity ); 
+	PhysCallbackSetVelocity( pEvent->pObjects[index], vecVelocity );
 }
 
 
@@ -1462,7 +1469,7 @@ void CPropCombineBall::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 
 			// Remove self without affecting the object that was hit. (Unless it was flesh)
 			NotifySpawnerOfRemoval();
-			g_helpfunc.PhysCallbackRemove( this->NetworkProp() );
+			PhysCallbackRemove( this->NetworkProp() );
 
 			// disable dissolve damage so we don't kill off the player when he's the one we hit
 			PhysClearGameFlags( VPhysicsGetObject(), FVPHYSICS_DMG_DISSOLVE );
@@ -1489,7 +1496,7 @@ void CPropCombineBall::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 	Vector vecFinalVelocity = pEvent->postVelocity[index];
 	VectorNormalize( vecFinalVelocity );
 	vecFinalVelocity *= GetSpeed();
-	g_helpfunc.PhysCallbackSetVelocity( pEvent->pObjects[index], vecFinalVelocity ); 
+	PhysCallbackSetVelocity( pEvent->pObjects[index], vecFinalVelocity );
 
 	CEntity *pHitEntity = CEntity::Instance(pEvent->pEntities[!index]);
 	if ( pHitEntity && IsHittableEntity( pHitEntity ) )
@@ -1506,7 +1513,7 @@ void CPropCombineBall::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 			return;
 		}
 
-		g_helpfunc.PhysCallbackSetVelocity( pEvent->pObjects[index], vec3_origin ); 
+		PhysCallbackSetVelocity( pEvent->pObjects[index], vec3_origin );
 
 		// Delay the fade out so that we don't change our 
 		// collision rules inside a vphysics callback.
@@ -1545,6 +1552,22 @@ void CPropCombineBall::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 	}
 }
 
+// CE
+void CPropCombineBall::AttachTrail()
+{
+	CBroadcastRecipientFilter filter;
+	filter.SetIgnorePredictionCull(true);
+
+	float radius = m_flRadius;
+	if (radius <= std::numeric_limits<float>::epsilon())
+		radius = 10.0f;
+
+	bool isPlayerBall = GetOwnerEntity() && GetOwnerEntity()->IsPlayer();
+	int modelIndex = isPlayerBall ? s_nBeamTrailBlueTexture : s_nBeamTrailRedTexture;
+
+	te->BeamFollow(filter, 0.0f, entindex(), modelIndex,
+				   0, 2.0f, radius, 0, 1, 255.0f, 255.0f, 255.0f,  180.0f);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1661,7 +1684,7 @@ void CFuncCombineBallSpawner::Spawn()
 
 	float flWidth = CollisionProp()->OBBSize().x;
 	float flHeight = CollisionProp()->OBBSize().y;
-	m_flRadius = min( flWidth, flHeight ) * 0.5f;
+	m_flRadius = std::min( flWidth, flHeight ) * 0.5f;
 	if ( m_flRadius <= 0.0f && m_bShooter == false )
 	{
 		Warning("Zero dimension func_combine_ball_spawner! Removing...\n");

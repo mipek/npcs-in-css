@@ -34,6 +34,20 @@ enum PlayerPhysFlag_e
 	// overwriting phys flags in the HL2 of TF2 player classes
 };
 
+enum HL2PlayerPhysFlag_e
+{
+	// 1 -- 5 are used by enum PlayerPhysFlag_e in player.h
+
+	PFLAG_ONBARNACLE	= ( 1<<6 )		// player is hangning from the barnalce
+};
+
+enum
+{
+	VEHICLE_ANALOG_BIAS_NONE = 0,
+	VEHICLE_ANALOG_BIAS_FORWARD,
+	VEHICLE_ANALOG_BIAS_REVERSE,
+};
+
 class CViewModel;
 
 abstract_class Hooked_CPlayer : public CCombatCharacter
@@ -49,9 +63,14 @@ public:
 	virtual bool BumpWeapon( CBaseEntity *pWeapon );
 	virtual void PickupObject( CBaseEntity *pObject, bool bLimitMassAndSize = true );
 	virtual Vector GetAutoaimVector_Float( float flScale );
+	virtual void CreateRagdollEntity();
+	virtual CBaseEntity *EntSelectSpawnPoint();
+	virtual void LeaveVehicle( const Vector &vecExitPoint = vec3_origin, const QAngle &vecExitAngles = vec3_angle );
 	virtual void ForceDropOfCarriedPhysObjects( CBaseEntity *pOnlyIfHoldingThis);
 	virtual void ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set );
 	virtual void SetAnimation( PLAYER_ANIM playerAnim );
+	virtual bool GetInVehicle( IServerVehicle *pVehicle, int nRole );
+	virtual int FlashlightIsOn();
 
 public:
 	DECLARE_DEFAULTHEADER(GiveNamedItem, CBaseEntity *, (const char *szName, int iSubType));
@@ -64,7 +83,12 @@ public:
 	DECLARE_DEFAULTHEADER(GetAutoaimVector_Float, Vector, ( float flScale));
 	DECLARE_DEFAULTHEADER(ForceDropOfCarriedPhysObjects, void, (CBaseEntity *pOnlyIfHoldingThis));
 	DECLARE_DEFAULTHEADER(ModifyOrAppendPlayerCriteria, void, (AI_CriteriaSet& set));
+	DECLARE_DEFAULTHEADER(CreateRagdollEntity, void, ());
+	DECLARE_DEFAULTHEADER(EntSelectSpawnPoint, CBaseEntity *, ());
+	DECLARE_DEFAULTHEADER(LeaveVehicle, void, ( const Vector &vecExitPoint = vec3_origin, const QAngle &vecExitAngles = vec3_angle ));
 	DECLARE_DEFAULTHEADER(SetAnimation, void, (PLAYER_ANIM playerAnim));
+	DECLARE_DEFAULTHEADER(GetInVehicle, bool, (IServerVehicle *pVehicle, int nRole ));
+	DECLARE_DEFAULTHEADER(FlashlightIsOn, int, ());
 };
 
 class CPlayer : public Hooked_CPlayer
@@ -94,23 +118,43 @@ public:
 	void	IncrementArmorValue( int nCount, int nMaxValue = -1 );
 	
 	bool HasAnyAmmoOfType( int nAmmoIndex );
-	bool GiveAmmo(int nCount, int nAmmoIndex);
+
+	bool IsHoldingEntity( CEntity *pEntity );
 
 	CBaseEntity *FindUseEntity();
 	CBaseEntity *FindUseEntity_Fix();
 
 	CEntity	*DoubleCheckUseNPC( CEntity *pNPC, const Vector &vecSrc, const Vector &vecDir );
-	
-	void SetUseEntity( CEntity *pUseEntity );
 
+	bool HasPhysicsFlag( unsigned int flag ) const { return (m_afPhysicsFlags & flag) != 0; }
+
+	void ForceDropOfCarriedPhysObjects( CEntity *pOnlyIfHoldingThis);
 	CEntity *GetHoldEntity() { return m_hHoldEntity; }
 	void	SetHoldEntity(CBaseEntity *pEntity) { m_hHoldEntity.Set(pEntity); }
+
+	CCombatWeapon *GetRPGWeapon();
+
+	CBaseEntity	*GiveNamedItem( const char *szName, int iSubType=0) override;
+	bool Weapon_CanSwitchTo(CBaseEntity *pWeapon) override;
+	bool Weapon_CanUse(CBaseEntity *pWeapon) override;
+	int FlashlightIsOn() override;
 
 	float	MuzzleFlashTime() const { return m_flFlashTime; }
 	void	SetMuzzleFlashTime( float flTime ) { m_flFlashTime = flTime; }
 
-	void ForceDropOfCarriedPhysObjects( CEntity *pOnlyIfHoldingThis);
+	int		GetVehicleAnalogControlBias() const { return m_iVehicleAnalogBias; }
+	void	SetVehicleAnalogControlBias( int bias ) { m_iVehicleAnalogBias = bias; }
+
+	void	RumbleEffect( unsigned char index, unsigned char rumbleData, unsigned char rumbleFlags );
+	void	ShowCrosshair( bool bShow );
+	bool	CanEnterVehicle( IServerVehicle *pVehicle, int nRole );
+	int		GetFOV( void );
+	int		GetDefaultFOV( void );
+
+	void SetUseEntity( CEntity *pUseEntity );
 	bool ClearUseEntity();
+
+	void EyePositionAndVectors( Vector *pPosition, Vector *pForward, Vector *pRight, Vector *pUp );
 
 	void ExitLadder();
 
@@ -121,6 +165,9 @@ public:
 
 	virtual CViewModel *GetViewModel( int index=0 );
 
+	void PlayUseDenySound();
+	CEntity *GetUseEntity() { return m_hUseEntity; }
+
 public:
 	virtual int OnTakeDamage(const CTakeDamageInfo& info);
 	virtual void Weapon_Drop( CBaseEntity *pWeapon, const Vector *pvecTarget = NULL, const Vector *pVelocity = NULL );
@@ -128,6 +175,9 @@ public:
 	virtual void PickupObject( CBaseEntity *pObject, bool bLimitMassAndSize = true );
 	virtual void ForceDropOfCarriedPhysObjects( CBaseEntity *pOnlyIfHoldingThis);
 	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator);
+	//virtual Vector GetSmoothedVelocity( void );
+
+	virtual int GiveAmmo(int nCount, int nAmmoIndex, bool bSuppressSound = false);
 
 public: // input
 	void InputForceDropPhysObjects( inputdata_t &data );
@@ -148,8 +198,7 @@ private:
 
 public:
 	bool m_bOnLadder;
-	bool m_bOnBarnacle;
-
+	bool m_bHaveRPG;
 
 protected: //Sendprops
 	DECLARE_SENDPROP(QAngle, m_vecPunchAngle);
@@ -157,9 +206,15 @@ protected: //Sendprops
 	DECLARE_SENDPROP(int, m_ArmorValue);
 	DECLARE_SENDPROP(bool, m_bWearingSuit);
 	DECLARE_SENDPROP(CFakeHandle, m_hUseEntity);
-
-public:
-	DECLARE_SENDPROP(int, m_iHideHUD);
+	DECLARE_SENDPROP(float, m_flFallVelocity);
+	DECLARE_SENDPROP(int, m_iObserverMode);
+	DECLARE_SENDPROP(CFakeHandle, m_hObserverTarget);
+	DECLARE_SENDPROP(CFakeHandle, m_hVehicle);
+	DECLARE_SENDPROP(int, m_iDefaultFOV);
+	DECLARE_SENDPROP(int, m_iFOV);
+	DECLARE_SENDPROP(float, m_flFOVTime);
+	DECLARE_SENDPROP(int, m_iFOVStart);
+	DECLARE_SENDPROP(bool, m_bInBombZone);
 
 protected: //Datamaps
 	DECLARE_DATAMAP(CPlayerState, pl);
@@ -172,7 +227,13 @@ public:
 	DECLARE_DATAMAP(unsigned int, m_afPhysicsFlags);
 	DECLARE_DATAMAP(int, m_iTrain);
 	DECLARE_DATAMAP(int, m_nOldButtons);
+	DECLARE_DATAMAP(int, m_nPoisonDmg);
+	DECLARE_DATAMAP(float, m_tbdPrev);
+	DECLARE_DATAMAP_OFFSET(int, m_iVehicleAnalogBias);
 
+public: /* CPlayerLocalData (embedded) */
+	DECLARE_SENDPROP(int, m_iHideHUD);
+	DECLARE_SENDPROP(float, m_flFOVRate);
 };
 
 

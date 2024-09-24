@@ -12,7 +12,7 @@ ConVar sk_battery( "sk_battery","0" );
 ConVar sk_battery_max( "sk_battery_max","0" );
 
 
-BEGIN_DATADESC_CENTITY( CPickupItem )
+/*BEGIN_DATADESC_CENTITY( CPickupItem )
 	DEFINE_INPUT( CPickupItem::m_bRespawn,		FIELD_BOOLEAN,	"mm_respawn" ),
 END_DATADESC()
 
@@ -21,4 +21,4 @@ void CPickupItem::Spawn()
 	m_bRespawn = true;
 	BaseClass::Spawn( );
 	UTIL_DropToFloor( this, MASK_SOLID );
-}
+}*/

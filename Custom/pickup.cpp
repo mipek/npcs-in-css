@@ -1,7 +1,6 @@
 
 #include "pickup.h"
 #include "CPlayer.h"
-#include "CInfoTarget_Fix.h"
 #include "CCombatWeapon.h"
 #include "player_pickup.h"
 #include "physics_shared.h"
@@ -9,16 +8,11 @@
 #include "vphysics/friction.h"
 
 
-ConVar physcannon_minforce( "physcannon_minforce", "700", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar physcannon_maxforce( "physcannon_maxforce", "1500", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar physcannon_maxmass( "physcannon_maxmass", "250", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar physcannon_tracelength( "physcannon_tracelength", "250", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar physcannon_chargetime("physcannon_chargetime", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar physcannon_pullforce( "physcannon_pullforce", "4000", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar physcannon_cone( "physcannon_cone", "0.97", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar physcannon_ball_cone( "physcannon_ball_cone", "0.997", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar player_throwforce( "player_throwforce", "1000", FCVAR_REPLICATED | FCVAR_CHEAT );
+// memdbgon must be the last include file in a .cpp file!!!
+#include "tier0/memdbgon.h"
 
+extern ConVar player_throwforce;
+extern ConVar physcannon_maxmass;
 
 static void MatrixOrthogonalize( matrix3x4_t &matrix, int column )
 {
@@ -76,79 +70,23 @@ static QAngle AlignAngles( const QAngle &angles, float cosineAlignAngle )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 
-// derive from this so we can add save/load data to it
-struct game_shadowcontrol_params_t : public hlshadowcontrol_params_t
-{
-	DECLARE_SIMPLE_DATADESC();
-};
 
 BEGIN_SIMPLE_DATADESC( game_shadowcontrol_params_t )
-	
-	DEFINE_FIELD( targetPosition,		FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( targetRotation,		FIELD_VECTOR ),
-	DEFINE_FIELD( maxAngular, FIELD_FLOAT ),
-	DEFINE_FIELD( maxDampAngular, FIELD_FLOAT ),
-	DEFINE_FIELD( maxSpeed, FIELD_FLOAT ),
-	DEFINE_FIELD( maxDampSpeed, FIELD_FLOAT ),
-	DEFINE_FIELD( dampFactor, FIELD_FLOAT ),
-	DEFINE_FIELD( teleportDistance,	FIELD_FLOAT ),
+
+					DEFINE_FIELD( targetPosition,		FIELD_POSITION_VECTOR ),
+					DEFINE_FIELD( targetRotation,		FIELD_VECTOR ),
+					DEFINE_FIELD( maxAngular, FIELD_FLOAT ),
+					DEFINE_FIELD( maxDampAngular, FIELD_FLOAT ),
+					DEFINE_FIELD( maxSpeed, FIELD_FLOAT ),
+					DEFINE_FIELD( maxDampSpeed, FIELD_FLOAT ),
+					DEFINE_FIELD( dampFactor, FIELD_FLOAT ),
+					DEFINE_FIELD( teleportDistance,	FIELD_FLOAT ),
 
 END_DATADESC()
 
-class CGrabController : public IMotionEvent
-{
-public:
-	CGrabController( void );
-	~CGrabController( void );
-	void AttachEntity( CPlayer *pPlayer, CEntity *pEntity, IPhysicsObject *pPhys, bool bIsMegaPhysCannon, const Vector &vGrabPosition, bool bUseGrabPosition );
-	void DetachEntity( bool bClearVelocity );
-	void OnRestore();
-
-	bool UpdateObject( CPlayer *pPlayer, float flError );
-
-	void SetTargetPosition( const Vector &target, const QAngle &targetOrientation );
-	float ComputeError();
-	float GetLoadWeight( void ) const { return m_flLoadWeight; }
-	void SetAngleAlignment( float alignAngleCosine ) { m_angleAlignment = alignAngleCosine; }
-	void SetIgnorePitch( bool bIgnore ) { m_bIgnoreRelativePitch = bIgnore; }
-	QAngle TransformAnglesToPlayerSpace( const QAngle &anglesIn, CPlayer *pPlayer );
-	QAngle TransformAnglesFromPlayerSpace( const QAngle &anglesIn, CPlayer *pPlayer );
-
-	CEntity *GetAttached() { return (CEntity *)m_attachedEntity; }
-
-	IMotionEvent::simresult_e Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular );
-	float GetSavedMass( IPhysicsObject *pObject );
-
-	QAngle			m_attachedAnglesPlayerSpace;
-	Vector			m_attachedPositionObjectSpace;
-
-private:
-	// Compute the max speed for an attached object
-	void ComputeMaxSpeed( CEntity *pEntity, IPhysicsObject *pPhysics );
-
-	game_shadowcontrol_params_t	m_shadow;
-	float			m_timeToArrive;
-	float			m_errorTime;
-	float			m_error;
-	float			m_contactAmount;
-	float			m_angleAlignment;
-	bool			m_bCarriedEntityBlocksLOS;
-	bool			m_bIgnoreRelativePitch;
-
-	float			m_flLoadWeight;
-	float			m_savedRotDamping[VPHYSICS_MAX_OBJECT_LIST_COUNT];
-	float			m_savedMass[VPHYSICS_MAX_OBJECT_LIST_COUNT];
-	CFakeHandle		m_attachedEntity;
-	QAngle			m_vecPreferredCarryAngles;
-	bool			m_bHasPreferredCarryAngles;
-
-
-	IPhysicsMotionController *m_controller;
-	int				m_frameCount;
-};
 
 
 const float DEFAULT_MAX_ANGULAR = 360.0f * 10.0f;
@@ -171,6 +109,17 @@ CGrabController::CGrabController( void )
 	m_bHasPreferredCarryAngles = false;
 	m_attachedAnglesPlayerSpace.Init();
 	m_attachedPositionObjectSpace.Init();
+
+	m_timeToArrive = 0.0f;
+	m_contactAmount = 0.0f;
+	m_angleAlignment = 0.0f;
+	m_bCarriedEntityBlocksLOS = false;
+	m_bIgnoreRelativePitch = false;
+	m_flLoadWeight = 0.0f;
+	memset(&m_savedRotDamping, 0, sizeof(m_savedRotDamping));
+	memset(&m_savedMass, 0, sizeof(m_savedMass));
+	m_controller = NULL;
+	m_frameCount = 0;
 }
 
 CGrabController::~CGrabController( void )
@@ -199,7 +148,7 @@ void CGrabController::SetTargetPosition( const Vector &target, const QAngle &tar
 	if ( pAttached )
 	{
 		IPhysicsObject *pObj = pAttached->VPhysicsGetObject();
-		
+
 		if ( pObj != NULL )
 		{
 			pObj->Wake();
@@ -213,7 +162,7 @@ void CGrabController::SetTargetPosition( const Vector &target, const QAngle &tar
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : float
 //-----------------------------------------------------------------------------
 float CGrabController::ComputeError()
@@ -226,9 +175,9 @@ float CGrabController::ComputeError()
 	{
 		Vector pos;
 		IPhysicsObject *pObj = pAttached->VPhysicsGetObject();
-		
+
 		if ( pObj )
-		{	
+		{
 			pObj->GetShadowPosition( &pos, NULL );
 
 			float error = (m_shadow.targetPosition - pos).Length();
@@ -253,7 +202,7 @@ float CGrabController::ComputeError()
 			return 9999; // force detach
 		}
 	}
-	
+
 	if ( pAttached->IsEFlagSet( EFL_IS_BEING_LIFTED_BY_BARNACLE ) )
 	{
 		m_error *= 3.0f;
@@ -332,10 +281,9 @@ void CGrabController::AttachEntity( CPlayer *pPlayer, CEntity *pEntity, IPhysics
 {
 	// play the impact sound of the object hitting the player
 	// used as feedback to let the player know he picked up the object
-	
-	//CE_TODO
-	//PhysicsImpactSound( pPlayer, pPhys, CHAN_STATIC, pPhys->GetMaterialIndex(), pPlayer->VPhysicsGetObject()->GetMaterialIndex(), 1.0, 64 );
-	
+
+	PhysicsImpactSound( pPlayer->BaseEntity(), pPhys, CHAN_STATIC, pPhys->GetMaterialIndex(), pPlayer->VPhysicsGetObject()->GetMaterialIndex(), 1.0, 64 );
+
 	Vector position;
 	QAngle angles;
 	pPhys->GetPosition( &position, &angles );
@@ -374,7 +322,7 @@ void CGrabController::AttachEntity( CPlayer *pPlayer, CEntity *pEntity, IPhysics
 		pList[i]->SetMass( REDUCED_CARRY_MASS / flFactor );
 		pList[i]->SetDamping( NULL, &damping );
 	}
-	
+
 	// Give extra mass to the phys object we're actually picking up
 	pPhys->SetMass( REDUCED_CARRY_MASS );
 	pPhys->EnableDrag( false );
@@ -453,7 +401,7 @@ void CGrabController::DetachEntity( bool bClearVelocity )
 	}
 
 	m_attachedEntity.Set(NULL);
-	if ( physenv )
+	if ( physenv && m_controller )
 	{
 		physenv->DestroyMotionController( m_controller );
 	}
@@ -493,7 +441,7 @@ IMotionEvent::simresult_e CGrabController::Simulate( IPhysicsMotionController *p
 	shadowParams.maxAngular = m_shadow.maxAngular * m_contactAmount * m_contactAmount * m_contactAmount;
 	m_timeToArrive = pObject->ComputeShadowControl( shadowParams, m_timeToArrive, deltaTime );
 
-	
+
 	// Slide along the current contact points to fix bouncing problems
 	Vector velocity;
 	AngularImpulse angVel;
@@ -555,7 +503,7 @@ static void ComputePlayerMatrix( CPlayer *pPlayer, matrix3x4_t &out )
 
 	QAngle angles = pPlayer->EyeAngles();
 	Vector origin = pPlayer->EyePosition();
-	
+
 	// 0-360 / -180-180
 	//angles.x = init ? 0 : AngleDistance( angles.x, 0 );
 	//angles.x = clamp( angles.x, -PLAYER_LOOK_PITCH_RANGE, PLAYER_LOOK_PITCH_RANGE );
@@ -588,7 +536,7 @@ bool CGrabController::UpdateObject( CPlayer *pPlayer, float flError )
 	if ( pPlayer->GetGroundEntity() == pEntity )
 		return false;
 	if (!pEntity->VPhysicsGetObject() )
-		return false;    
+		return false;
 
 	//Adrian: Oops, our object became motion disabled, let go!
 	IPhysicsObject *pPhys = pEntity->VPhysicsGetObject();
@@ -606,7 +554,7 @@ bool CGrabController::UpdateObject( CPlayer *pPlayer, float flError )
 	QAngle playerAngles = pPlayer->EyeAngles();
 
 	float pitch = AngleDistance(playerAngles.x,0);
-	playerAngles.x = clamp( pitch, -75, 75 );
+	playerAngles.x = clamp( pitch, -75.0f, 75.0f );
 	AngleVectors( playerAngles, &forward, &right, &up );
 
 	// Now clamp a sphere of object radius at end to the player's bbox
@@ -651,7 +599,7 @@ bool CGrabController::UpdateObject( CPlayer *pPlayer, float flError )
 
 	QAngle angles = TransformAnglesFromPlayerSpace( m_attachedAnglesPlayerSpace, pPlayer );
 
-	
+
 	// If it has a preferred orientation, update to ensure we're still oriented correctly.
 	Pickup_GetPreferredCarryAngles( pEntity, pPlayer, pPlayer->EntityToWorldTransform(), angles );
 
@@ -677,46 +625,18 @@ bool CGrabController::UpdateObject( CPlayer *pPlayer, float flError )
 
 
 
-
-
-class CPlayerPickupController : public CE_InfoTarget_Fix
-{
-public:
-	DECLARE_CLASS( CPlayerPickupController, CE_InfoTarget_Fix );
-	
-	CPlayerPickupController()
-	{
-		m_pPlayer = NULL;
-	}
-
-	void PickUp_Init( CPlayer *pPlayer, CEntity *pObject );
-	void Shutdown( bool bThrown = false );
-	bool OnControls( CBaseEntity *pControls ) { return true; }
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void OnRestore()
-	{
-		m_grabController.OnRestore();
-	}
-	void VPhysicsUpdate( IPhysicsObject *pPhysics ){}
-	void VPhysicsShadowUpdate( IPhysicsObject *pPhysics ) {}
-
-	bool IsHoldingEntity( CEntity *pEnt );
-	CGrabController &GetGrabController() { return m_grabController; }
-
-private:
-	CGrabController		m_grabController;
-	CPlayer				*m_pPlayer;
-};
-
-
 LINK_ENTITY_TO_CUSTOM_CLASS( player_pickup, info_target, CPlayerPickupController );
 
 
+void CPlayerPickupController::OnRestore()
+{
+	m_grabController.OnRestore();
+}
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPlayer - 
-//			*pObject - 
+// Purpose:
+// Input  : *pPlayer -
+//			*pObject -
 //-----------------------------------------------------------------------------
 void CPlayerPickupController::PickUp_Init( CPlayer *pPlayer, CEntity *pObject )
 {
@@ -744,9 +664,9 @@ void CPlayerPickupController::PickUp_Init( CPlayer *pPlayer, CEntity *pObject )
 	m_pPlayer = pPlayer;
 	IPhysicsObject *pPhysics = pObject->VPhysicsGetObject();
 	Pickup_OnPhysGunPickup( pObject, m_pPlayer );
-	
+
 	m_grabController.AttachEntity( pPlayer, pObject, pPhysics, false, vec3_origin, false );
-	
+
 	m_pPlayer->m_iHideHUD |= HIDEHUD_WEAPONSELECTION;
 	m_pPlayer->SetUseEntity( this );
 	m_pPlayer->SetHoldEntity(pObject->BaseEntity());
@@ -755,8 +675,8 @@ void CPlayerPickupController::PickUp_Init( CPlayer *pPlayer, CEntity *pObject )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bool - 
+// Purpose:
+// Input  : bool -
 //-----------------------------------------------------------------------------
 void CPlayerPickupController::Shutdown( bool bThrown )
 {
@@ -792,7 +712,7 @@ void CPlayerPickupController::Shutdown( bool bThrown )
 
 		m_pPlayer->m_iHideHUD &= ~HIDEHUD_WEAPONSELECTION;
 	}
-	Remove();	
+	Remove();
 }
 
 
@@ -812,7 +732,7 @@ void CPlayerPickupController::Use( CBaseEntity *pActivator, CBaseEntity *pCaller
 			Shutdown();
 			return;
 		}
-		
+
 		//Adrian: Oops, our object became motion disabled, let go!
 		IPhysicsObject *pPhys = pAttached->VPhysicsGetObject();
 		if ( pPhys && pPhys->IsMoveable() == false )
@@ -828,7 +748,7 @@ void CPlayerPickupController::Use( CBaseEntity *pActivator, CBaseEntity *pCaller
 			Vector vecLaunch;
 			m_pPlayer->EyeVectors( &vecLaunch );
 			// JAY: Scale this with mass because some small objects really go flying
-			float massFactor = clamp( pPhys->GetMass(), 0.5, 15 );
+			float massFactor = clamp( pPhys->GetMass(), 0.5f, 15.0f );
 			massFactor = RemapVal( massFactor, 0.5, 15, 0.5, 4 );
 			vecLaunch *= player_throwforce.GetFloat() * massFactor;
 
@@ -848,8 +768,8 @@ void CPlayerPickupController::Use( CBaseEntity *pActivator, CBaseEntity *pCaller
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEnt - 
+// Purpose:
+// Input  : *pEnt -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CPlayerPickupController::IsHoldingEntity( CEntity *pEnt )
@@ -865,14 +785,22 @@ void PlayerPickupObject( CPlayer *pPlayer, CEntity *pObject )
 {
 	//Don't pick up if we don't have a phys object.
 	if ( pObject->VPhysicsGetObject() == NULL )
-		 return;
+		return;
 
 	CPlayerPickupController *pController = (CPlayerPickupController *)CEntity::Create( "player_pickup", pObject->GetAbsOrigin(), vec3_angle, pPlayer->BaseEntity() );
-	
+
 	if ( !pController )
 		return;
 
 	pController->PickUp_Init( pPlayer, pObject );
 
+}
+
+
+bool PlayerPickupControllerIsHoldingEntity( CEntity *pPickupControllerEntity, CEntity *pHeldEntity )
+{
+	CPlayerPickupController *pController = dynamic_cast<CPlayerPickupController *>(pPickupControllerEntity);
+
+	return pController ? pController->IsHoldingEntity( pHeldEntity ) : false;
 }
 

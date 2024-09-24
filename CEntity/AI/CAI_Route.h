@@ -14,7 +14,7 @@
 #include "CAI_NPC.h"
 #include "mathlib/vector.h"
 #include "CAI_Network.h"
-#include "CAI_node.h"
+#include "CAI_Node.h"
 #include "ai_waypoint.h"
 
 struct AI_Waypoint_t;

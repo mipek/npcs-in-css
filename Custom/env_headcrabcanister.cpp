@@ -89,11 +89,9 @@ private:
 	void				HeadcrabCanisterSkyboxThink( void );
 	void				HeadcrabCanisterWorldThink( void );
 	void				HeadcrabCanisterSpawnHeadcrabThink();
-	void				HeadcrabCanisterSpawnHeadcrabThink_CBE();
 	void				HeadcrabCanisterSkyboxOnlyThink( void );
 	void				HeadcrabCanisterSkyboxRestartThink( void );
 	void				WaitForOpenSequenceThink();
-	void				WaitForOpenSequenceThink_CBE();
 
 
 	// Place the canister in the world
@@ -697,16 +695,6 @@ void CEnvHeadcrabCanister::TestForCollisionsAgainstWorld( const Vector &vecEndPo
 	}
 }
 
-
-void CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink_CBE()
-{
-	CEnvHeadcrabCanister *cent = (CEnvHeadcrabCanister *)CEntity::Instance(reinterpret_cast<CBaseEntity *>(this));
-	if(cent)
-	{
-		cent->HeadcrabCanisterSpawnHeadcrabThink();
-	}
-}
-
 //-----------------------------------------------------------------------------
 // Headcrab creation
 //-----------------------------------------------------------------------------
@@ -740,7 +728,7 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink()
 	if ( m_nHeadcrabCount != 0 )
 	{
 		float flWaitTime = enginerandom->RandomFloat( 1.0f, 2.0f );
-		SetContextThink( &CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink_CBE, gpGlobals->curtime + flWaitTime, s_pHeadcrabThinkContext );
+		SetContextThink( &CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink, gpGlobals->curtime + flWaitTime, s_pHeadcrabThinkContext );
 	}
 	else
 	{
@@ -759,7 +747,7 @@ void CEnvHeadcrabCanister::StartSpawningHeadcrabs( float flDelay )
 
 	if ( m_nHeadcrabCount != 0 )
 	{
-		SetContextThink( &CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink_CBE, gpGlobals->curtime + flDelay, s_pHeadcrabThinkContext );
+		SetContextThink( &CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink, gpGlobals->curtime + flDelay, s_pHeadcrabThinkContext );
 	}
 }
 
@@ -783,15 +771,6 @@ void CEnvHeadcrabCanister::CanisterFinishedOpening( void )
 	}
 }
 
-void CEnvHeadcrabCanister::WaitForOpenSequenceThink_CBE()
-{
-	CEnvHeadcrabCanister *cent = (CEnvHeadcrabCanister *)CEntity::Instance(reinterpret_cast<CBaseEntity *>(this));
-	if(cent)
-	{
-		cent->WaitForOpenSequenceThink();
-	}
-}
-
 //-----------------------------------------------------------------------------
 // Finish the opening sequence
 //-----------------------------------------------------------------------------
@@ -804,7 +783,7 @@ void CEnvHeadcrabCanister::WaitForOpenSequenceThink()
 	}
 	else
 	{
-		SetContextThink( &CEnvHeadcrabCanister::WaitForOpenSequenceThink_CBE, gpGlobals->curtime + 0.01f, s_pOpenThinkContext );
+		SetContextThink( &CEnvHeadcrabCanister::WaitForOpenSequenceThink, gpGlobals->curtime + 0.01f, s_pOpenThinkContext );
 	}
 }
 
@@ -823,7 +802,7 @@ void CEnvHeadcrabCanister::OpenCanister( void )
 		EmitSound( "HeadcrabCanister.Open" );
 
 		ResetSequence( nOpenSequence );
-		SetContextThink( &CEnvHeadcrabCanister::WaitForOpenSequenceThink_CBE, gpGlobals->curtime + 0.01f, s_pOpenThinkContext );
+		SetContextThink( &CEnvHeadcrabCanister::WaitForOpenSequenceThink, gpGlobals->curtime + 0.01f, s_pOpenThinkContext );
 	}
 	else
 	{
@@ -868,7 +847,7 @@ void CEnvHeadcrabCanister::Landed( void )
 	{
 		// Create the smoke trail to obscure the headcrabs
 		CSmokeTrail *trail = CSmokeTrail::CreateSmokeTrail();
-		trail->FollowEntity( BaseEntity(), "smoke" );
+		trail->FollowEntity( this, "smoke" );
 
 		trail->m_SpawnRate			= 8;
 		trail->m_ParticleLifetime	= 2.0f;

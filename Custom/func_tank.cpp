@@ -540,7 +540,7 @@ void CFuncTank::NPC_FindController( void )
 //			ptr - 
 //			bitsDamageType - 
 //-----------------------------------------------------------------------------
-void CFuncTank::TraceAttack( CBaseEntity *pAttacker, float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType)
+/*void CFuncTank::TraceAttack( CBaseEntity *pAttacker, float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType)
 {
 	if (m_spawnflags & SF_TANK_DAMAGE_KICK)
 	{
@@ -585,7 +585,7 @@ void CFuncTank::TraceAttack( CBaseEntity *pAttacker, float flDamage, const Vecto
 			SetLocalAngles( angles );
 		}
 	}
-}
+}*/
 
 
 //-----------------------------------------------------------------------------
@@ -2059,7 +2059,7 @@ void CFuncTank::DoMuzzleFlash( void )
 	if ( m_bUsePoseParameters && GetParent() )
 	{
 		CAnimating *pAnim = GetParent()->GetBaseAnimating();
-		pAnim->DoMuzzleFlash();
+		pAnim->DoMuzzleFlash_Animating();
 
 		// Do the AR2 muzzle flash
 		if ( m_iEffectHandling == EH_COMBINE_CANNON )

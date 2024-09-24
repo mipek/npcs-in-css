@@ -479,7 +479,7 @@ void CFastZombie::PrescheduleThink( void )
 			// Zombie is close! Recalculate pitch.
 			int iPitch;
 
-			m_flDistFactor = min( 1.0, 1 - flDistNoBBox / FASTZOMBIE_EXCITE_DIST ); 
+			m_flDistFactor = std::min( 1.0f, 1.0f - flDistNoBBox / (float)FASTZOMBIE_EXCITE_DIST );
 			iPitch = (int)(FASTZOMBIE_MIN_PITCH + ( ( FASTZOMBIE_MAX_PITCH - FASTZOMBIE_MIN_PITCH ) * m_flDistFactor)); 
 			g_SoundController->SoundChangePitch( m_pMoanSound, iPitch, FASTZOMBIE_SOUND_UPDATE_FREQ );
 		}

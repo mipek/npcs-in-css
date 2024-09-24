@@ -1,6 +1,6 @@
 
 #include "CAI_NPC.h"
-#include "CAI_Moveshoot.h"
+#include "CAI_moveshoot.h"
 #include "CAI_utils.h"
 
 

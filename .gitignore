@@ -322,3 +322,7 @@ ASALocalRun/
 
 # NVidia Nsight GPU debugger configuration file
 *.nvuser
+
+# CLion CMake default dirs
+cmake-build-debug/
+cmake-build-release/

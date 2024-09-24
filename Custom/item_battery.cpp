@@ -6,13 +6,14 @@
 #include "vphysics/constraints.h"
 
 
-class CItemBattery : public CPickupItem
+class CItemBattery : public CItem<CSode_Fix>
 {
 public:
-	CE_DECLARE_CLASS( CItemBattery, CPickupItem );
+	CE_DECLARE_CLASS( CItemBattery, CItem<CSode_Fix> );
 
 	void Spawn( void )
-	{ 
+	{
+		m_bRespawn = true;
 		Precache();
 		SetModel( "models/items/battery.mdl" );
 		BaseClass::Spawn( );
@@ -24,9 +25,11 @@ public:
 		PrecacheScriptSound( "ItemBattery.Touch" );
 
 	}
-	bool MyTouch( CPlayer *pPlayer )
+	CEntity* MyTouch( CPlayer *pPlayer )
 	{
-		return pPlayer->ApplyBattery();
+		if(pPlayer->ApplyBattery())
+			return this;
+		return NULL;
 	}
 };
 

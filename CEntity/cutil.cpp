@@ -27,14 +27,25 @@
 #include "effect_dispatch_data.h"
 #include "CE_recipientfilter.h"
 #include "GameSystem.h"
-
-
+#include "CEntityManager.h"
+#include "explode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-
-
+//-----------------------------------------------------------------------------
+// Clears the trace
+//-----------------------------------------------------------------------------
+static void Collision_ClearTrace( const Vector &vecRayStart, const Vector &vecRayDelta, CBaseTrace *pTrace )
+{
+	pTrace->startpos = vecRayStart;
+	pTrace->endpos = vecRayStart;
+	pTrace->endpos += vecRayDelta;
+	pTrace->startsolid = false;
+	pTrace->allsolid = false;
+	pTrace->fraction = 1.0f;
+	pTrace->contents = 0;
+}
 
 int ENTINDEX( CBaseEntity *pEnt )
 {
@@ -440,7 +451,10 @@ bool CGameTrace::DidHitWorld() const
 	return m_pEnt == GetWorldEntity()->BaseEntity();
 }
 
-
+bool CGameTrace::DidHitNonWorldEntity() const
+{
+	return m_pEnt && !DidHitWorld();
+}
 
 
 //-----------------------------------------------------------------------------
@@ -1007,6 +1021,68 @@ void UTIL_ClearTrace( trace_t &trace )
 	trace.surface = g_NullSurface;
 }
 
+byte *UTIL_LoadFileForMe( const char *filename, int *pLength )
+{
+	void *buffer = NULL;
+
+	int length = filesystem->ReadFileEx( filename, "GAME", &buffer, true, true );
+
+	if ( pLength )
+	{
+		*pLength = length;
+	}
+
+	return (byte *)buffer;
+}
+
+void UTIL_FreeFile( byte *buffer )
+{
+	filesystem->FreeOptimalReadBuffer( buffer );
+}
+
+void UTIL_ParentToWorldSpace( CEntity *pEntity, Vector &vecPosition, QAngle &vecAngles )
+{
+	if ( pEntity == NULL )
+		return;
+
+	// Construct the entity-to-world matrix
+	// Start with making an entity-to-parent matrix
+	matrix3x4_t matEntityToParent;
+	AngleMatrix( vecAngles, matEntityToParent );
+	MatrixSetColumn( vecPosition, 3, matEntityToParent );
+
+	// concatenate with our parent's transform
+	matrix3x4_t matScratch, matResult;
+	matrix3x4_t matParentToWorld;
+
+	if ( pEntity->GetParent() != NULL )
+	{
+		matParentToWorld = pEntity->GetParentToWorldTransform( matScratch );
+	}
+	else
+	{
+		matParentToWorld = pEntity->EntityToWorldTransform();
+	}
+
+	ConcatTransforms( matParentToWorld, matEntityToParent, matResult );
+
+	// pull our absolute position out of the matrix
+	MatrixGetColumn( matResult, 3, vecPosition );
+	MatrixAngles( matResult, vecAngles );
+}
+
+
+void UTIL_ParentToWorldSpace( CEntity *pEntity, Vector &vecPosition, Quaternion &quat )
+{
+	if (pEntity == NULL)
+		return;
+
+	QAngle vecAngles;
+	QuaternionAngles(quat, vecAngles);
+	UTIL_ParentToWorldSpace(pEntity, vecPosition, vecAngles);
+	AngleQuaternion(vecAngles, quat);
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -1070,10 +1146,11 @@ void UTIL_BloodDrips( const Vector &origin, const Vector &direction, int color, 
 	}
 }	
 
-extern int g_sModelIndexSmoke;
 void UTIL_Smoke( const Vector &origin, const float scale, const float framerate )
 {
-	g_pEffects->Smoke( origin, g_sModelIndexSmoke, scale, framerate );
+	CPVSFilter filter( origin );
+	te->Smoke(filter, 0.0f, &origin, g_sModelIndexSmoke, scale, (int) framerate);
+	//g_pEffects->Smoke( origin, g_sModelIndexSmoke, scale, framerate );
 }
 
 void UTIL_BloodImpact( const Vector &pos, const Vector &dir, int color, int amount )
@@ -1606,9 +1683,6 @@ float UTIL_WaterLevel( const Vector &position, float minz, float maxz )
 	return midUp.z;
 }
 
-
-extern short	g_sModelIndexBubbles;
-
 void UTIL_Bubbles( const Vector& mins, const Vector& maxs, int count )
 {
 	Vector mid =  (mins + maxs) * 0.5;
@@ -1792,7 +1866,24 @@ int UTIL_DropToFloor( CEntity *pEntity, unsigned int mask, CEntity *pIgnore)
 	return 1;
 }
 
+Vector UTIL_PointOnLineNearestPoint(const Vector& vStartPos, const Vector& vEndPos, const Vector& vPoint, bool clampEnds )
+{
+	Vector	vEndToStart		= (vEndPos - vStartPos);
+	Vector	vOrgToStart		= (vPoint  - vStartPos);
+	float	fNumerator		= DotProduct(vEndToStart,vOrgToStart);
+	float	fDenominator	= vEndToStart.Length() * vOrgToStart.Length();
+	float	fIntersectDist	= vOrgToStart.Length()*(fNumerator/fDenominator);
+	float	flLineLength	= VectorNormalize( vEndToStart );
 
+	if ( clampEnds )
+	{
+		fIntersectDist = clamp( fIntersectDist, 0.0f, flLineLength );
+	}
+
+	Vector	vIntersectPos	= vStartPos + vEndToStart * fIntersectDist;
+
+	return vIntersectPos;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Used to tell whether an item may be picked up by the player.  This
@@ -2218,7 +2309,251 @@ void SENTENCEG_PlaySentenceIndex( edict_t *entity, int iSentenceIndex, float vol
 	}
 }
 
+void ShakeRopes( const Vector &vCenter, float flRadius, float flMagnitude )
+{
+	CEffectData shakeData;
+	shakeData.m_vOrigin = vCenter;
+	shakeData.m_flRadius = flRadius;
+	shakeData.m_flMagnitude = flMagnitude;
+	g_helpfunc.DispatchEffect( "ShakeRopes", shakeData );
+}
 
+//-----------------------------------------------------------------------------
+//
+// IntersectRayWithSphere
+//
+// Returns whether or not there was an intersection.
+// Returns the two intersection points, clamped to (0,1)
+//
+//-----------------------------------------------------------------------------
+bool IntersectRayWithSphere( const Vector &vecRayOrigin, const Vector &vecRayDelta,
+							 const Vector &vecSphereCenter, float flRadius, float *pT1, float *pT2 )
+{
+	if ( !IntersectInfiniteRayWithSphere( vecRayOrigin, vecRayDelta, vecSphereCenter, flRadius, pT1, pT2 ) )
+		return false;
+
+	if (( *pT1 > 1.0f ) || ( *pT2 < 0.0f ))
+		return false;
+
+	// Clamp it!
+	if ( *pT1 < 0.0f )
+		*pT1 = 0.0f;
+	if ( *pT2 > 1.0f )
+		*pT2 = 1.0f;
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+//
+// IntersectInfiniteRayWithSphere
+//
+// Returns whether or not there was an intersection.
+// Returns the two intersection points
+//
+//-----------------------------------------------------------------------------
+bool IntersectInfiniteRayWithSphere( const Vector &vecRayOrigin, const Vector &vecRayDelta,
+									 const Vector &vecSphereCenter, float flRadius, float *pT1, float *pT2 )
+{
+	// Solve using the ray equation + the sphere equation
+	// P = o + dt
+	// (x - xc)^2 + (y - yc)^2 + (z - zc)^2 = r^2
+	// (ox + dx * t - xc)^2 + (oy + dy * t - yc)^2 + (oz + dz * t - zc)^2 = r^2
+	// (ox - xc)^2 + 2 * (ox-xc) * dx * t + dx^2 * t^2 +
+	//		(oy - yc)^2 + 2 * (oy-yc) * dy * t + dy^2 * t^2 +
+	//		(oz - zc)^2 + 2 * (oz-zc) * dz * t + dz^2 * t^2 = r^2
+	// (dx^2 + dy^2 + dz^2) * t^2 + 2 * ((ox-xc)dx + (oy-yc)dy + (oz-zc)dz) t +
+	//		(ox-xc)^2 + (oy-yc)^2 + (oz-zc)^2 - r^2 = 0
+	// or, t = (-b +/- sqrt( b^2 - 4ac)) / 2a
+	// a = DotProduct( vecRayDelta, vecRayDelta );
+	// b = 2 * DotProduct( vecRayOrigin - vecCenter, vecRayDelta )
+	// c = DotProduct(vecRayOrigin - vecCenter, vecRayOrigin - vecCenter) - flRadius * flRadius;
+
+	Vector vecSphereToRay;
+	VectorSubtract(	vecRayOrigin, vecSphereCenter, vecSphereToRay );
+
+	float a = DotProduct( vecRayDelta, vecRayDelta );
+
+	// This would occur in the case of a zero-length ray
+	if ( a == 0.0f )
+	{
+		*pT1 = *pT2 = 0.0f;
+		return vecSphereToRay.LengthSqr() <= flRadius * flRadius;
+	}
+
+	float b = 2 * DotProduct( vecSphereToRay, vecRayDelta );
+	float c = DotProduct( vecSphereToRay, vecSphereToRay ) - flRadius * flRadius;
+	float flDiscrim = b * b - 4 * a * c;
+	if ( flDiscrim < 0.0f )
+		return false;
+
+	flDiscrim = sqrt( flDiscrim );
+	float oo2a = 0.5f / a;
+	*pT1 = ( - b - flDiscrim ) * oo2a;
+	*pT2 = ( - b + flDiscrim ) * oo2a;
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Intersects a ray against a box
+//-----------------------------------------------------------------------------
+bool IntersectRayWithBox( const Vector &vecRayStart, const Vector &vecRayDelta,
+						  const Vector &boxMins, const Vector &boxMaxs, float flTolerance, BoxTraceInfo_t *pTrace )
+{
+	int			i;
+	float		d1, d2;
+	float		f;
+
+	pTrace->t1 = -1.0f;
+	pTrace->t2 = 1.0f;
+	pTrace->hitside = -1;
+
+	// UNDONE: This makes this code a little messy
+	pTrace->startsolid = true;
+
+	for ( i = 0; i < 6; ++i )
+	{
+		if ( i >= 3 )
+		{
+			d1 = vecRayStart[i-3] - boxMaxs[i-3];
+			d2 = d1 + vecRayDelta[i-3];
+		}
+		else
+		{
+			d1 = -vecRayStart[i] + boxMins[i];
+			d2 = d1 - vecRayDelta[i];
+		}
+
+		// if completely in front of face, no intersection
+		if (d1 > 0 && d2 > 0)
+		{
+			// UNDONE: Have to revert this in case it's still set
+			// UNDONE: Refactor to have only 2 return points (true/false) from this function
+			pTrace->startsolid = false;
+			return false;
+		}
+
+		// completely inside, check next face
+		if (d1 <= 0 && d2 <= 0)
+			continue;
+
+		if (d1 > 0)
+		{
+			pTrace->startsolid = false;
+		}
+
+		// crosses face
+		if (d1 > d2)
+		{
+			f = d1 - flTolerance;
+			if ( f < 0 )
+			{
+				f = 0;
+			}
+			f = f / (d1-d2);
+			if (f > pTrace->t1)
+			{
+				pTrace->t1 = f;
+				pTrace->hitside = i;
+			}
+		}
+		else
+		{
+			// leave
+			f = (d1 + flTolerance) / (d1-d2);
+			if (f < pTrace->t2)
+			{
+				pTrace->t2 = f;
+			}
+		}
+	}
+
+	return pTrace->startsolid || (pTrace->t1 < pTrace->t2 && pTrace->t1 >= 0.0f);
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Intersects a ray against a box
+//-----------------------------------------------------------------------------
+bool IntersectRayWithBox( const Vector &vecRayStart, const Vector &vecRayDelta,
+						  const Vector &boxMins, const Vector &boxMaxs, float flTolerance, CBaseTrace *pTrace, float *pFractionLeftSolid )
+{
+	Collision_ClearTrace( vecRayStart, vecRayDelta, pTrace );
+
+	BoxTraceInfo_t trace;
+
+	if ( IntersectRayWithBox( vecRayStart, vecRayDelta, boxMins, boxMaxs, flTolerance, &trace ) )
+	{
+		pTrace->startsolid = trace.startsolid;
+		if (trace.t1 < trace.t2 && trace.t1 >= 0.0f)
+		{
+			pTrace->fraction = trace.t1;
+			VectorMA( pTrace->startpos, trace.t1, vecRayDelta, pTrace->endpos );
+			pTrace->contents = CONTENTS_SOLID;
+			pTrace->plane.normal = vec3_origin;
+			if ( trace.hitside >= 3 )
+			{
+				trace.hitside -= 3;
+				pTrace->plane.dist = boxMaxs[trace.hitside];
+				pTrace->plane.normal[trace.hitside] = 1.0f;
+				pTrace->plane.type = trace.hitside;
+			}
+			else
+			{
+				pTrace->plane.dist = -boxMins[trace.hitside];
+				pTrace->plane.normal[trace.hitside] = -1.0f;
+				pTrace->plane.type = trace.hitside;
+			}
+			return true;
+		}
+
+		if ( pTrace->startsolid )
+		{
+			pTrace->allsolid = (trace.t2 <= 0.0f) || (trace.t2 >= 1.0f);
+			pTrace->fraction = 0;
+			if ( pFractionLeftSolid )
+			{
+				*pFractionLeftSolid = trace.t2;
+			}
+			pTrace->endpos = pTrace->startpos;
+			pTrace->contents = CONTENTS_SOLID;
+			pTrace->plane.dist = pTrace->startpos[0];
+			pTrace->plane.normal.Init( 1.0f, 0.0f, 0.0f );
+			pTrace->plane.type = 0;
+			pTrace->startpos = vecRayStart + (trace.t2 * vecRayDelta);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool IntersectRayWithBox( const Ray_t &ray, const Vector &boxMins, const Vector &boxMaxs, float epsilon, CBaseTrace *pTrace, float *pFractionLeftSolid )
+{
+	if ( !ray.m_IsRay )
+	{
+		Vector vecExpandedMins = boxMins - ray.m_Extents;
+		Vector vecExpandedMaxs = boxMaxs + ray.m_Extents;
+		bool bIntersects = IntersectRayWithBox( ray.m_Start, ray.m_Delta, vecExpandedMins, vecExpandedMaxs, epsilon, pTrace, pFractionLeftSolid );
+		pTrace->startpos += ray.m_StartOffset;
+		pTrace->endpos += ray.m_StartOffset;
+		return bIntersects;
+	}
+	return IntersectRayWithBox( ray.m_Start, ray.m_Delta, boxMins, boxMaxs, epsilon, pTrace, pFractionLeftSolid );
+}
+
+bool IntersectRayWithOBB( const Vector &vecRayStart, const Vector &vecRayDelta,
+						  const matrix3x4_t &matOBBToWorld, const Vector &vecOBBMins, const Vector &vecOBBMaxs,
+						  float flTolerance, BoxTraceInfo_t *pTrace )
+{
+	// FIXME: Two transforms is pretty expensive. Should we optimize this?
+	Vector start, delta;
+	VectorITransform( vecRayStart, matOBBToWorld, start );
+	VectorIRotate( vecRayDelta, matOBBToWorld, delta );
+
+	return IntersectRayWithBox( start, delta, vecOBBMins, vecOBBMaxs, flTolerance, pTrace );
+}
 
 #define EXTRACT_VOID_FUNCTIONPTR(x)		(*(void **)(&(x)))
 
@@ -2228,7 +2563,13 @@ void *UTIL_FunctionFromName( datamap_t *pMap, const char *pName )
 	{
 		for ( int i = 0; i < pMap->dataNumFields; i++ )
 		{
+#ifdef WIN32
 			Assert( sizeof(pMap->dataDesc[i].inputFunc) == sizeof(void *) );
+#elif defined(POSIX)
+			Assert( sizeof(pMap->dataDesc[i].inputFunc) == 8 );
+#else
+#error
+#endif
 
 			if ( pMap->dataDesc[i].flags & FTYPEDESC_FUNCTIONTABLE )
 			{
@@ -2278,7 +2619,7 @@ bool UTIL_HudHintTextAll( const char *pMessage )
 	cell_t players[CE_MAX_PLAYERS];
 	int playerCount = 0;
 
-	for(int i=0; i<gpGlobals->maxClients; ++i)
+	for(int i=1; i<gpGlobals->maxClients; ++i)
 	{
 		CPlayer *pPlayer = UTIL_PlayerByIndex(i);
 		if(!pPlayer)
@@ -2475,6 +2816,21 @@ bool IsBoxIntersectingBox( const Vector& boxMin1, const Vector& boxMax1,
 	return true;
 }
 
+bool IsPointInBox( const Vector& pt, const Vector& boxMin, const Vector& boxMax )
+{
+	Assert( boxMin[0] <= boxMax[0] );
+	Assert( boxMin[1] <= boxMax[1] );
+	Assert( boxMin[2] <= boxMax[2] );
+
+	if ( (pt[0] > boxMax[0]) || (pt[0] < boxMin[0]) )
+		return false;
+	if ( (pt[1] > boxMax[1]) || (pt[1] < boxMin[1]) )
+		return false;
+	if ( (pt[2] > boxMax[2]) || (pt[2] < boxMin[2]) )
+		return false;
+	return true;
+}
+
 void UTIL_ClipPunchAngleOffset( QAngle &in, const QAngle &punch, const QAngle &clip )
 {
 	QAngle	final = in + punch;
@@ -2540,4 +2896,45 @@ void UTIL_ParticleTracer( const char *pszTracerEffectName, const Vector &vecStar
 {
 	int iParticleIndex = GetParticleSystemIndex( pszTracerEffectName );
 	UTIL_Tracer( vecStart, vecEnd, iEntIndex, iAttachment, 0, bWhiz, "ParticleTracer", iParticleIndex );
+}
+
+bool CanCreateEntityClass( const char *pszClassname )
+{
+	IEntityFactoryDictionary_CE *ceDictionary = GetEntityManager()->GetEntityFactoryDictionary();
+	return ( ceDictionary && ceDictionary->FindFactory( pszClassname ) );
+}
+
+
+void UTIL_SetModel( CEntity *pEntity, const char *pModelName )
+{
+	// check to see if model was properly precached
+	int i = modelinfo->GetModelIndex( pModelName );
+	if ( i < 0 )
+	{
+		META_CONPRINTF("[Monster] ERROR! %i/%s - %s: UTIL_SetModel: not precached: %s\n", pEntity->entindex(),
+			  pEntity->GetEntityName(),
+			  pEntity->GetClassname(), pModelName);
+	}
+
+	pEntity->SetModelIndex( i ) ;
+	pEntity->SetModelName( AllocPooledString( pModelName ) );
+
+	// brush model
+	const model_t *mod = modelinfo->GetModel( i );
+	if ( mod )
+	{
+		Vector mins, maxs;
+		modelinfo->GetModelBounds( mod, mins, maxs );
+		g_helpfunc.SetMinMaxSize (pEntity->BaseEntity(), mins, maxs);
+	}
+	else
+	{
+		g_helpfunc.SetMinMaxSize (pEntity->BaseEntity(), vec3_origin, vec3_origin);
+	}
+
+	CAnimating *pAnimating = pEntity->GetBaseAnimating();
+	if ( pAnimating )
+	{
+		pAnimating->m_nForceBone = 0;
+	}
 }

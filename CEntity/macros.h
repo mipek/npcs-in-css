@@ -23,7 +23,13 @@
 #include "CEntityBase.h"
 #include "CEntity.h"
 #include "../CDetour/detours.h"
+#include "vtablehook.h"
 
+#ifdef PLATFORM_WINDOWS
+#define THISCALLCONV __thiscall
+#else
+#define THISCALLCONV __cdecl
+#endif
 
 #define CE_CUSTOM_ENTITY()\
 	bool IsCustomEntity() { return true; }
@@ -39,7 +45,7 @@
 		{ \
 			ThisClass::m_DataMap.baseMap = NULL; \
 		} \
-		datamap_t *pMap = gamehelpers->GetDataMap(BaseEntity()); \
+		datamap_t *pMap = gamehelpers->GetDataMap(this->BaseEntity()); \
 		if (eventFuncs == NULL) \
 		{ \
 			if (pMap) \
@@ -171,8 +177,42 @@ public: \
 }; \
 name##cl##HookTracker name##cl##HookTrackerObj;
 
-
-
+// Declares a vtable hook (not using SourceHook!). Do _not_ use without a good reason to.
+#define DECLARE_HOOK_WITHOUT_SOURCEHOOK(name, cl) \
+class name##cl##HookTracker : public IHookTracker \
+{ \
+	void *m_orig; \
+	int m_offset; \
+public: \
+	name##cl##HookTracker(): m_orig(nullptr), m_offset(-1) {} \
+	void ReconfigureHook(IGameConfig *pConfig) \
+	{ \
+		if (!pConfig->GetOffset(#name, &m_offset)) \
+		{ \
+			g_pSM->LogError(myself, "[CENTITY] Failed to retrieve offset %s from gamedata file", #name); \
+			m_bShouldHook = false; \
+		} else { \
+			m_bShouldHook = true; \
+		} \
+	} \
+	void AddHook(CEntity *pEnt) \
+	{ \
+		assert(m_offset >= 0); \
+		cl *pThisType = dynamic_cast<cl *>(pEnt); \
+		if (pThisType && m_bShouldHook) \
+		{ \
+			m_orig = VTableHook(pEnt->BaseEntity(), m_offset, (void*)&cl::Internal##name); \
+		} \
+	} \
+	void ClearFlag(CEntity *pEnt) \
+	{ \
+	} \
+	void* GetOriginalFunction() const \
+    { \
+    	return m_orig; \
+    } \
+}; \
+name##cl##HookTracker name##cl##HookTrackerObj;
 
 class IDetourTracker
 {
@@ -262,7 +302,9 @@ name##SigOffsetTracker name##SigOffsetTrackerObj;
 
 #define DECLARE_DATAMAP_OFFSET(typeof, name) DECLARE_PROP_OFFSET(typeof, name)
 
-
+//#define DECLARE_FUNCTION(ret, args, name) \
+//	typedef ret (CEntity::*DMFunc_##name)args; \
+//	DECLARE_PROP(DMFunc_##name, name);
 
 #define DEFINE_PROP(name, cl)	cl::name##PropTracker cl::name##PropTrackerObj;
 
@@ -553,11 +595,7 @@ friend class name##PropTracker; \
 class name##PropTracker : public IPropTracker \
 { \
 public: \
-	name##PropTracker() \
-	{ \
-		lookup = false; \
-		found = false; \
-	} \
+	name##PropTracker(): lookup(false), found(false) {} \
 	void InitProp(CEntity *pEnt) \
 	{ \
 		ThisClass *pThisType = dynamic_cast<ThisClass *>(pEnt); \
@@ -916,7 +954,24 @@ ret type::Internal##name params \
 } \
 ret (type::* type::name##_Actual) params = NULL;
 
-
+// TODO: add support for different params
+#define DECLARE_DEFAULTHANDLER_WITHOUT_SOURCEHOOK(type, name, ret) \
+ret type::name () \
+{ \
+	typedef ret (THISCALLCONV *func_t)(CBaseEntity *); \
+	func_t orig = (func_t) (name##type##HookTrackerObj).GetOriginalFunction(); \
+	return orig(BaseEntity()); \
+} \
+ret type::Internal##name (CBaseEntity *thisptr) \
+{ \
+	CEntity *pEnt = (CEntity *) CEntity::Instance((CBaseEntity*) thisptr);  \
+	if (!pEnt) \
+		return nullptr; \
+	int index = pEnt->entindex_non_network(); \
+	ret retvalue = (pEnt->name)(); \
+	pEnt = (CEntity *) CEntity::Instance(index); \
+	return retvalue; \
+}
 
 #define RegisterHook(name, hook)\
 	if(!g_pGameConf->GetOffset(name, &offset))\
@@ -955,7 +1010,7 @@ ret (type::* type::name##_Actual) params = NULL;
 		META_CONPRINT("Success\n");
 
 
-#define GET_VARIABLE(name, type)\
+#define GET_VARIABLE_OLD(name, type)\
 	_GET_VARIABLE(name, type, false);
 
 #define GET_VARIABLE_NORET(name, type)\
@@ -988,16 +1043,6 @@ ret (type::* type::name##_Actual) params = NULL;
 
 #define GET_VARIABLE_POINTER_NORET(name, type)\
 	_GET_VARIABLE_POINTER(name, type,);
-
-
-#define GET_DETOUR(name, func)\
-	name##_CDetour = func;\
-	if(name##_CDetour == NULL)\
-	{\
-		g_pSM->LogError(myself,"Unable getting %s",#name);\
-		return false;\
-	}\
-	name##_CDetour->EnableDetour();
 
 
 #define FindValveGameSystem(ptr, bclass, systemname) \

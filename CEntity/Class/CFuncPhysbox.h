@@ -2,7 +2,7 @@
 #define _INCLUDE_CFUNCPHYSBOX_H
 
 #include "CEntityManager.h"
-#include "CE_CBreakable.h"
+#include "CBreakable.h"
 
 class CFuncPhysbox : public CE_CBreakable
 {

@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -17,10 +17,10 @@
 //=========================================================
 class CNPC_CombineS : public CNPC_Combine
 {
+public:
 	CE_DECLARE_CLASS( CNPC_CombineS, CNPC_Combine );
 	DECLARE_DATADESC();
 
-public: 
 	void		Spawn( void );
 	void		Precache( void );
 	void		DeathSound( const CTakeDamageInfo &info );

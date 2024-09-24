@@ -1,5 +1,6 @@
 
 #include "CECollisionProperty.h"
+#include "CAnimating.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -130,23 +131,47 @@ void CECollisionProperty::MarkPartitionHandleDirty()
 }
 
 void CECollisionProperty::SetSurroundingBoundsType( SurroundingBoundsType_t type, const Vector *pMins, const Vector *pMaxs )
-{	
+{
+	CCollisionProperty *collsion = centity->CollisionProp_Actual();
+
 	centity->m_nSurroundType = type;
 	if (type != USE_SPECIFIED_BOUNDS)
 	{
-		//Assert( !pMins && !pMaxs );
+		Assert( !pMins && !pMaxs );
 		MarkSurroundingBoundsDirty();
 	}
 	else
 	{
-		//Assert( pMins && pMaxs );
-		centity->m_vecSpecifiedSurroundingMins = *pMins;
-		centity->m_vecSpecifiedSurroundingMaxs = *pMaxs;
-		centity->m_vecSurroundingMins = *pMins;
-		centity->m_vecSurroundingMaxs = *pMaxs;
+		Assert( pMins && pMaxs );
+		centity->m_vecSpecifiedSurroundingMinsPreScaled = *pMins;
+		centity->m_vecSpecifiedSurroundingMaxsPreScaled = *pMaxs;
 
-		//ASSERT_COORD( m_vecSurroundingMins );
-		//ASSERT_COORD( m_vecSurroundingMaxs );
+		// Check if it's a scaled model
+		CAnimating *pAnim = centity->GetBaseAnimating();
+		if ( pAnim && pAnim->GetModelScale() != 1.0f )
+		{
+			// Do the scaling
+			Vector vecNewMins = *pMins * pAnim->GetModelScale();
+			Vector vecNewMaxs = *pMaxs * pAnim->GetModelScale();
+
+			centity->m_vecSpecifiedSurroundingMins = vecNewMins;
+			centity->m_vecSpecifiedSurroundingMaxs = vecNewMaxs;
+			collsion->m_vecSurroundingMins = vecNewMins;
+			collsion->m_vecSurroundingMaxs = vecNewMaxs;
+
+		}
+		else
+		{
+			// No scaling needed!
+			centity->m_vecSpecifiedSurroundingMins = *pMins;
+			centity->m_vecSpecifiedSurroundingMaxs = *pMaxs;
+			collsion->m_vecSurroundingMins = *pMins;
+			collsion->m_vecSurroundingMaxs = *pMaxs;
+
+		}
+
+		ASSERT_COORD( (collsion->m_vecSurroundingMins) );
+		ASSERT_COORD( (collsion->m_vecSurroundingMaxs) );
 	}
 }
 
@@ -208,20 +233,52 @@ void CECollisionProperty::CalcNearestPoint( const Vector &vecWorldPt, Vector *pV
 
 void CECollisionProperty::SetCollisionBounds( const Vector& mins, const Vector &maxs )
 {
-	if ( (*(centity->m_vecMins.ptr) == mins) && (*(centity->m_vecMaxs.ptr) == maxs) )
-		return;
-		
-	centity->m_vecMins = mins;
-	centity->m_vecMaxs = maxs;
-	
-	//ASSERT_COORD( mins );
-	//ASSERT_COORD( maxs );
+	if ( ( *(centity->m_vecMinsPreScaled) != mins ) || ( *(centity->m_vecMaxsPreScaled) != maxs ) )
+	{
+		centity->m_vecMinsPreScaled = mins;
+		centity->m_vecMaxsPreScaled = maxs;
+	}
 
-	Vector vecSize;
-	VectorSubtract( maxs, mins, vecSize );
-	centity->m_flRadius = vecSize.Length() * 0.5f;
+	bool bDirty = false;
 
-	MarkSurroundingBoundsDirty();
+	// Check if it's a scaled model
+	CAnimating *pAnim = centity->GetBaseAnimating();
+	if ( pAnim && pAnim->GetModelScale() != 1.0f )
+	{
+		// Do the scaling
+		Vector vecNewMins = mins * pAnim->GetModelScale();
+		Vector vecNewMaxs = maxs * pAnim->GetModelScale();
+
+		if ( ( *(centity->m_vecMins) != vecNewMins ) || ( *(centity->m_vecMaxs) != vecNewMaxs ) )
+		{
+			centity->m_vecMins = vecNewMins;
+			centity->m_vecMaxs = vecNewMaxs;
+			bDirty = true;
+		}
+	}
+	else
+	{
+		// No scaling needed!
+		if ( ( *(centity->m_vecMins) != mins ) || ( *(centity->m_vecMaxs) != maxs ) )
+		{
+			centity->m_vecMins = mins;
+			centity->m_vecMaxs = maxs;
+			bDirty = true;
+		}
+	}
+
+	if ( bDirty )
+	{
+		//ASSERT_COORD( m_vecMins.Get() );
+		//ASSERT_COORD( m_vecMaxs.Get() );
+
+		Vector vecSize;
+		VectorSubtract( centity->m_vecMaxs, centity->m_vecMins, vecSize );
+		CCollisionProperty *collsion = centity->CollisionProp_Actual();
+		collsion->m_flRadius = vecSize.Length() * 0.5f;
+
+		MarkSurroundingBoundsDirty();
+	}
 }
 
 void CECollisionProperty::UseTriggerBounds( bool bEnable, float flBloat )
@@ -242,6 +299,46 @@ void CECollisionProperty::UseTriggerBounds( bool bEnable, float flBloat )
 bool CECollisionProperty::IsSolidFlagSet( int flagMask ) const
 {
 	return (centity->m_usSolidFlags & flagMask) != 0;
+}
+
+const Vector & CECollisionProperty::WorldDirectionToCollisionSpace( const Vector &in, Vector *pResult ) const
+{
+	if ( !IsBoundsDefinedInEntitySpace() || ( GetCollisionAngles() == vec3_angle ) )
+	{
+		*pResult = in;
+	}
+	else
+	{
+		VectorIRotate( in, CollisionToWorldTransform(), *pResult );
+	}
+	return *pResult;
+}
+
+bool CECollisionProperty::IsPointInBounds( const Vector &vecWorldPt ) const
+{
+	Vector vecLocalSpace;
+	WorldToCollisionSpace( vecWorldPt, &vecLocalSpace );
+	return ( ( vecLocalSpace.x >= centity->m_vecMins->x && vecLocalSpace.x <=centity->m_vecMaxs->x ) &&
+			 ( vecLocalSpace.y >= centity->m_vecMins->y && vecLocalSpace.y <= centity->m_vecMaxs->y ) &&
+			 ( vecLocalSpace.z >= centity->m_vecMins->z && vecLocalSpace.z <= centity->m_vecMaxs->z ) );
+}
+
+const Vector & CECollisionProperty::WorldToNormalizedSpace( const Vector &in, Vector *pResult ) const
+{
+	Vector vecCollisionSpace;
+	WorldToCollisionSpace( in, &vecCollisionSpace );
+	CollisionToNormalizedSpace( vecCollisionSpace, pResult );
+	return *pResult;
+}
+
+const Vector &	CECollisionProperty::CollisionToNormalizedSpace( const Vector &in, Vector *pResult ) const
+{
+	Vector vecSize = centity->CollisionProp_Actual()->OBBSize( );
+	Vector m_vecMins = centity->m_vecMins;
+	pResult->x = ( vecSize.x != 0.0f ) ? ( in.x - m_vecMins.x ) / vecSize.x : 0.5f;
+	pResult->y = ( vecSize.y != 0.0f ) ? ( in.y - m_vecMins.y ) / vecSize.y : 0.5f;
+	pResult->z = ( vecSize.z != 0.0f ) ? ( in.z - m_vecMins.z ) / vecSize.z : 0.5f;
+	return *pResult;
 }
 
 const Vector& CECollisionProperty::OBBMins( ) const

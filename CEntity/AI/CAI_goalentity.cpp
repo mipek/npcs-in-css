@@ -10,6 +10,26 @@
 
 CE_LINK_ENTITY_TO_CLASS(CAI_GoalEntity, CE_AI_GoalEntity);
 
+SH_DECL_MANUALHOOK1_void(InputActivate, 0, 0, 0, inputdata_t &);
+DECLARE_HOOK(InputActivate, CE_AI_GoalEntity);
+DECLARE_DEFAULTHANDLER_void(CE_AI_GoalEntity, InputActivate, (inputdata_t &inputdata), (inputdata));
+
+SH_DECL_MANUALHOOK1_void(InputUpdateActors, 0, 0, 0, inputdata_t &);
+DECLARE_HOOK(InputUpdateActors, CE_AI_GoalEntity);
+DECLARE_DEFAULTHANDLER_void(CE_AI_GoalEntity, InputUpdateActors, (inputdata_t &inputdata), (inputdata));
+
+SH_DECL_MANUALHOOK1_void(InputDeactivate, 0, 0, 0, inputdata_t &);
+DECLARE_HOOK(InputDeactivate, CE_AI_GoalEntity);
+DECLARE_DEFAULTHANDLER_void(CE_AI_GoalEntity, InputDeactivate, (inputdata_t &inputdata), (inputdata));
+
+
+SH_DECL_MANUALHOOK1_void(EnableGoal, 0, 0, 0, CBaseEntity *);
+DECLARE_HOOK(EnableGoal, CE_AI_GoalEntity);
+DECLARE_DEFAULTHANDLER_void(CE_AI_GoalEntity, EnableGoal, (CBaseEntity *pAI), (pAI));
+
+SH_DECL_MANUALHOOK1_void(DisableGoal, 0, 0, 0, CBaseEntity *);
+DECLARE_HOOK(DisableGoal, CE_AI_GoalEntity);
+DECLARE_DEFAULTHANDLER_void(CE_AI_GoalEntity, DisableGoal, (CBaseEntity *pAI), (pAI));
 
 //Datamaps
 DEFINE_PROP(m_hGoalEntity, CE_AI_GoalEntity);

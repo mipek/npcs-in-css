@@ -9,12 +9,16 @@
 #include "eventqueue.h"
 #include "ladder.h"
 #include "CViewModel.h"
-
+#include "weapon_rpg_replace.h"
+#include "combine_mine.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+#include "weapon_physcannon_replace.h"
 
-
+#ifndef MAX_FOV
+#define MAX_FOV	90
+#endif
 
 CE_LINK_ENTITY_TO_CLASS(CBasePlayer, CPlayer);
 
@@ -64,9 +68,29 @@ SH_DECL_MANUALHOOK1_void(ModifyOrAppendPlayerCriteria, 0, 0, 0, AI_CriteriaSet&)
 DECLARE_HOOK(ModifyOrAppendPlayerCriteria, Hooked_CPlayer);
 DECLARE_DEFAULTHANDLER_void(Hooked_CPlayer, ModifyOrAppendPlayerCriteria, (AI_CriteriaSet& set), (set));
 
+SH_DECL_MANUALHOOK0_void(CreateRagdollEntity, 0, 0, 0);
+DECLARE_HOOK(CreateRagdollEntity, Hooked_CPlayer);
+DECLARE_DEFAULTHANDLER_void(Hooked_CPlayer, CreateRagdollEntity,  (), ());
+
+SH_DECL_MANUALHOOK0(EntSelectSpawnPoint, 0, 0, 0, CBaseEntity *);
+DECLARE_HOOK(EntSelectSpawnPoint, Hooked_CPlayer);
+DECLARE_DEFAULTHANDLER(Hooked_CPlayer, EntSelectSpawnPoint, CBaseEntity *, (), ());
+
+SH_DECL_MANUALHOOK2_void(LeaveVehicle, 0, 0, 0, const Vector &, const QAngle &);
+DECLARE_HOOK(LeaveVehicle, Hooked_CPlayer);
+DECLARE_DEFAULTHANDLER_void(Hooked_CPlayer, LeaveVehicle, (const Vector &vecExitPoint, const QAngle &vecExitAngles), (vecExitPoint, vecExitAngles));
+
 SH_DECL_MANUALHOOK1_void(SetAnimation, 0, 0, 0, PLAYER_ANIM);
 DECLARE_HOOK(SetAnimation, Hooked_CPlayer);
 DECLARE_DEFAULTHANDLER_void(Hooked_CPlayer, SetAnimation, (PLAYER_ANIM anim), (anim));
+
+SH_DECL_MANUALHOOK2(GetInVehicle, 0, 0, 0, bool, IServerVehicle *, int );
+DECLARE_HOOK(GetInVehicle, Hooked_CPlayer);
+DECLARE_DEFAULTHANDLER(Hooked_CPlayer, GetInVehicle, bool, (IServerVehicle *pVehicle, int nRole), (pVehicle, nRole));
+
+SH_DECL_MANUALHOOK0(FlashlightIsOn, 0, 0, 0, int);
+DECLARE_HOOK(FlashlightIsOn, Hooked_CPlayer);
+DECLARE_DEFAULTHANDLER(Hooked_CPlayer, FlashlightIsOn, int, (), ());
 
 //Sendprops
 DEFINE_PROP(m_vecPunchAngle, CPlayer);
@@ -74,10 +98,21 @@ DEFINE_PROP(m_ArmorValue, CPlayer);
 DEFINE_PROP(m_bWearingSuit, CPlayer);
 DEFINE_PROP(m_DmgSave, CPlayer);
 DEFINE_PROP(m_hUseEntity, CPlayer);
-DEFINE_PROP(m_iHideHUD, CPlayer);
 DEFINE_PROP(m_nOldButtons, CPlayer);
+DEFINE_PROP(m_nPoisonDmg, CPlayer);
+DEFINE_PROP(m_flFallVelocity, CPlayer);
+DEFINE_PROP(m_iObserverMode, CPlayer);
+DEFINE_PROP(m_hObserverTarget, CPlayer);
+DEFINE_PROP(m_hVehicle, CPlayer);
+DEFINE_PROP(m_iDefaultFOV, CPlayer);
+DEFINE_PROP(m_iFOV, CPlayer);
+DEFINE_PROP(m_flFOVTime, CPlayer);
+DEFINE_PROP(m_iFOVStart, CPlayer);
 
+DEFINE_PROP(m_bInBombZone, CPlayer);
 
+DEFINE_PROP(m_iHideHUD, CPlayer);
+DEFINE_PROP(m_flFOVRate, CPlayer);
 
 //Datamaps
 DEFINE_PROP(pl, CPlayer);
@@ -86,6 +121,8 @@ DEFINE_PROP(m_afButtonPressed, CPlayer);
 DEFINE_PROP(m_afButtonReleased, CPlayer);
 DEFINE_PROP(m_afPhysicsFlags, CPlayer);
 DEFINE_PROP(m_iTrain, CPlayer);
+DEFINE_PROP(m_tbdPrev, CPlayer);
+DEFINE_PROP(m_iVehicleAnalogBias, CPlayer);
 
 
 BEGIN_DATADESC( CPlayer )
@@ -97,7 +134,7 @@ END_DATADESC()
 void CPlayer::Spawn()
 {
 	m_bOnLadder = false;
-	m_bOnBarnacle = false;
+	m_bHaveRPG = false;
 	m_nVehicleViewSavedFrame = 0;
 	BaseClass::Spawn();
 
@@ -247,8 +284,33 @@ int CPlayer::OnTakeDamage(const CTakeDamageInfo& info)
 			newinfo.SetDamage(10.0f);
 		}
 	}
-	return BaseClass::OnTakeDamage(newinfo);
+
+	int result = BaseClass::OnTakeDamage(newinfo);
+	if (result)
+	{
+		// DMG_POISON is not handled because CBasePlayer::OnTakeDamage is never called.
+		// We handle it ourselves because some NPCs deal poison damage.
+		if (newinfo.GetDamageType() & DMG_POISON)
+		{
+			m_nPoisonDmg += (int) newinfo.GetDamage();
+			m_tbdPrev = gpGlobals->curtime;
+		}
+	}
+	return result;
 }
+
+/*Vector CPlayer::GetSmoothedVelocity( void )
+{
+	if (IsInAVehicle())
+	{
+		CEntity *vehicle = m_hVehicle;
+		if (stricmp(vehicle->GetClassname(), "prop_vehicle_prisoner_pod") == 0)
+		{
+			return vehicle->GetVelocity();
+		}
+	}
+	return BaseClass ::GetSmoothedVelocity();
+}*/
 
 void CPlayer::Weapon_Drop( CBaseEntity *pWeapon, const Vector *pvecTarget , const Vector *pVelocity )
 {
@@ -328,19 +390,58 @@ bool CPlayer::HasAnyAmmoOfType( int nAmmoIndex )
 	return false;
 }
 
-bool CPlayer::GiveAmmo(int nCount, int nAmmoIndex)
+int CPlayer::GiveAmmo(int nCount, int nAmmoIndex, bool bSuppressSound)
 {
+	// Don't try to give the player invalid ammo indices.
 	if (nAmmoIndex < 0)
-		return false;
+		return 0;
 
+	bool bCheckAutoSwitch = false;
 	if (!HasAnyAmmoOfType(nAmmoIndex))
 	{
-		return false;
+		bCheckAutoSwitch = true;
 	}
 
-	return BaseClass::GiveAmmo(nCount, nAmmoIndex);
+	int nAdd = BaseClass::GiveAmmo(nCount, nAmmoIndex, bSuppressSound);
+
+	if ( nCount > 0 && nAdd == 0 )
+	{
+		// we've been denied the pickup, display a hud icon to show that
+		CSingleUserRecipientFilter user( this );
+		//user.MakeReliable();
+
+		int msgid = usermsgs->GetMessageIndex("AmmoDenied");
+		if (msgid != -1) {
+			cell_t players[1] = { entindex() };
+			bf_write *bf = usermsgs->StartBitBufMessage(msgid, players, 1, 0);
+			Assert(bf);
+			bf->WriteShort(nAmmoIndex);
+			usermsgs->EndMessage();
+		}
+	}
+
+	//
+	// If I was dry on ammo for my best weapon and just picked up ammo for it,
+	// autoswitch to my best weapon now.
+	//
+	if (bCheckAutoSwitch)
+	{
+		CEntity *cent = GetActiveWeapon();
+		CCombatWeapon *pWeapon = g_helpfunc.GameRules_GetNextBestWeapon(BaseEntity(), (cent)?cent->BaseEntity():NULL);
+
+		if ( pWeapon && pWeapon->GetPrimaryAmmoType() == nAmmoIndex )
+		{
+			SwitchToNextBestWeapon(GetActiveWeapon());
+		}
+	}
+
+	return nAdd;
 }
 
+bool CPlayer::IsHoldingEntity( CEntity *pEntity )
+{
+	return PlayerPickupControllerIsHoldingEntity( m_hUseEntity, pEntity );
+}
 
 float IntervalDistance( float x, float x0, float x1 )
 {
@@ -533,6 +634,59 @@ CEntity *CPlayer::DoubleCheckUseNPC( CEntity *pNPC, const Vector &vecSrc, const 
 	return pNPC;
 }
 
+CCombatWeapon *CPlayer::GetRPGWeapon()
+{
+	for ( int i = 0; i < MAX_WEAPONS; i++ )
+	{
+		CWeaponRPG *weapon = ToCWeaponRPG(GetWeapon(i));
+		if ( weapon )
+		{
+			return weapon;
+		}
+	}
+	return NULL;
+}
+
+CBaseEntity	*CPlayer::GiveNamedItem( const char *szName, int iSubType)
+{
+	const char *new_name = GetWeaponReplaceName(szName);
+	if(new_name == NULL)
+	{
+		return BaseClass::GiveNamedItem(szName);
+	} else {
+		PreWeaponReplace(szName);
+		CBaseEntity *pEntity =  BaseClass::GiveNamedItem(new_name);
+		PostWeaponReplace();
+		return pEntity;
+	}
+}
+
+bool CPlayer::Weapon_CanSwitchTo(CBaseEntity *pWeapon)
+{
+	CWeaponRPG *rpg = ToCWeaponRPG(pWeapon);
+	if(rpg)
+	{
+		if(rpg->GetMissile() != NULL)
+			return false;
+	}
+	return BaseClass::Weapon_CanSwitchTo(pWeapon);
+}
+
+bool CPlayer::Weapon_CanUse(CBaseEntity *pWeapon)
+{
+	CWeaponPhysCannon *physcannon = ToCWeaponPhysCannon(pWeapon);
+	if(physcannon)
+	{
+		return true;
+	}
+
+	return BaseClass::Weapon_CanUse(pWeapon);
+}
+
+int CPlayer::FlashlightIsOn()
+{
+	return IsEffectActive( EF_DIMLIGHT );
+}
 
 void CPlayer::PickupObject( CBaseEntity *pObject, bool bLimitMassAndSize )
 {
@@ -598,6 +752,10 @@ bool CPlayer::CanPickupObject( CEntity *pObject, float massLimit, float sizeLimi
 
 	if ( checkEnable )
 	{
+		CBounceBomb *pBomb = dynamic_cast<CBounceBomb*>(pObject);
+		if( pBomb )
+			return true;
+
 		// Allow pickup of phys props that are motion enabled on player pickup
 		CE_CPhysicsProp *pProp = dynamic_cast<CE_CPhysicsProp*>(pObject);
 		CE_CPhysBox *pBox = dynamic_cast<CE_CPhysBox*>(pObject);
@@ -631,6 +789,95 @@ void CPlayer::ForceDropOfCarriedPhysObjects( CBaseEntity *pOnlyIfHoldingThis)
 	ForceDropOfCarriedPhysObjects(CEntity::Instance(pOnlyIfHoldingThis));
 }
 
+
+void CPlayer::RumbleEffect( unsigned char index, unsigned char rumbleData, unsigned char rumbleFlags )
+{
+	g_helpfunc.CBasePlayer_RumbleEffect(BaseEntity(), index, rumbleData, rumbleFlags);
+}
+
+
+void CPlayer::ShowCrosshair( bool bShow )
+{
+	if ( bShow )
+	{
+		m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
+	}
+	else
+	{
+		m_iHideHUD |= HIDEHUD_CROSSHAIR;
+	}
+}
+
+bool CPlayer::CanEnterVehicle( IServerVehicle *pVehicle, int nRole )
+{
+	// Must not have a passenger there already
+	if ( pVehicle->GetPassenger( nRole ) )
+		return false;
+
+	// Must be able to holster our current weapon (ie. grav gun!)
+	if (!pVehicle->IsPassengerUsingStandardWeapons(nRole))
+	{
+		//Must be able to stow our weapon
+		CCombatWeapon *pWeapon = GetActiveWeapon();
+		if (pWeapon && !pWeapon->CanHolster())
+			return false;
+	}
+
+	// Must be alive
+	if (!IsAlive())
+		return false;
+
+	// Can't be pulled by a barnacle
+	if ( IsEFlagSet( EFL_IS_BEING_LIFTED_BY_BARNACLE ) )
+		return false;
+
+	return true;
+}
+
+int	CPlayer::GetDefaultFOV( void )
+{
+	int iFOV = ( m_iDefaultFOV == 0 ) ? 90 : m_iDefaultFOV;
+	if ( iFOV > MAX_FOV )
+		iFOV = MAX_FOV;
+	return iFOV;
+}
+
+int CPlayer::GetFOV( void )
+{
+	int nDefaultFOV;
+
+	// The vehicle's FOV wins if we're asking for a default value
+	if ( GetVehicle() )
+	{
+		CacheVehicleView();
+		nDefaultFOV = ( m_flVehicleViewFOV == 0 ) ? GetDefaultFOV() : (int) m_flVehicleViewFOV;
+	}
+	else
+	{
+		nDefaultFOV = GetDefaultFOV();
+	}
+
+	int fFOV = ( m_iFOV == 0 ) ? nDefaultFOV : m_iFOV;
+
+	// If it's immediate, just do it
+	if ( m_flFOVRate == 0.0f )
+		return fFOV;
+
+	float deltaTime = (float)( gpGlobals->curtime - m_flFOVTime ) / m_flFOVRate;
+
+	if ( deltaTime >= 1.0f )
+	{
+		//If we're past the zoom time, just take the new value and stop lerping
+		m_iFOVStart = fFOV;
+	}
+	else
+	{
+		fFOV = (int)SimpleSplineRemapValClamped( deltaTime, 0.0f, 1.0f, m_iFOVStart, fFOV );
+	}
+
+	return fFOV;
+}
+
 void CPlayer::ForceDropOfCarriedPhysObjects( CEntity *pOnlyIfHoldingThis)
 {
 	if(!pOnlyIfHoldingThis || pOnlyIfHoldingThis != m_hHoldEntity)
@@ -660,6 +907,27 @@ bool CPlayer::ClearUseEntity()
 	return false;
 }
 
+void CPlayer::EyePositionAndVectors( Vector *pPosition, Vector *pForward,
+									 Vector *pRight, Vector *pUp )
+{
+	// Handle the view in the vehicle
+	if ( GetVehicle() != NULL )
+	{
+		CacheVehicleView();
+		AngleVectors( m_vecVehicleViewAngles, pForward, pRight, pUp );
+
+		if ( pPosition != NULL )
+		{
+			*pPosition = m_vecVehicleViewOrigin;
+		}
+	}
+	else
+	{
+		VectorCopy( BaseClass::EyePosition(), *pPosition );
+		AngleVectors( EyeAngles(), pForward, pRight, pUp );
+	}
+}
+
 void CPlayer::ExitLadder()
 {
 	if ( MOVETYPE_LADDER != GetMoveType() )
@@ -667,6 +935,11 @@ void CPlayer::ExitLadder()
 
 	SetMoveType( MOVETYPE_WALK );
 	SetMoveCollide( MOVECOLLIDE_DEFAULT );
+}
+
+void CPlayer::PlayUseDenySound()
+{
+	EmitSound("HL2Player.UseDeny");
 }
 
 CViewModel *CPlayer::GetViewModel( int index )

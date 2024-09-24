@@ -80,8 +80,8 @@ public:
 #endif	// HL2_EPISODIC
 
 	// Player pickup
-	virtual void	OnPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t reason );
-	virtual void	OnPhysGunDrop( CPlayer *pPhysGunUser, PhysGunDrop_t Reason );
+	virtual void	OnPhysGunPickup( CBaseEntity *pPhysGunUser, PhysGunPickup_t reason );
+	virtual void	OnPhysGunDrop( CBaseEntity *pPhysGunUser, PhysGunDrop_t Reason );
 	virtual bool	HasPreferredCarryAnglesForPlayer( CPlayer *pPlayer );
 	virtual QAngle	PreferredCarryAngles( void );
 	virtual bool	OnAttemptPhysGunPickup( CPlayer *pPhysGunUser, PhysGunPickup_t reason );

@@ -54,7 +54,7 @@ private:
 extern CAI_TimedSemaphore *g_AIFriendliesTalkSemaphore;
 extern CAI_TimedSemaphore *g_AIFoesTalkSemaphore;
 
-#define GetSpeechSemaphore( pNpc ) (((pNpc)->IsPlayerAlly()) ? &g_AIFriendliesTalkSemaphore : &g_AIFoesTalkSemaphore )
+#define GetSpeechSemaphore( pNpc ) (((pNpc)->IsPlayerAlly()) ? g_AIFriendliesTalkSemaphore : g_AIFoesTalkSemaphore )
 //-----------------------------------------------------------------------------
 // Basic speech system types
 //-----------------------------------------------------------------------------
@@ -393,6 +393,11 @@ inline float CAI_ExpresserHost<BASE_NPC>::GetResponseDuration( AI_Response *resp
 template <class BASE_NPC>
 inline void CAI_ExpresserHost<BASE_NPC>::DispatchResponse( const char *conceptName )
 	{
+		// CE_TODO: fixme?
+		if (conceptName && strcmp(conceptName, "TLK_DISSOLVESCREAM") == 0)
+		{
+			return;
+		}
 		Speak( (AIConcept_t)conceptName );
 	}
 

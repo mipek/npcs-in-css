@@ -814,7 +814,7 @@ void CNPC_CScanner::SetInspectTargetToHint(CE_AI_Hint *pHint, float fInspectDura
 	}
 	else
 	{
-		SetHintNode( pHint->BaseEntity() );
+		SetHintNode( pHint );
 		m_vInspectPos = tr.endpos;
 		pHint->Lock( this->BaseEntity() );
 
@@ -1204,7 +1204,7 @@ void CNPC_CScanner::GatherConditions( void )
 	if ( gpGlobals->curtime > m_fCheckHintTime && HaveInspectTarget() == false )
 	{
 		CE_AI_Hint *pHint = CAI_HintManager::FindHint( this, HINT_WORLD_WINDOW, 0, SCANNER_CIT_INSPECT_FLY_DIST );
-		SetHintNode( pHint ? pHint->BaseEntity() : NULL );
+		SetHintNode( pHint );
 
 		if ( GetHintNode() )
 		{
@@ -2330,7 +2330,7 @@ bool CNPC_CScanner::OverrideMove( float flInterval )
 	else
 	{
 		Vector vMoveTargetPos(0,0,0);
-		CBaseEntity *pMoveTarget = NULL;
+		CEntity *pMoveTarget = NULL;
 		
 		// The original line of code was, due to the accidental use of '|' instead of
 		// '&', always true. Replacing with 'true' to suppress the warning without changing
@@ -2340,11 +2340,11 @@ bool CNPC_CScanner::OverrideMove( float flInterval )
 			// Select move target 
 			if ( GetTarget() != NULL )
 			{
-				pMoveTarget = GetTarget()->BaseEntity();
+				pMoveTarget = GetTarget();
 			}
 			else if ( GetEnemy() != NULL )
 			{
-				pMoveTarget = GetEnemy()->BaseEntity();
+				pMoveTarget = GetEnemy();
 			}
 			
 			// Select move target position 
@@ -2373,7 +2373,7 @@ bool CNPC_CScanner::OverrideMove( float flInterval )
 
 			float fTargetDist = (1.0f-tr.fraction)*(GetAbsOrigin() - vMoveTargetPos).Length();
 			
-			if ( ( tr.m_pEnt == pMoveTarget ) || ( fTargetDist < 50 ) )
+			if ( pMoveTarget && (( tr.m_pEnt == pMoveTarget->BaseEntity() ) || ( fTargetDist < 50 )) )
 			{
 				/*if ( g_debug_cscanner.GetBool() )
 				{
@@ -2399,7 +2399,7 @@ bool CNPC_CScanner::OverrideMove( float flInterval )
 		// If I have a route, keep it updated and move toward target
 		if ( GetNavigator()->IsGoalActive() )
 		{
-			if ( OverridePathMove( CEntity::Instance(pMoveTarget), flInterval ) )
+			if ( pMoveTarget && OverridePathMove( pMoveTarget, flInterval ) )
 			{
 				BlendPhyscannonLaunchSpeed();
 				return true;

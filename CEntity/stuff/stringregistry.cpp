@@ -137,9 +137,9 @@ unsigned short CStringRegistry::Next( unsigned short key ) const
 	return m_pStringList->Next( key );
 }
 
-unsigned short CStringRegistry::InvalidIndex() const
+unsigned short CStringRegistry::InvalidIndex()
 {
-	return m_pStringList->InvalidIndex();
+	return StringTable_t::InvalidIndex();
 }
 
 #endif // _STATIC_LINKED && CLIENT_DLL

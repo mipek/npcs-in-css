@@ -8,14 +8,13 @@
 
 #include "ispatialpartition.h"
 #include "utlpriorityqueue.h"
-
+#include "ai_hull.h"
 
 class CEAI_NetworkManager;
 class CAI_Node;
 class CAI_Link;
 class CAI_DynamicLink;
 class CCombatCharacter;
-enum Hull_t;
 class CAI_NPC;
 class INearestNodeFilter;
 class CNodeList;

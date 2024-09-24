@@ -35,6 +35,14 @@ public:
 	CE_DECLARE_CLASS(CAnimating, CEntity);
 	CAnimating();
 
+	enum
+	{
+		NUM_POSEPAREMETERS = 24,
+		NUM_BONECTRLS = 4
+	};
+
+	virtual void UpdateOnRemove();
+
 public:
 	virtual void StudioFrameAdvance();
 	virtual void StudioFrameAdvanceManual(float flInterval);
@@ -47,13 +55,16 @@ public:
 	virtual float GetSequenceGroundSpeed( CStudioHdr *pStudioHdr, int iSequence );
 	inline float GetSequenceGroundSpeed( int iSequence ) { return GetSequenceGroundSpeed(GetModelPtr(), iSequence); }
 	virtual bool CanBecomeRagdoll( void );
-	virtual void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity);
 	virtual void PopulatePoseParameters( void );
 	virtual	Vector GetGroundSpeedVelocity( void );
 	virtual bool Dissolve(const char *pMaterialName, float flStartTime, bool bNPCOnly = true, int nDissolveType = 0, Vector vDissolverOrigin = vec3_origin, int iMagnitude = 0 );
 	virtual void ClampRagdollForce( const Vector &vecForceIn, Vector *vecForceOut );
 	virtual void HandleAnimEvent(animevent_t *pEvent);
-	virtual	void DispatchAnimEvents ( CBaseEntity *eventHandler ); 
+	virtual	void DispatchAnimEvents ( CBaseEntity *eventHandler );
+	virtual void InitBoneControllers ( void );
+	virtual bool IsActivityFinished();
+	virtual void SetupBones( matrix3x4_t *pBoneToWorld, int boneMask );
+	virtual void CalculateIKLocks( float currentTime );
 
 public:
 	virtual CAnimating*	GetBaseAnimating() { return this; }
@@ -85,6 +96,7 @@ public:
 	inline float SetPoseParameter( int iParameter, float flValue ) { return SetPoseParameter( GetModelPtr(), iParameter, flValue ); }
 
 	float	GetPoseParameter( int iPoseParameter );
+	float   GetPoseParameter( const char *name );
 
 	float GetSequenceMoveYaw( int iSequence );
 
@@ -144,7 +156,7 @@ public:
 
 	bool ComputeHitboxSurroundingBox( Vector *pVecWorldMins, Vector *pVecWorldMaxs );
 
-	void DoMuzzleFlash();
+	void DoMuzzleFlash_Animating();
 	
 	int		GetBoneCacheFlags( void ) { return m_fBoneCacheFlags; }
 	inline void	SetBoneCacheFlags( unsigned short fFlag ) { m_fBoneCacheFlags |= fFlag; }
@@ -155,8 +167,26 @@ public:
 
 	float	EdgeLimitPoseParameter( int iParameter, float flValue, float flBase = 0.0f );
 
+	int SelectHeaviestSequence ( Activity activity );
+	int ExtractBbox( int sequence, Vector& mins, Vector& maxs );
+
 	int GetHitboxSet();
 	inline void StopAnimation() { m_flPlaybackRate = 0; }
+
+	void EnableServerIK();
+	Activity GetSequenceActivity( int iSequence );
+
+	float GetBoneController ( int iController );
+	float SetBoneController ( int iController, float flValue );
+
+	void ResetClientsideFrame( void );
+
+	bool GetAttachmentLocal( int iAttachment, Vector &origin, QAngle &angles );
+	bool GetAttachmentLocal( int iAttachment, matrix3x4_t &attachmentToLocal );
+
+	float GetModelScale() const { return m_flModelScale; }
+
+	bool IsDissolving() { return ( (GetFlags() & FL_DISSOLVING) != 0 ); }
 
 public:
 	CStudioHdr *		GetModelPtr();
@@ -172,12 +202,15 @@ public:
 	DECLARE_DEFAULTHEADER(GetIdealAccel, float, () const);
 	DECLARE_DEFAULTHEADER(GetSequenceGroundSpeed, float, (CStudioHdr *pStudioHdr, int iSequence));
 	DECLARE_DEFAULTHEADER(CanBecomeRagdoll, bool, ());
-	DECLARE_DEFAULTHEADER(GetVelocity, void, (Vector *vVelocity, AngularImpulse *vAngVelocity));
 	DECLARE_DEFAULTHEADER(PopulatePoseParameters, void, ());
 	DECLARE_DEFAULTHEADER(GetGroundSpeedVelocity, Vector, ());
 	DECLARE_DEFAULTHEADER(ClampRagdollForce, void, ( const Vector &vecForceIn, Vector *vecForceOut ));
 	DECLARE_DEFAULTHEADER(HandleAnimEvent, void, (animevent_t *pEvent));
-	DECLARE_DEFAULTHEADER(DispatchAnimEvents, void, ( CBaseEntity *eventHandler )); 
+	DECLARE_DEFAULTHEADER(DispatchAnimEvents, void, ( CBaseEntity *eventHandler ));
+	DECLARE_DEFAULTHEADER(InitBoneControllers, void, ());
+	DECLARE_DEFAULTHEADER(IsActivityFinished, bool, ());
+	DECLARE_DEFAULTHEADER(SetupBones, void, ( matrix3x4_t *pBoneToWorld, int boneMask ));
+	DECLARE_DEFAULTHEADER(CalculateIKLocks, void, (float currentTime));
 
 public:
 	DECLARE_DEFAULTHEADER_DETOUR(StudioFrameAdvanceManual, void, (float flInterval));
@@ -192,23 +225,34 @@ protected: //Sendprops
 	DECLARE_SENDPROP(int,m_nBody);
 	DECLARE_SENDPROP(int,m_nNewSequenceParity);
 	DECLARE_SENDPROP(int,m_nResetEventsParity);
-	DECLARE_SENDPROP(int,m_nHitboxSet);
 	DECLARE_SENDPROP(unsigned char,m_nMuzzleFlashParity);
+	DECLARE_SENDPROP(bool, m_bClientSideFrameReset)
+	DECLARE_SENDPROP(bool, m_bClientSideAnimation)
+	DECLARE_SENDPROP(float *, m_flEncodedController);
 
 public:
 	DECLARE_SENDPROP(int,m_nSkin);
+	DECLARE_SENDPROP(int,m_nHitboxSet);
+	DECLARE_SENDPROP(int,m_nForceBone);
+	DECLARE_SENDPROP(float,m_flModelScale);
 
 	
 protected: //Datamaps
 	DECLARE_DATAMAP(float, m_flCycle);
 	DECLARE_DATAMAP(int, m_nSequence);
+	DECLARE_SENDPROP(float, m_flFadeScale);
 	DECLARE_DATAMAP(bool, m_bSequenceLoops);
 	DECLARE_DATAMAP(bool, m_bSequenceFinished);
 	DECLARE_DATAMAP(float, m_flLastEventCheck);
 	DECLARE_DATAMAP(unsigned short, m_fBoneCacheFlags);
+	DECLARE_DATAMAP(CIKContext *, m_pIk);
+	DECLARE_DATAMAP(int, m_iIKCounter);
 
 public:
 	DECLARE_DATAMAP(float, m_flGroundSpeed);
+
+private:
+	CIKContext *my_m_pIk;
 
 };
 
