@@ -102,6 +102,7 @@ void CNPC_CombineS::Precache()
 	PrecacheModel( STRING( GetModelName() ) );
 
 	g_helpfunc.UTIL_PrecacheOther( "item_healthvial" );
+	g_helpfunc.UTIL_PrecacheOther( "prop_combine_ball" );
 	/////g_helpfunc.UTIL_PrecacheOther( "weapon_frag" );
 	//g_helpfunc.UTIL_PrecacheOther( "item_ammo_ar2_altfire" );
 
