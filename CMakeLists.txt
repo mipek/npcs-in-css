@@ -23,7 +23,7 @@ project(npcs-in-css)
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 
-### Finding the SourceMod SDK and any game SDKs
+### Finding the SourceMod SDK and game SDK
 get_filename_component(build_root ".." ABSOLUTE)
 
 if(IS_DIRECTORY ${build_root}/metamod-source)
@@ -75,6 +75,7 @@ add_library(npcs-in-css
         CEntity/physics_impact_damage.cpp
         CEntity/rtti.cpp
         CEntity/rtti.h
+        CEntity/vtablehook.cpp
         CEntity/stuff/ammodef.cpp
         CEntity/stuff/animation.cpp
         CEntity/stuff/bone_setup.cpp
@@ -85,7 +86,14 @@ add_library(npcs-in-css
         CEntity/stuff/studio.cpp
         CEntity/stuff/TemplateEntities.cpp
         CEntity/stuff/TemplateEntities.h
+        CEntity/stuff/globalstate.cpp
+        CEntity/stuff/globalstate.h
         CEntity/modify/simtimer.cpp
+        CEntity/modify/mempool.h
+        CEntity/modify/mempool.cpp
+        CEntity/modify/vehicle_viewblend_shared.cpp
+        CEntity/modify/fourwheelvehiclephysics.cpp
+        CEntity/modify/fourwheelvehiclephysics.h
         CEntity/Class/CAI_NPC.cpp
         CEntity/Class/CAI_relationship.cpp
         CEntity/Class/CAnimating.cpp
@@ -163,6 +171,30 @@ add_library(npcs-in-css
         CEntity/Class/CWorld.h
         CEntity/Class/ItemRespawnSystem.cpp
         CEntity/Class/ItemRespawnSystem.h
+        CEntity/Class/CAI_FollowGoal_Fix.cpp
+        CEntity/Class/CAI_FollowGoal_Fix.h
+        CEntity/Class/CAI_NPC_AI_Patch.cpp
+        CEntity/Class/CAI_NPC_AI_Patch.h
+        CEntity/Class/CNPCBaseWeapon.cpp
+        CEntity/Class/CNPCBaseWeapon.h
+        CEntity/Class/CGrenadeWeapon.cpp
+        CEntity/Class/CGrenadeWeapon.h
+        CEntity/Class/CBoneFollower.cpp
+        CEntity/Class/CBoneFollower.h
+        CEntity/Class/CBreakableProp.cpp
+        CEntity/Class/CBreakableProp.h
+        CEntity/Class/CFilters.cpp
+        CEntity/Class/CFilters.h
+        CEntity/Class/CEntityFlame.cpp
+        CEntity/Class/CEntityFlame.h
+        CEntity/Class/CPathTrack.cpp
+        CEntity/Class/CParticleEntity.cpp
+        CEntity/Class/CEnvPlayerSurfaceTrigger.cpp
+        CEntity/Class/CEnvPlayerSurfaceTrigger.h
+        CEntity/Class/CEntityBlocker.cpp
+        CEntity/Class/CEntityBlocker.h
+        CEntity/Class/CPropVehicle.cpp
+        CEntity/Class/CPropVehicle.h
         CEntity/AI/activitylist.cpp
         CEntity/AI/CAI_baseactor.cpp
         CEntity/AI/CAI_baseactor.h
@@ -225,6 +257,23 @@ add_library(npcs-in-css
         CEntity/AI/eventlist.cpp
         CEntity/AI/interpolatortypes.cpp
         CEntity/AI/sceneentity.cpp
+        CEntity/AI/CAI_planesolver.cpp
+        CEntity/AI/CAI_behavior_lead.cpp
+        CEntity/AI/CAI_behavior_lead.h
+        CEntity/AI/CAI_behavior_police.cpp
+        CEntity/AI/CAI_behavior_police.h
+        CEntity/AI/CAI_goal_police.cpp
+        CEntity/AI/CAI_goal_police.h
+        CEntity/AI/CAI_playerally.cpp
+        CEntity/AI/CAI_playerally.h
+        CEntity/AI/CAI_speechfilter.cpp
+        CEntity/AI/CAI_speechfilter.h
+        CEntity/AI/CAI_behavior_functank.cpp
+        CEntity/AI/CAI_behavior_functank.h
+        CEntity/AI/CAI_behavior_actbusy.cpp
+        CEntity/AI/CAI_behavior_actbusy.h
+        CEntity/AI/CAI_spotlight.cpp
+        CEntity/AI/CAI_trackpather.cpp
         Custom/env_flare.cpp
         Custom/env_flare.h
         Custom/env_headcrabcanister.cpp
@@ -299,30 +348,12 @@ add_library(npcs-in-css
         CEntity/stuff/effects.cpp
         Monster/npc_attackchopper.cpp
         CEntity/Class/CSoda_Fix.cpp
-        CEntity/AI/CAI_spotlight.cpp
-        CEntity/AI/CAI_trackpather.cpp
-        CEntity/Class/CPathTrack.cpp
-        CEntity/Class/CParticleEntity.cpp
         Custom/vehicle_jeep.cpp
-        CEntity/Class/CPropVehicle.cpp
-        CEntity/Class/CPropVehicle.h
-        CEntity/modify/fourwheelvehiclephysics.cpp
-        CEntity/modify/fourwheelvehiclephysics.h
         Custom/vehicle_jeep.h
-        CEntity/Class/CEnvPlayerSurfaceTrigger.cpp
-        CEntity/Class/CEnvPlayerSurfaceTrigger.h
-        CEntity/Class/CEntityBlocker.cpp
-        CEntity/Class/CEntityBlocker.h
         Monster/npc_crow.cpp
         Monster/npc_crow.h
-        CEntity/modify/vehicle_viewblend_shared.cpp
         Custom/vehicle_prisoner_pod.cpp
-        CEntity/vtablehook.cpp
         Monster/npc_combinegunship.cpp
-        CEntity/Class/CAI_NPC_AI_Patch.cpp
-        CEntity/Class/CAI_NPC_AI_Patch.h
-        CEntity/Class/CNPCBaseWeapon.cpp
-        CEntity/Class/CNPCBaseWeapon.h
         Custom/weapon_replace.cpp
         Custom/weapon_replace.h
         Custom/weapon_pistol.cpp
@@ -334,53 +365,22 @@ add_library(npcs-in-css
         Custom/weapon_stunstick.h
         Monster/npc_metropolice.cpp
         Monster/npc_metropolice.h
-        CEntity/AI/CAI_behavior_functank.cpp
-        CEntity/AI/CAI_behavior_functank.h
-        CEntity/AI/CAI_behavior_actbusy.cpp
-        CEntity/AI/CAI_behavior_actbusy.h
-        CEntity/Class/CAI_FollowGoal_Fix.cpp
-        CEntity/Class/CAI_FollowGoal_Fix.h
-        CEntity/AI/CAI_behavior_police.cpp
-        CEntity/AI/CAI_behavior_police.h
-        CEntity/AI/CAI_goal_police.cpp
-        CEntity/AI/CAI_goal_police.h
-        CEntity/AI/CAI_playerally.cpp
-        CEntity/AI/CAI_playerally.h
-        CEntity/AI/CAI_speechfilter.cpp
-        CEntity/AI/CAI_speechfilter.h
-        CEntity/stuff/globalstate.cpp
-        CEntity/stuff/globalstate.h
         Custom/weapon_rpg.cpp
         Custom/weapon_rpg.h
         Custom/weapon_rpg_replace.cpp
         Custom/weapon_rpg_replace.h
-        CEntity/Class/CGrenadeWeapon.cpp
-        CEntity/Class/CGrenadeWeapon.h
-        CEntity/AI/CAI_behavior_lead.cpp
-        CEntity/AI/CAI_behavior_lead.h
         Monster/npc_missiledefence.cpp
         Custom/weapon_physcannon_replace.cpp
         Custom/weapon_physcannon_replace.h
         Monster/npc_enemyfinder.cpp
         Custom/combine_mine.cpp
         Custom/combine_mine.h
-        CEntity/Class/CBreakableProp.cpp
-        CEntity/Class/CBreakableProp.h
         Custom/prop_thumper.cpp
         Monster/npc_strider.cpp
         Monster/npc_strider.h
-        CEntity/Class/CBoneFollower.cpp
-        CEntity/Class/CBoneFollower.h
-        CEntity/Class/CFilters.cpp
-        CEntity/Class/CFilters.h
         Custom/cblast.cpp
-        CEntity/AI/CAI_planesolver.cpp
-        CEntity/modify/mempool.h
-        CEntity/modify/mempool.cpp
         Monster/npc_puppet.cpp
         Monster/npc_combinedropship.cpp
-        CEntity/Class/CEntityFlame.cpp
-        CEntity/Class/CEntityFlame.h
 ) 
 
 target_compile_definitions(npcs-in-css
@@ -432,20 +432,17 @@ target_compile_options(npcs-in-css
             -Wno-unused-parameter
             -Wno-deprecated-copy
             -Wno-pedantic
-            -Wno-packed-not-aligned
             -Wno-unused-but-set-variable
-            -Wno-nonnull-compare
             -Wno-switch
-            -Wno-template-id-cdtor
             -Wno-invalid-offsetof
             -Wno-conversion-null
             -Wno-inconsistent-missing-override
+            -Wno-implicit-const-int-float-conversion
 
             -Wno-expansion-to-defined
             -Wno-ignored-qualifiers
             -Wno-extra
             -Wno-register
-            -Wno-class-memaccess
             -Wno-reorder
             -Wno-c++11-narrowing
         >
